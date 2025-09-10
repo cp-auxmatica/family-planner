@@ -1,237 +1,439 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="cupcake">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Hub - Multi-List Shopping</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.2/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Home Project Planner - v11</title>
     
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.1/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .fc-event { cursor: pointer; }
-        .toast { z-index: 1000; }
-        .fc .fc-toolbar.fc-header-toolbar { flex-direction: column; align-items: center; gap: 0.5rem; }
-        @media (min-width: 768px) { .fc .fc-toolbar.fc-header-toolbar { flex-direction: row; } }
-        .fc { --fc-border-color: #e5e7eb; --fc-page-bg-color: #ffffff; --fc-event-bg-color: #3b82f6; --fc-event-border-color: #2563eb; --fc-today-bg-color: rgba(253, 230, 138, 0.3); }
-        .fc .fc-button-primary { background-color: #2563eb; border-color: #2563eb; }
-        .fc .fc-button-primary:hover { background-color: #1d4ed8; border-color: #1d4ed8; }
-        .fc-bg-event { opacity: 0.3 !important; }
-        .dashboard-item { transition: background-color 0.2s; }
-        .dashboard-item:hover { background-color: #e5e7eb; } 
+        body { font-family: 'Inter', sans-serif; -webkit-text-size-adjust: 100%; }
+        .kanban-column { min-height: 200px; }
+        .fc-event { cursor: pointer; border: none !important; }
+        .sortable-ghost { background: #f0f0f0; border: 2px dashed #ccc; }
+        .modal { max-height: 90vh; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 1000; }
+        .color-swatch { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid white; box-shadow: 0 0 0 1px rgba(0,0,0,0.2); }
     </style>
 </head>
-<body class="bg-base-200 min-h-screen">
+<body class="bg-slate-100 text-slate-800">
 
-    <header class="bg-base-100 shadow-md sticky top-0 z-40">
-        <div class="navbar container mx-auto px-4">
-            <div class="navbar-start"><h1 class="text-xl md:text-2xl font-bold text-primary"><i class="fas fa-home mr-2"></i> Home Hub</h1></div>
-            <div class="navbar-end">
-                <button class="btn btn-ghost btn-circle" onclick="document.getElementById('manage_modal').showModal()"><i class="fas fa-cog text-xl"></i></button>
-                <button class="btn btn-primary btn-sm md:btn-md" onclick="ui.openTaskModal()"><i class="fas fa-plus md:mr-2"></i><span class="hidden md:inline">New Event</span></button>
+    <div id="app" class="p-4 md:p-8" style="display: none;">
+        
+        <header class="mb-6 flex flex-wrap justify-between items-center gap-4">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-700"><i class="fa-solid fa-house-chimney-window mr-3"></i>Home Planner</h1>
+            <div class="flex items-center gap-2">
+                <div class="form-control"><input type="text" id="searchInput" placeholder="Search..." class="input input-bordered w-full md:w-auto"></div>
+                <button onclick="app.openNewProjectForm()" class="btn btn-primary btn-md"><i class="fa-solid fa-plus mr-2"></i>New</button>
+                <button onclick="openModal('settingsModal')" class="btn btn-ghost btn-md"><i class="fa-solid fa-gear"></i></button>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <main class="container mx-auto p-4">
-        <div role="tablist" class="tabs tabs-bordered tabs-lg mb-6" id="viewTabs">
-            <a role="tab" class="tab tab-active" data-view="dashboard"><i class="fas fa-tachometer-alt mr-1"></i><span class="hidden sm:inline ml-1">Dashboard</span></a>
-            <a role="tab" class="tab" data-view="mealplanner"><i class="fas fa-utensils mr-1"></i><span class="hidden sm:inline ml-1">Meals</span></a>
-            <a role="tab" class="tab" data-view="grocerylist"><i class="fas fa-shopping-cart mr-1"></i><span class="hidden sm:inline ml-1">Groceries</span></a>
-            <a role="tab" class="tab" data-view="history"><i class="fas fa-history mr-1"></i><span class="hidden sm:inline ml-1">History</span></a>
-            <a role="tab" class="tab" data-view="fullschedule"><i class="fas fa-calendar-alt mr-1"></i><span class="hidden sm:inline ml-1">Schedule</span></a>
+        <div class="tabs tabs-boxed mb-6 bg-white w-fit overflow-x-auto">
+            <a class="tab tab-lg" data-view="kanban" onclick="app.setView('kanban')"><i class="fa-solid fa-table-columns mr-2"></i>Kanban</a>
+            <a class="tab tab-lg" data-view="list" onclick="app.setView('list')"><i class="fa-solid fa-list-ul mr-2"></i>List</a>
+            <a class="tab tab-lg" data-view="calendar" onclick="app.setView('calendar')"><i class="fa-solid fa-calendar-days mr-2"></i>Calendar</a>
+            <a class="tab tab-lg" data-view="reports" onclick="app.setView('reports')"><i class="fa-solid fa-chart-pie mr-2"></i>Reports</a>
+            <a class="tab tab-lg" data-view="shopping" onclick="app.setView('shopping')"><i class="fa-solid fa-cart-shopping mr-2"></i>Shopping</a>
         </div>
 
-        <div id="app-views">
-            <div id="dashboard-view" class="view"><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title"><i class="fas fa-clock text-info mr-2"></i>Today's Schedule</h2><div id="today-schedule-widget" class="space-y-2"></div></div></div><div class="card bg-base-100 shadow-xl hover:bg-base-200/50 cursor-pointer" onclick="ui.switchView('grocerylist')"><div class="card-body"><h2 class="card-title"><i class="fas fa-shopping-cart text-accent mr-2"></i>Active Grocery Lists</h2><div id="grocery-list-widget" class="space-y-1"></div></div></div><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title" id="dinner-widget-title"><i class="fas fa-drumstick-bite text-warning mr-2"></i>What's for Dinner?</h2><div id="dinner-widget" class="mt-2"></div></div></div><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title"><i class="fas fa-tasks text-success mr-2"></i>Today's Chores</h2><div id="today-chores-widget" class="space-y-2"></div></div></div></div></div>
-            <div id="mealplanner-view" class="view hidden"><div class="card bg-base-100 shadow-xl mb-6"><div class="card-body"><details class="collapse collapse-arrow bg-base-200"><summary class="collapse-title text-xl font-medium">Plan a New Meal</summary><div class="collapse-content"><form id="meal-page-form" class="space-y-4 pt-4"><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><input type="date" id="meal-page-date" class="input input-bordered w-full" required /><select id="meal-page-type" class="select select-bordered w-full" required><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select></div><input type="text" id="meal-page-recipeName" class="input input-bordered w-full" placeholder="Recipe Name" required /><div class="text-right"><button type="submit" class="btn btn-primary">Save Meal & Open Editor</button></div></form></div></details></div></div><div id="meal-planner-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div></div>
-            <div id="grocerylist-view" class="view hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="space-y-6">
-                    <div class="card bg-base-100 shadow-xl">
-                        <div class="card-body">
-                            <h2 class="card-title">My Stores</h2>
-                            <form id="add-store-form" class="join w-full mt-2"><input type="text" id="new-store-name" placeholder="Add a new store..." class="input input-bordered join-item w-full" required /><button type="submit" class="btn btn-primary join-item">Add</button></form>
-                        </div>
-                    </div>
-                    <div id="stores-container" class="space-y-4"></div>
-                </div>
-                <div class="card bg-base-100 shadow-xl">
-                    <div class="card-body">
-                        <h2 class="card-title">Active Shopping Lists</h2>
-                        <div id="active-lists-container" class="space-y-6 mt-4"></div>
-                    </div>
-                </div>
-            </div>
-            <div id="history-view" class="view hidden"><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title">Shopping Trip History</h2><div id="trip-history-container" class="space-y-4 mt-4"></div></div></div></div>
-            <div id="fullschedule-view" class="view hidden"><div class="card bg-base-100 shadow-xl p-2 md:p-4"><div id="calendar"></div></div></div>
-        </div>
-    </main>
+        <main>
+            <div id="kanban-view" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            <div id="list-view" class="bg-white p-4 rounded-lg shadow-md"></div>
+            <div id="calendar-view" class="bg-white p-4 rounded-lg shadow-md"><div id="calendar"></div></div>
+            <div id="reports-view" class="bg-white p-4 rounded-lg shadow-md"></div>
+            <div id="shopping-view"></div>
+        </main>
+    </div>
     
-    <div class="toast toast-top toast-center" id="toast-container"></div>
+    <div id="loading" class="text-center p-20"><span class="loading loading-spinner loading-lg"></span><p class="mt-4 text-slate-600">Initializing Database...</p></div>
+    <div id="toastContainer"></div>
 
-    <dialog id="task_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg" id="task-modal-title">New Event</h3><form id="task-form" class="space-y-4 mt-4"><input type="hidden" id="taskId"><input type="text" id="taskName" class="input input-bordered w-full" placeholder="Event Name" required /><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><select id="taskType" class="select select-bordered" required><option disabled selected>Event Type</option><option>Appointment</option><option>Meeting</option><option>Work Schedule</option><option>Chore</option><option>Errand</option><option>Time Off</option></select><select id="taskAssignee" class="select select-bordered"><option disabled selected>Assign To</option></select></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><input type="date" id="taskDueDate" class="input input-bordered" /><input type="time" id="taskDueTime" class="input input-bordered" /></div><div class="flex items-center justify-between"><div class="form-control"><label class="cursor-pointer label"><span class="label-text">Recurring?</span><input type="checkbox" id="taskIsRecurring" class="toggle toggle-primary ml-2" /></label></div><div class="form-control"><label class="cursor-pointer label"><span class="label-text">Completed?</span><input type="checkbox" id="taskIsDone" class="checkbox checkbox-success ml-2" /></label></div></div><div id="recurring-options" class="hidden"><label class="label"><span class="label-text">Repeats on:</span></label><div class="join w-full" id="recurring-day-picker"><button type="button" class="join-item btn btn-sm flex-1" data-day="1">M</button><button type="button" class="join-item btn btn-sm flex-1" data-day="2">T</button><button type="button" class="join-item btn btn-sm flex-1" data-day="3">W</button><button type="button" class="join-item btn btn-sm flex-1" data-day="4">T</button><button type="button" class="join-item btn btn-sm flex-1" data-day="5">F</button><button type="button" class="join-item btn btn-sm flex-1" data-day="6">S</button><button type="button" class="join-item btn btn-sm flex-1" data-day="0">S</button></div></div><textarea id="taskNotes" class="textarea textarea-bordered w-full" placeholder="Notes..."></textarea><div class="modal-action"><button type="button" class="btn" onclick="document.getElementById('task_modal').close()">Cancel</button><button type="submit" class="btn btn-primary">Save Event</button></div></form></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
-    <dialog id="edit_recurring_modal" class="modal"><div class="modal-box w-11/12 max-w-xs text-center"><h3 class="font-bold text-lg">Edit Recurring Event</h3><p class="py-4">Do you want to change only this event, or this and all future events in the series?</p><div class="modal-action justify-center"><button class="btn" id="edit-single-event-btn">Only This Event</button><button class="btn btn-primary" id="edit-future-events-btn">Future Events</button></div></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
-    <dialog id="meal_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg" id="meal-modal-title">Edit Meal</h3><form id="meal-form" class="space-y-4 mt-4"><input type="hidden" id="mealId"><input type="hidden" id="mealDate"><input type="hidden" id="mealType"><input type="text" id="recipeName" class="input input-bordered w-full" placeholder="Recipe Name" required /><input type="url" id="recipeURL" class="input input-bordered w-full" placeholder="https://example.com/recipe" /><div class="divider">Ingredients</div><div id="ingredient-list-container" class="space-y-2 max-h-48 overflow-y-auto pr-2"></div><div class="join w-full"><input type="text" id="new-ingredient-name" placeholder="Add an ingredient" class="input input-bordered join-item w-full" /><button type="button" id="add-ingredient-button" class="btn btn-secondary join-item">Add</button></div><div class="modal-action"><button type="button" id="delete-meal-btn" class="btn btn-error mr-auto" onclick="app.handleDeleteMeal()">Delete</button><button type="button" class="btn" onclick="document.getElementById('meal_modal').close()">Cancel</button><button type="submit" class="btn btn-primary">Save Changes</button></div></form></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
-    <dialog id="manage_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg">Manage Data & Family</h3><div class="mt-6"><h4 class="font-semibold text-md">Family Members</h4><div id="family-member-list" class="mt-2 space-y-2"></div><form id="add-family-member-form" class="flex gap-2 mt-2"><input type="text" id="new-member-name" placeholder="New member name" class="input input-bordered w-full" required /><button type="submit" class="btn btn-primary">Add</button></form></div><div class="divider"></div><div class="mt-4"><h4 class="font-semibold text-md">Backup & Restore</h4><p class="text-sm text-base-content/70">Export or import your data.</p><div class="flex gap-4 mt-4"><button class="btn btn-secondary flex-1" onclick="app.exportData()">Export</button><label class="btn btn-accent flex-1">Import<input type="file" id="import-file-input" class="hidden" accept=".json" onchange="app.importData(event)" /></label></div><div class="divider">DANGER ZONE</div><button class="btn btn-error w-full" onclick="app.clearAllData()"><i class="fas fa-exclamation-triangle mr-2"></i>Clear All Application Data</button></div><div class="modal-action"><button type="button" class="btn" onclick="document.getElementById('manage_modal').close()">Close</button></div></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
+    <dialog id="projectModal" class="modal">
+        <div class="modal-box w-11/12 max-w-4xl">
+            <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button></form>
+            <h3 class="font-bold text-lg mb-4" id="projectModalTitle">New Project</h3>
+            <form id="projectForm" class="space-y-4">
+                <input type="hidden" id="projectId">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="label"><span class="label-text">Project Name</span></label><input type="text" id="projectName" class="input input-bordered w-full" required></div>
+                    <div><label class="label"><span class="label-text">Status</span></label><select id="projectStatus" class="select select-bordered w-full"><option>Not Started</option><option>In Progress</option><option>Blocked</option><option>Done</option></select></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="label"><span class="label-text">Priority</span></label><select id="projectPriority" class="select select-bordered w-full"><option value="3">Low</option><option value="2">Medium</option><option value="1">High</option></select></div>
+                    <div><label class="label"><span class="label-text">Project Size</span></label><select id="projectSize" class="select select-bordered w-full"><option>Quick Fix</option><option>Small</option><option>Medium</option><option>Big</option><option>Overhaul</option></select></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div><label class="label"><span class="label-text">Start Date</span></label><input type="date" id="projectStartDate" class="input input-bordered w-full"></div>
+                    <div><label class="label"><span class="label-text">End Date</span></label><input type="date" id="projectEndDate" class="input input-bordered w-full"></div>
+                </div>
+                <div class="form-control"><label class="label cursor-pointer"><span class="label-text">DIY Project</span><input type="radio" name="projectType" value="DIY" id="projectTypeDIY" class="radio radio-primary" checked></label><label class="label cursor-pointer"><span class="label-text">Contractor Project</span><input type="radio" name="projectType" value="Contractor" id="projectTypeContractor" class="radio radio-primary"></label></div>
+                <div id="contractorSection" class="hidden space-y-2 p-4 border rounded-md"><label class="label"><span class="label-text">Select Contractor</span></label><select id="projectContractor" class="select select-bordered w-full"></select><label class="label"><span class="label-text">Quoted Cost</span></label><input type="number" id="projectQuote" placeholder="0.00" class="input input-bordered w-full"></div>
+                <div id="diySection" class="space-y-4 p-4 border rounded-md">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label class="label"><span class="label-text">Assigned Family Members</span></label><div id="projectFamilyMembers" class="flex flex-wrap gap-2"></div></div>
+                        <div><label class="label"><span class="label-text">Total Est. Hours</span></label><input type="number" id="projectHours" placeholder="0" class="input input-bordered w-full"></div>
+                    </div>
+                    <div class="divider my-0"></div>
+                    <div><h4 class="font-bold">Materials</h4><div id="materialsList" class="space-y-2"></div><button type="button" id="addMaterialBtn" class="btn btn-sm btn-outline mt-2"><i class="fa-solid fa-plus mr-2"></i>Add Material</button></div>
+                    <div class="divider my-0"></div>
+                    <div><h4 class="font-bold">Subtasks</h4><div id="subtasksContainer" class="space-y-3 mt-2"></div><button type="button" id="addSubtaskBtn" class="btn btn-sm btn-outline mt-2"><i class="fa-solid fa-plus mr-2"></i>Add Subtask</button></div>
+                </div>
+                <div><label class="label"><span class="label-text">Notes</span></label><textarea id="projectNotes" class="textarea textarea-bordered w-full" rows="3"></textarea></div>
+                <div class="modal-action"><button type="button" class="btn btn-error" id="deleteProjectBtn" style="display:none;">Delete</button><button type="submit" class="btn btn-primary">Save Project</button></div>
+            </form>
+        </div>
+    </dialog>
+    
+    <dialog id="settingsModal" class="modal">
+        <div class="modal-box w-11/12 max-w-5xl">
+            <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button></form>
+            <h3 class="font-bold text-lg mb-4">Manage Lists & Data</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div><h4 class="font-semibold text-lg mb-2"><i class="fa-solid fa-users mr-2"></i>Family</h4><ul id="familyList" class="space-y-1 mb-2"></ul><div class="join"><input id="newFamilyMember" type="text" placeholder="New name" class="input input-bordered input-md join-item w-full"/><button onclick="app.addListItem('family')" class="btn btn-md join-item btn-primary">Add</button></div></div>
+                <div><h4 class="font-semibold text-lg mb-2"><i class="fa-solid fa-helmet-safety mr-2"></i>Contractors</h4><ul id="contractorList" class="space-y-1 mb-2"></ul><div class="join"><input id="newContractorName" type="text" placeholder="Company Name" class="input input-bordered input-md join-item w-full"/><button onclick="app.addListItem('contractors')" class="btn btn-md join-item btn-primary">Add</button></div></div>
+                <div><h4 class="font-semibold text-lg mb-2"><i class="fa-solid fa-store mr-2"></i>Suppliers</h4><ul id="supplierList" class="space-y-1 mb-2"></ul><div class="join"><input id="newSupplierName" type="text" placeholder="Store Name" class="input input-bordered input-md join-item w-full"/><button onclick="app.addListItem('suppliers')" class="btn btn-md join-item btn-primary">Add</button></div></div>
+            </div>
+            <div class="divider mt-8 mb-4">Data Management</div>
+            <div class="p-4 bg-base-200 rounded-lg flex flex-wrap gap-4 justify-center">
+                <button class="btn btn-success" onclick="app.exportData()"><i class="fa-solid fa-file-export mr-2"></i>Export Data</button>
+                <button class="btn btn-warning" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-file-import mr-2"></i>Import Data</button>
+                <input type="file" id="importFile" accept="application/json" class="hidden" onchange="app.importData(event)">
+            </div>
+        </div>
+    </dialog>
+
+    <dialog id="newListModal" class="modal"><div class="modal-box"><form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button></form><h3 class="font-bold text-lg mb-4">Create New Shopping List</h3><div class="form-control w-full"><label class="label"><span class="label-text">Select a Store</span></label><select id="newStoreSelect" class="select select-bordered"></select></div><div class="modal-action"><button class="btn btn-primary" onclick="app.createNewShoppingList()">Create List</button></div></div></dialog>
 
 <script>
-// --- GLOBAL CONFIG ---
-const DB_NAME = 'HomeHubDB'; const DB_VERSION = 5;
-const OBJECT_STORES = ['tasks', 'meals', 'groceries', 'familyMembers', 'shoppingTrips', 'stores', 'storeItems'];
-const GROCERY_CATEGORIES = ["Produce", "Dairy & Eggs", "Meat & Seafood", "Pantry", "Bakery", "Frozen Foods", "Beverages", "Household", "Personal Care", "Pets", "Other"];
+// --- GLOBAL HELPER FUNCTIONS --- //
+window.openModal = (id) => document.getElementById(id).showModal();
+window.closeModal = (id) => document.getElementById(id).close();
 
-/**
- * =================================================================
- * DATABASE MODULE (db) - Unchanged from previous version
- * =================================================================
- */
-const db = { _db: null, async init() { return new Promise((resolve, reject) => { if (this._db) return resolve(this._db); const request = indexedDB.open(DB_NAME, DB_VERSION); request.onerror = e => reject("Database error: " + e.target.errorCode); request.onsuccess = e => { this._db = e.target.result; resolve(this._db); }; request.onupgradeneeded = e => { const db = e.target.result; const transaction = e.target.transaction; const s = db.objectStoreNames; if (!s.contains('tasks')) { const tasksStore = db.createObjectStore('tasks', { keyPath: 'id', autoIncrement: true }); tasksStore.createIndex('seriesId', 'seriesId', { unique: false }); } else if (e.oldVersion < 4) { transaction.objectStore('tasks').createIndex('seriesId', 'seriesId', { unique: false }); } if (!s.contains('meals')) db.createObjectStore('meals', { keyPath: 'id', autoIncrement: true }); if (!s.contains('groceries')) db.createObjectStore('groceries', { keyPath: 'id', autoIncrement: true }); if (!s.contains('familyMembers')) db.createObjectStore('familyMembers', { keyPath: 'id', autoIncrement: true }); if (!s.contains('shoppingTrips')) db.createObjectStore('shoppingTrips', { keyPath: 'id', autoIncrement: true }); if (e.oldVersion < 5) { if (s.contains('masterGroceries')) db.deleteObjectStore('masterGroceries'); if (!s.contains('stores')) db.createObjectStore('stores', { keyPath: 'id', autoIncrement: true }); if (!s.contains('storeItems')) { const storeItemsStore = db.createObjectStore('storeItems', { keyPath: 'id', autoIncrement: true }); storeItemsStore.createIndex('storeId', 'storeId', { unique: false }); } } }; }); }, async _getStore(storeName, mode = 'readonly') { const db = await this.init(); return db.transaction(storeName, mode).objectStore(storeName); }, async add(storeName, item) { const store = await this._getStore(storeName, 'readwrite'); return new Promise((resolve, reject) => { const r = store.add(item); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); }); }, async get(storeName, id) { const store = await this._getStore(storeName); return new Promise((resolve, reject) => { const r = store.get(id); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); }); }, async getAll(storeName) { const store = await this._getStore(storeName); return new Promise((resolve, reject) => { const r = store.getAll(); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); }); }, async update(storeName, item) { const store = await this._getStore(storeName, 'readwrite'); return new Promise((resolve, reject) => { const r = store.put(item); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); }); }, async delete(storeName, id) { const store = await this._getStore(storeName, 'readwrite'); return new Promise((resolve, reject) => { const r = store.delete(id); r.onsuccess = () => resolve(); r.onerror = () => reject(r.error); }); }, async clear(storeName) { const store = await this._getStore(storeName, 'readwrite'); return new Promise((resolve, reject) => { const r = store.clear(); r.onsuccess = () => resolve(); r.onerror = () => reject(r.error); }); }, async query(storeName, indexName, query) { const store = await this._getStore(storeName); const index = store.index(indexName); return new Promise((resolve, reject) => { const r = index.getAll(query); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); });}};
 
-/**
- * =================================================================
- * UI MODULE (ui)
- * =================================================================
- */
-const ui = {
-    currentView: 'dashboard', calendar: null,
-    init() { this.setupTabs(); this.renderAll(); },
-    setupTabs() { document.getElementById('viewTabs').addEventListener('click', (e) => { if (e.target.closest('a[role="tab"]')) this.switchView(e.target.closest('a[role="tab"]').dataset.view); }); },
-    switchView(viewName) { this.currentView = viewName; document.querySelectorAll('#viewTabs .tab').forEach(tab => tab.classList.toggle('tab-active', tab.dataset.view === viewName)); document.querySelectorAll('#app-views .view').forEach(view => view.classList.toggle('hidden', view.id !== `${viewName}-view`)); this.renderAll(); },
-    async renderAll() { switch (this.currentView) { case 'dashboard': await this.renderDashboard(); break; case 'mealplanner': await this.renderMealPlanner(); break; case 'grocerylist': await this.renderGroceryList(); break; case 'history': await this.renderHistory(); break; case 'fullschedule': await this.renderFullSchedule(); break; } await this.renderFamilyMembers(); await this.populateAssigneeDropdown(); },
-
-    async renderDashboard() {
-        const today = new Date(); const todayStr = today.toISOString().split('T')[0]; const dayName = today.toLocaleDateString(undefined, { weekday: 'long' });
-        const tasks = (await db.getAll('tasks')).filter(t => t.status !== 'Done'); const meals = await db.getAll('meals'); const allGroceries = await db.getAll('groceries');
-        
-        const scheduleContainer = document.getElementById('today-schedule-widget'); const todayEvents = tasks.filter(t => t.dueDate === todayStr && t.type !== 'Chore').sort((a,b) => (a.dueTime || '').localeCompare(b.dueTime || ''));
-        scheduleContainer.innerHTML = todayEvents.length ? todayEvents.map(t => `<div class="p-2 rounded cursor-pointer dashboard-item" onclick="ui.openTaskModal(${t.id})"><div class="flex items-center justify-between"><div><span class="font-bold">${t.name}</span><span class="text-sm text-base-content/70 ml-2">${t.assignee||''}</span></div><div class="badge ${app.getEventTypeColor(t.type,'badge')}">${t.dueTime||t.type}</div></div></div>`).join('') : '<p class="text-base-content/70">No events scheduled today.</p>';
-        
-        const choresContainer = document.getElementById('today-chores-widget'); const todayChores = tasks.filter(t => t.dueDate === todayStr && t.type === 'Chore');
-        choresContainer.innerHTML = todayChores.length ? todayChores.map(t => `<div class="p-2 rounded cursor-pointer dashboard-item" onclick="ui.openTaskModal(${t.id})"><div class="font-bold">${t.name}</div></div>`).join('') : '<p class="text-base-content/70">No chores due today!</p>';
-        
-        const dinnerWidgetTitle = document.getElementById('dinner-widget-title'); const dinnerContainer = document.getElementById('dinner-widget'); const tonightDinner = meals.find(m => m.date === todayStr && m.mealType === 'Dinner');
-        dinnerWidgetTitle.innerHTML = `<i class="fas fa-drumstick-bite text-warning mr-2"></i> ${dayName}'s Dinner`;
-        if (tonightDinner) { dinnerContainer.innerHTML = `<div class="p-2 rounded cursor-pointer dashboard-item" onclick="ui.openMealModal('${tonightDinner.date}', '${tonightDinner.mealType}', ${tonightDinner.id})"><div class="flex items-center justify-between"><div><span class="font-bold">${tonightDinner.recipeName}</span></div></div></div>${tonightDinner.recipeURL ? `<a href="${tonightDinner.recipeURL}" target="_blank" class="link link-primary text-sm mt-2 block">View Recipe</a>` : ''}`; } else { dinnerContainer.innerHTML = '<p class="text-base-content/70">Not planned.</p>'; }
-        
-        const groceryWidget = document.getElementById('grocery-list-widget'); 
-        if(allGroceries.length > 0) {
-            const activeListsByStore = allGroceries.reduce((acc, item) => { (acc[item.storeId] = acc[item.storeId] || []).push(item); return acc; }, {});
-            const stores = await db.getAll('stores');
-            let widgetHTML = '';
-            for(const storeId in activeListsByStore) {
-                const store = stores.find(s => s.id === parseInt(storeId));
-                if(store) widgetHTML += `<div class="font-bold text-sm text-accent">${store.name} (${activeListsByStore[storeId].length} items)</div>`;
-            }
-            groceryWidget.innerHTML = widgetHTML || '<p class="text-base-content/70">No active shopping lists.</p>';
-        } else {
-            groceryWidget.innerHTML = '<p class="text-base-content/70">No active shopping lists.</p>';
-        }
+// ========================================================
+// --- INDEXEDDB DATABASE LAYER                           ---
+// ========================================================
+const db = {
+    _db: null, DB_NAME: 'HomeProjectPlannerDB', DB_VERSION: 5,
+    async init() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(this.DB_NAME, this.DB_VERSION);
+            request.onerror = (e) => { console.error("DB error:", e.target.error); reject(e.target.error); };
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result; const tx = e.target.transaction; const oldVersion = e.oldVersion;
+                if (oldVersion < 1) { db.createObjectStore('projects', { keyPath: 'id' }); db.createObjectStore('family', { keyPath: 'id', autoIncrement: true }); db.createObjectStore('contractors', { keyPath: 'id', autoIncrement: true }); db.createObjectStore('suppliers', { keyPath: 'id', autoIncrement: true }); }
+                if (oldVersion < 2) { const ps = tx.objectStore('projects'); ps.getAll().onsuccess = (ev) => { ev.target.result.forEach(p => { p.projectSize = p.projectSize || 'Medium'; ps.put(p); }); }; }
+                if (oldVersion < 3) { const ps = tx.objectStore('projects'); const sm = { "Minor Project": "Small", "Moderate Project": "Medium", "Major Project": "Big" }; ps.openCursor().onsuccess = (ev) => { const c = ev.target.result; if (c) { const p = c.value; if (sm[p.projectSize]) { p.projectSize = sm[p.projectSize]; c.update(p); } c.continue(); } }; }
+                if (oldVersion < 4) { const fs = tx.objectStore('family'); const cp = ['#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#f59e0b']; let ci = 0; fs.openCursor().onsuccess = (ev) => { const c = ev.target.result; if (c) { const p = c.value; p.color = p.color || cp[ci++ % cp.length]; c.update(p); c.continue(); } }; }
+                if (oldVersion < 5) { db.createObjectStore('masterItems', { keyPath: 'id', autoIncrement: true }); db.createObjectStore('shoppingLists', { keyPath: 'id' }); }
+            };
+            request.onsuccess = (e) => { this._db = e.target.result; resolve(); };
+        });
     },
-    
-    async renderGroceryList(restoreState = { openStoreIds: [] }) {
-        // Active Shopping Lists
-        const allGroceries = await db.getAll('groceries');
-        const stores = await db.getAll('stores');
-        const activeListsContainer = document.getElementById('active-lists-container');
-        const activeListsByStore = allGroceries.reduce((acc, item) => { (acc[item.storeId] = acc[item.storeId] || []).push(item); return acc; }, {});
-
-        if (Object.keys(activeListsByStore).length === 0) {
-            activeListsContainer.innerHTML = '<p class="text-base-content/70 text-center py-4">No active lists. Add items from a store to begin.</p>';
-        } else {
-            activeListsContainer.innerHTML = '';
-            for (const storeId in activeListsByStore) {
-                const store = stores.find(s => s.id === parseInt(storeId));
-                if (!store) continue;
-
-                const listItems = activeListsByStore[storeId];
-                const total = listItems.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
-                const listEl = document.createElement('div');
-                listEl.className = 'p-4 bg-base-200 rounded-lg';
-                listEl.innerHTML = `
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="font-bold text-lg">For: ${store.name}</h3>
-                        <button class="btn btn-sm btn-success" onclick="app.handleCompleteShoppingTrip(${store.id}, '${store.name}')"><i class="fas fa-check-circle mr-2"></i>Complete</button>
-                    </div>
-                    <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
-                        ${listItems.map(item => `<div class="flex items-center gap-2 p-1 rounded group" id="shopping-item-${item.id}"><input type="checkbox" data-id="${item.id}" ${item.isChecked ? 'checked' : ''} class="checkbox checkbox-sm checkbox-primary shopping-item-checkbox" /><div class="flex-grow ${item.isChecked ? 'line-through text-base-content/60' : ''} shopping-item-name">${item.itemName}</div><input type="number" step="0.01" placeholder="0.00" value="${item.price || ''}" data-id="${item.id}" class="input input-xs input-bordered w-20 text-right shopping-item-price" /><button class="btn btn-xs btn-ghost text-base-content/40 opacity-0 group-hover:opacity-100" onclick="app.toggleEditShoppingItem(${item.id})"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-xs btn-ghost text-error" onclick="app.handleRemoveFromShoppingList(${item.id})">&times;</button></div>`).join('')}
-                    </div>
-                    <div class="divider my-1"></div>
-                    <div class="text-right font-bold">Total: $${total.toFixed(2)}</div>
-                `;
-                activeListsContainer.appendChild(listEl);
-            }
-        }
-
-        // My Stores & Master Items
-        const allStoreItems = await db.getAll('storeItems');
-        const storesContainer = document.getElementById('stores-container');
-        if (stores.length === 0) { storesContainer.innerHTML = '<p class="text-base-content/70">No stores created yet. Add one to get started!</p>'; } 
-        else { storesContainer.innerHTML = stores.map(store => { const itemsForStore = allStoreItems.filter(item => item.storeId === store.id); return ` <details class="collapse collapse-arrow bg-base-200" data-store-id="${store.id}"><summary class="collapse-title text-lg font-medium flex justify-between items-center">${store.name}<button class="btn btn-xs btn-ghost text-error" onclick="event.stopPropagation(); app.deleteStore(${store.id}, '${store.name}')"><i class="fas fa-trash"></i></button></summary><div class="collapse-content"><form class="join w-full my-2" onsubmit="app.addStoreItem(event, ${store.id})"><input type="text" placeholder="Add new item to ${store.name}" class="input input-sm input-bordered join-item w-full" required /><button type="submit" class="btn btn-sm btn-secondary join-item">+</button></form><div class="space-y-1 mt-1">${itemsForStore.length > 0 ? itemsForStore.map(item => ` <div class="flex justify-between items-center p-1 rounded group" id="store-item-${item.id}"><div class="store-item-name">${item.itemName}</div><div><button class="btn btn-xs btn-ghost text-base-content/40 opacity-0 group-hover:opacity-100" onclick="app.toggleEditStoreItem(${item.id})"><i class="fas fa-pencil-alt"></i></button><button class="btn btn-xs btn-circle btn-primary" onclick="app.handleAddToShoppingList(${item.id})">+</button></div></div>`).join('') : '<p class="text-xs text-base-content/60">No items added yet.</p>'}</div></div></details> `}).join(''); }
-        
-        restoreState.openStoreIds.forEach(id => { const el = document.querySelector(`#stores-container [data-store-id='${id}']`); if(el) el.open = true; });
-    },
-    
-    // Other render & UI functions...
-    async renderHistory() { const container = document.getElementById('trip-history-container'); const trips = await db.getAll('shoppingTrips'); trips.sort((a, b) => new Date(b.dateCompleted) - new Date(a.dateCompleted)); if (trips.length === 0) { container.innerHTML = '<p class="text-base-content/70">No completed shopping trips found in your history.</p>'; return; } container.innerHTML = trips.map(trip => `<details class="collapse collapse-arrow bg-base-200"><summary class="collapse-title text-lg font-medium">${new Date(trip.dateCompleted).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })} - ${trip.storeName || 'Store'}<span class="ml-4 font-bold text-success">$${trip.totalCost.toFixed(2)}</span></summary><div class="collapse-content"><button class="btn btn-sm btn-outline btn-secondary my-2" onclick="app.reuseShoppingTrip(${trip.id})"><i class="fas fa-redo-alt mr-2"></i>Reuse This List</button><ul class="list-disc pl-6">${trip.items.map(item => `<li><span class="${item.isChecked ? '' : 'line-through text-base-content/60'}">${item.itemName}</span><span class="ml-2 text-sm font-mono">${item.price ? '$' + item.price.toFixed(2) : '-'}</span></li>`).join('')}</ul></div></details>`).join(''); },
-    async renderFullSchedule() { if (this.calendar) this.calendar.destroy(); const calendarEl = document.getElementById('calendar'); const tasks = await db.getAll('tasks'); const meals = await db.getAll('meals'); const events = [ ...tasks.map(task => { const eventObj = { id: `task-${task.id}`, title: `${task.name} (${task.assignee || 'all'})`, start: `${task.dueDate}${task.dueTime ? 'T' + task.dueTime : ''}`, allDay: !task.dueTime, borderColor: app.getEventTypeColor(task.type, 'calendar'), className: task.status === 'Done' ? 'opacity-50' : '' }; if (task.type === 'Time Off') { eventObj.display = 'background'; eventObj.backgroundColor = app.getEventTypeColor(task.type, 'calendar'); } else { eventObj.backgroundColor = app.getEventTypeColor(task.type, 'calendar'); } return eventObj; }), ...meals.map(meal => ({ id: `meal-${meal.id}`, title: `${meal.mealType}: ${meal.recipeName}`, start: meal.date, allDay: true, backgroundColor: '#f97316', borderColor: '#ea580c' })) ]; this.calendar = new FullCalendar.Calendar(calendarEl, { initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' }, events: events, eventClick: (info) => { const [type, id] = info.event.id.split('-'); if (type === 'task') this.openTaskModal(parseInt(id)); else if (type === 'meal') { const mealDate = info.event.start.toISOString().split('T')[0]; const mealType = info.event.title.split(':')[0]; this.openMealModal(mealDate, mealType, parseInt(id)); } } }); this.calendar.render(); },
-    renderIngredientListItem(ingredient = { name: '', status: 'Need' }) { const container = document.getElementById('ingredient-list-container'); const div = document.createElement('div'); div.className = 'flex items-center gap-2 bg-base-200 p-2 rounded'; div.innerHTML = `<label class="flex-grow flex items-center gap-2 cursor-pointer"><input type="checkbox" class="checkbox checkbox-sm ingredient-status" ${ingredient.status === 'Need' ? 'checked' : ''} /><span class="ingredient-name">${ingredient.name}</span></label><button type="button" class="btn btn-xs btn-ghost text-error ingredient-remove">&times;</button>`; div.querySelector('.ingredient-remove').addEventListener('click', () => div.remove()); container.appendChild(div); },
-    async openMealModal(date, mealType, id = null) { if (!id) return; const form = document.getElementById('meal-form'); form.reset(); document.getElementById('mealId').value = ''; document.getElementById('mealDate').value = date; document.getElementById('mealType').value = mealType; document.getElementById('ingredient-list-container').innerHTML = ''; const meal = await db.get('meals', parseInt(id)); if (meal) { document.getElementById('meal-modal-title').textContent = `Edit: ${meal.recipeName}`; document.getElementById('mealId').value = meal.id; document.getElementById('recipeName').value = meal.recipeName; document.getElementById('recipeURL').value = meal.recipeURL || ''; let ingredients = meal.ingredients || []; if (typeof ingredients === 'string') { ingredients = ingredients.split('\n').filter(Boolean).map(name => ({ name, status: 'Need' })); } ingredients.forEach(ing => this.renderIngredientListItem(ing)); } document.getElementById('meal_modal').showModal(); },
-    async openTaskModal(id = null, templateData = null) { const form = document.getElementById('task-form'); form.reset(); document.getElementById('taskId').value = ''; document.getElementById('recurring-options').classList.add('hidden'); document.getElementById('task-modal-title').textContent = 'New Event'; document.querySelectorAll('#recurring-day-picker .btn').forEach(btn => btn.classList.remove('btn-active')); if (id) { const task = await db.get('tasks', id); if (task) { document.getElementById('task-modal-title').textContent = 'Edit Event'; document.getElementById('taskId').value = task.id; document.getElementById('taskName').value = task.name; document.getElementById('taskType').value = task.type; document.getElementById('taskAssignee').value = task.assignee || ''; document.getElementById('taskDueDate').value = task.dueDate || ''; document.getElementById('taskDueTime').value = task.dueTime || ''; document.getElementById('taskIsRecurring').checked = task.isRecurring; document.getElementById('taskIsDone').checked = task.status === 'Done'; document.getElementById('taskNotes').value = task.notes || ''; if (task.isRecurring) { document.getElementById('recurring-options').classList.remove('hidden'); if (task.recurringDays) { task.recurringDays.forEach(day => document.querySelector(`#recurring-day-picker [data-day='${day}']`)?.classList.add('btn-active')); } } } } else if (templateData) { Object.keys(templateData).forEach(key => { const el = form.querySelector(`#task${key.charAt(0).toUpperCase() + key.slice(1)}`); if(el) el.value = templateData[key]; }); if(templateData.isRecurring) { document.getElementById('taskIsRecurring').checked = true; document.getElementById('recurring-options').classList.remove('hidden'); if(templateData.recurringDays) { templateData.recurringDays.forEach(day => document.querySelector(`#recurring-day-picker [data-day='${day}']`)?.classList.add('btn-active')); } } } document.getElementById('task_modal').showModal(); },
-    async renderFamilyMembers() { const members = await db.getAll('familyMembers'); document.getElementById('family-member-list').innerHTML = members.length ? members.map(member => `<div class="flex justify-between items-center p-2 bg-base-200 rounded"><span>${member.name}</span><button class="btn btn-xs btn-ghost text-error" onclick="app.deleteFamilyMember(${member.id})"><i class="fas fa-trash"></i></button></div>`).join('') : `<p class="text-base-content/70 text-sm">No family members added.</p>`; },
-    async populateAssigneeDropdown() { const members = await db.getAll('familyMembers'); const select = document.getElementById('taskAssignee'); select.innerHTML = '<option value="">Unassigned</option>'; members.forEach(member => { select.innerHTML += `<option value="${member.name}">${member.name}</option>`; }); }
+    async _tx(storeName, mode, action) { return new Promise((resolve, reject) => { const tx = this._db.transaction(storeName, mode); const store = tx.objectStore(storeName); const req = action(store); req.onsuccess = () => resolve(req.result); req.onerror = () => reject(req.error); }); },
+    async get(store, key) { return this._tx(store, 'readonly', s => s.get(key)); },
+    async getAll(store) { return this._tx(store, 'readonly', s => s.getAll()); },
+    async add(store, item) { return this._tx(store, 'readwrite', s => s.add(item)); },
+    async put(store, item) { return this._tx(store, 'readwrite', s => s.put(item)); },
+    async delete(store, key) { return this._tx(store, 'readwrite', s => s.delete(key)); },
+    async clear(store) { return this._tx(store, 'readwrite', s => s.clear()); }
 };
 
-/**
- * =================================================================
- * APPLICATION MODULE (app)
- * =================================================================
- */
+
+// ========================================================
+// --- CORE APPLICATION LOGIC                             ---
+// ========================================================
 const app = {
-    _tempTaskData: null,
-    async init() { await db.init(); ui.init(); this.setupEventListeners(); },
-    setupEventListeners() { document.getElementById('task-form').addEventListener('submit', this.handleTaskFormSubmit); document.getElementById('taskIsRecurring').addEventListener('change', e => document.getElementById('recurring-options').classList.toggle('hidden', !e.target.checked)); document.getElementById('recurring-day-picker').addEventListener('click', e => { if(e.target.matches('.btn')) e.target.classList.toggle('btn-active'); }); document.getElementById('meal-form').addEventListener('submit', this.handleMealModalSubmit); document.getElementById('meal-page-form').addEventListener('submit', this.handleMealPageFormSubmit); document.getElementById('add-ingredient-button').addEventListener('click', this.handleAddIngredient); document.getElementById('new-ingredient-name').addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); this.handleAddIngredient(); }}); document.getElementById('add-store-form').addEventListener('submit', this.addStore); document.getElementById('active-lists-container').addEventListener('change', this.handleShoppingListUpdate); document.getElementById('edit-single-event-btn').addEventListener('click', () => this.handleEditSingleRecurring()); document.getElementById('edit-future-events-btn').addEventListener('click', () => this.handleEditFutureRecurring()); document.getElementById('add-family-member-form').addEventListener('submit', this.addFamilyMember); },
-    getEventTypeColor(type, context) { const c = { 'Appointment': { badge: 'badge-info', calendar: '#3b82f6' }, 'Meeting': { badge: 'badge-primary', calendar: '#8b5cf6' }, 'Work Schedule': { badge: 'badge-neutral', calendar: '#4b5563' }, 'Chore': { badge: 'badge-success', calendar: '#22c55e' }, 'Errand': { badge: 'badge-warning', calendar: '#f59e0b' }, 'Time Off': {badge: 'badge-error', calendar: 'rgba(239, 68, 68, 0.5)' }, 'default': { badge: 'badge-ghost', calendar: '#6b7280' } }; return (c[type] || c.default)[context]; },
-    async handleTaskFormSubmit(e) { e.preventDefault(); const taskId = parseInt(document.getElementById('taskId').value); const isRecurring = document.getElementById('taskIsRecurring').checked; const recurringDays = isRecurring ? Array.from(document.querySelectorAll('#recurring-day-picker .btn-active')).map(btn => parseInt(btn.dataset.day)) : []; if (isRecurring && recurringDays.length === 0) { ui.showToast("Please select at least one day for recurring events.", "error"); return; } const taskData = { name: document.getElementById('taskName').value, type: document.getElementById('taskType').value, assignee: document.getElementById('taskAssignee').value, dueDate: document.getElementById('taskDueDate').value, dueTime: document.getElementById('taskDueTime').value, isRecurring, recurringDays, status: document.getElementById('taskIsDone').checked ? 'Done' : 'To Do', notes: document.getElementById('taskNotes').value, }; if (taskId) { const originalTask = await db.get('tasks', taskId); if (originalTask.isRecurring) { this._tempTaskData = { ...taskData, id: taskId, originalTask }; document.getElementById('edit_recurring_modal').showModal(); return; } taskData.id = taskId; await db.update('tasks', taskData); ui.showToast('Event updated!'); } else { taskData.seriesId = `series-${Date.now()}`; await db.add('tasks', taskData); if (taskData.isRecurring && taskData.recurringDays.length > 0) { const baseTask = { ...taskData }; delete baseTask.id; let currentDate = new Date(baseTask.dueDate + 'T12:00:00Z'); const endDate = new Date(currentDate); endDate.setDate(endDate.getDate() + 60); while(currentDate < endDate) { currentDate.setDate(currentDate.getDate() + 1); if(baseTask.recurringDays.includes(currentDate.getUTCDay())) { const nextTask = { ...baseTask }; nextTask.dueDate = currentDate.toISOString().split('T')[0]; await db.add('tasks', nextTask); } } } ui.showToast('Event(s) added!'); } document.getElementById('task_modal').close(); ui.renderAll(); },
-    async handleEditSingleRecurring() { if (!this._tempTaskData) return; const taskData = { ...this._tempTaskData }; document.getElementById('edit_recurring_modal').close(); document.getElementById('task_modal').close(); taskData.isRecurring = false; taskData.recurringDays = []; delete taskData.seriesId; await db.update('tasks', taskData); ui.showToast("Just this event was updated."); this._tempTaskData = null; ui.renderAll(); },
-    async handleEditFutureRecurring() { if (!this._tempTaskData) return; const taskData = { ...this._tempTaskData }; const originalTask = taskData.originalTask; delete taskData.originalTask; document.getElementById('edit_recurring_modal').close(); document.getElementById('task_modal').close(); const futureEvents = (await db.query('tasks', 'seriesId', originalTask.seriesId)).filter(t => t.dueDate >= originalTask.dueDate); for(const event of futureEvents) { await db.delete('tasks', event.id); } taskData.seriesId = originalTask.seriesId; delete taskData.id; await db.add('tasks', taskData); if (taskData.isRecurring && taskData.recurringDays.length > 0) { const baseTask = { ...taskData }; let currentDate = new Date(baseTask.dueDate + 'T12:00:00Z'); const endDate = new Date(currentDate); endDate.setDate(endDate.getDate() + 60); while(currentDate < endDate) { currentDate.setDate(currentDate.getDate() + 1); if(baseTask.recurringDays.includes(currentDate.getUTCDay())) { const nextTask = { ...baseTask }; nextTask.dueDate = currentDate.toISOString().split('T')[0]; await db.add('tasks', nextTask); } } } ui.showToast("This and all future events were updated."); this._tempTaskData = null; ui.renderAll(); },
+    state: { activeView: 'kanban', projects: [], family: [], contractors: [], suppliers: [], masterItems: [], shoppingLists: [], editingProjectId: null, showDoneInList: true, searchQuery: '', listFilter: 'All', activeShoppingListId: null },
+    statusColors: { "Not Started": 'bg-slate-400', "In Progress": 'bg-blue-500', "Blocked": 'bg-red-500', "Done": 'bg-green-500' },
+    sizeColors: { "Quick Fix": 'badge-ghost', "Small": 'badge-info', "Medium": 'badge-success', "Big": 'badge-warning', "Overhaul": 'badge-error' },
+    colorPalette: ['#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#f59e0b', '#14b8a6', '#6366f1'],
 
-    // --- Grocery Handlers ---
-    async addStore(e) { e.preventDefault(); const nameInput = document.getElementById('new-store-name'); const name = nameInput.value.trim(); if (name) { await db.add('stores', { name }); nameInput.value = ''; ui.showToast("Store added!"); await ui.renderGroceryList(); } },
-    async deleteStore(id, name) { if (confirm(`Delete store "${name}" and all its master items? This cannot be undone.`)) { await db.delete('stores', id); const itemsToDelete = await db.query('storeItems', 'storeId', id); for(const item of itemsToDelete) { await db.delete('storeItems', item.id); } ui.showToast(`"${name}" deleted.`); ui.renderGroceryList(); } },
-    async addStoreItem(e, storeId) { e.preventDefault(); const input = e.target.querySelector('input'); const itemName = input.value.trim(); if(itemName) { const restoreState = this._getOpenStoreState(); await db.add('storeItems', { itemName, storeId, category: 'Uncategorized' }); input.value = ''; await ui.renderGroceryList(restoreState); } },
-    async handleAddToShoppingList(storeItemId) { const item = await db.get('storeItems', storeItemId); const currentList = await db.getAll('groceries'); if(currentList.some(i => i.itemName.toLowerCase() === item.itemName.toLowerCase() && i.storeId === item.storeId)) { return ui.showToast(`${item.itemName} is already on the list for this store.`, 'error'); } await db.add('groceries', { storeId: item.storeId, itemName: item.itemName, isChecked: false, price: null }); ui.renderGroceryList(this._getOpenStoreState()); },
-    async handleCompleteShoppingTrip(storeId, storeName) { const allGroceries = await db.getAll('groceries'); const listToComplete = allGroceries.filter(i => i.storeId === storeId); if (listToComplete.length === 0) return; if (confirm(`Complete trip for ${storeName}? This will save it to history and clear the list.`)) { const totalCost = listToComplete.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0); const newTrip = { dateCompleted: new Date().toISOString(), items: listToComplete, totalCost: totalCost, storeId: storeId, storeName: storeName }; await db.add('shoppingTrips', newTrip); for (const item of listToComplete) { await db.delete('groceries', item.id); } ui.showToast('Shopping trip saved to history!'); ui.renderAll(); } },
-    async reuseShoppingTrip(tripId) { const currentList = await db.getAll('groceries'); const trip = await db.get('shoppingTrips', tripId); if (currentList.some(i => i.storeId === trip.storeId)) { if (!confirm(`You have an active list for ${trip.storeName}. Replace it with this historical list?`)) return; const toDelete = currentList.filter(i => i.storeId === trip.storeId); for (const item of toDelete) { await db.delete('groceries', item.id); } } for (const item of trip.items) { const newItem = { ...item, isChecked: false, price: null }; delete newItem.id; await db.add('groceries', newItem); } ui.showToast(`Loaded list from trip to ${trip.storeName}.`); ui.switchView('grocerylist'); },
+    async init() {
+        try {
+            await db.init(); await this.loadStateFromDB(); this.render();
+            document.getElementById('loading').style.display = 'none'; document.getElementById('app').style.display = 'block';
+            this.addEventListeners();
+        } catch (error) { console.error("Init failed:", error); document.getElementById('loading').innerHTML = `<p class="text-red-500">Error: Could not initialize.</p>`; }
+    },
     
-    // In-place editing handlers
-    _getOpenStoreState() { return { openStoreIds: Array.from(document.querySelectorAll('#stores-container details[open]')).map(el => el.dataset.storeId) }; },
-    async toggleEditStoreItem(id) { const restoreState = this._getOpenStoreState(); const nameDiv = document.querySelector(`#store-item-${id} .store-item-name`); if(nameDiv.querySelector('input')) return; const text = nameDiv.textContent; nameDiv.innerHTML = `<input type="text" value="${text}" class="input input-sm input-bordered w-full/2 grow" onblur="app.saveStoreItemEdit(${id})" onkeypress="if(event.key==='Enter') app.saveStoreItemEdit(${id})" />`; nameDiv.querySelector('input').focus(); },
-    async saveStoreItemEdit(id) { const restoreState = this._getOpenStoreState(); const itemDiv = document.getElementById(`store-item-${id}`); const input = itemDiv.querySelector('input'); if(!input) return; const newName = input.value.trim(); if (newName) { const item = await db.get('storeItems', id); item.itemName = newName; await db.update('storeItems', item); } ui.renderGroceryList(restoreState); },
-    async toggleEditShoppingItem(id) { const nameDiv = document.querySelector(`#shopping-item-${id} .shopping-item-name`); if(nameDiv.querySelector('input')) return; const text = nameDiv.textContent; nameDiv.innerHTML = `<input type="text" value="${text}" class="input input-sm input-bordered w-full/2 grow" onblur="app.saveShoppingItemEdit(${id})" onkeypress="if(event.key==='Enter') app.saveShoppingItemEdit(${id})" />`; nameDiv.querySelector('input').focus(); },
-    async saveShoppingItemEdit(id) { const itemDiv = document.getElementById(`shopping-item-${id}`); const input = itemDiv.querySelector('input'); if(!input) return; const newName = input.value.trim(); if (newName) { const item = await db.get('groceries', id); item.itemName = newName; await db.update('groceries', item); } ui.renderGroceryList(this._getOpenStoreState()); },
+    async loadStateFromDB() { const [p, f, c, s, mi, sl] = await Promise.all([db.getAll('projects'), db.getAll('family'), db.getAll('contractors'), db.getAll('suppliers'), db.getAll('masterItems'), db.getAll('shoppingLists')]); this.state = {...this.state, projects:p, family:f, contractors:c, suppliers:s, masterItems: mi, shoppingLists: sl}; },
     
-    // Other handlers
-    async handleShoppingListUpdate(e) { if (!e.target.matches('.shopping-item-checkbox, .shopping-item-price')) return; const itemId = parseInt(e.target.dataset.id); if (!itemId) return; const item = await db.get('groceries', itemId); if (e.target.matches('.shopping-item-checkbox')) { item.isChecked = e.target.checked; } else if (e.target.matches('.shopping-item-price')) { item.price = parseFloat(e.target.value) || null; } await db.update('groceries', item); ui.renderGroceryList(this._getOpenStoreState()); },
-    async handleRemoveFromShoppingList(id) { if (id) { await db.delete('groceries', id); ui.renderGroceryList(this._getOpenStoreState()); } },
-    async handleMealModalSubmit(e) { e.preventDefault(); const mealId = parseInt(document.getElementById('mealId').value); if (!mealId) return; const ingredients = []; document.querySelectorAll('#ingredient-list-container > div').forEach(div => { ingredients.push({ name: div.querySelector('.ingredient-name').textContent, status: div.querySelector('.ingredient-status').checked ? 'Need' : 'Have' }); }); const meal = { id: mealId, date: document.getElementById('mealDate').value, mealType: document.getElementById('mealType').value, recipeName: document.getElementById('recipeName').value, recipeURL: document.getElementById('recipeURL').value, ingredients }; await db.update('meals', meal); const addedToGrocery = await this.addNeededIngredientsToGroceries(meal); let toastMessage = 'Meal saved!'; if(addedToGrocery > 0) toastMessage += ` Added ${addedToGrocery} item(s) to grocery list.`; ui.showToast(toastMessage); document.getElementById('meal_modal').close(); ui.renderAll(); },
-    async handleMealPageFormSubmit(e) { e.preventDefault(); const form = document.getElementById('meal-page-form'); const date = form.querySelector('#meal-page-date').value; const mealType = form.querySelector('#meal-page-type').value; const allMeals = await db.getAll('meals'); const existingMeal = allMeals.find(m => m.date === date && m.mealType === mealType); if (existingMeal) { ui.showToast('A meal already exists for this date and time.', 'error'); return; } const meal = { date, mealType, recipeName: form.querySelector('#meal-page-recipeName').value, recipeURL: '', ingredients: [] }; const newId = await db.add('meals', meal); ui.showToast('Meal created! Now add ingredients.'); form.reset(); document.querySelector('#mealplanner-view details').open = false; await ui.renderAll(); ui.openMealModal(meal.date, meal.mealType, newId); },
-    handleAddIngredient() { const input = document.getElementById('new-ingredient-name'); const name = input.value.trim(); if (name) { ui.renderIngredientListItem({ name, status: 'Need' }); input.value = ''; input.focus(); } },
-    async addNeededIngredientsToGroceries(meal) { const currentGroceries = await db.getAll('groceries'); const stores = await db.getAll('stores'); if (currentGroceries.length === 0 && stores.length > 0) { ui.showToast(`Cannot add ingredients. Start a shopping list at a store first.`, "error"); return 0; } else if (stores.length === 0) { ui.showToast(`Cannot add ingredients. Please create a grocery store first.`, "error"); return 0; } const activeStoreIds = [...new Set(currentGroceries.map(i => i.storeId))]; if (activeStoreIds.length > 1) { ui.showToast(`Cannot auto-add ingredients with multiple active lists.`, "error"); return 0; } const activeStoreId = activeStoreIds[0]; let itemsAddedCount = 0; const neededIngredients = meal.ingredients.filter(ing => ing.status === 'Need'); for (const ingredient of neededIngredients) { const exists = currentGroceries.some(g => g.itemName.toLowerCase() === ingredient.name.toLowerCase()); if (!exists) { await db.add('groceries', { storeId: activeStoreId, itemName: ingredient.name, isChecked: false, price: null, fromRecipe: meal.recipeName }); itemsAddedCount++; } } if (itemsAddedCount > 0) ui.renderGroceryList(this._getOpenStoreState()); return itemsAddedCount; },
-    async handleDeleteMeal() { const mealId = parseInt(document.getElementById('mealId').value); if (mealId && confirm('Are you sure you want to delete this meal?')) { await db.delete('meals', mealId); document.getElementById('meal_modal').close(); ui.showToast('Meal deleted.'); ui.renderAll(); } },
-    async addFamilyMember(e) { e.preventDefault(); const nameInput = document.getElementById('new-member-name'); const name = nameInput.value.trim(); if (name) { await db.add('familyMembers', { name }); ui.showToast('Family member added.'); nameInput.value = ''; ui.renderFamilyMembers(); ui.populateAssigneeDropdown(); } },
-    async deleteFamilyMember(id) { if(confirm('Are you sure?')){ await db.delete('familyMembers', id); ui.showToast('Family member removed.'); ui.renderFamilyMembers(); ui.populateAssigneeDropdown(); } },
-    async clearAllData() { if (confirm("DANGER: This will permanently delete ALL data in the application (events, meals, stores, groceries, history, and family members). Are you absolutely sure?")) { for (const storeName of OBJECT_STORES) { await db.clear(storeName); } ui.showToast('All application data has been cleared.'); document.getElementById('manage_modal').close(); ui.renderAll(); } },
-    async exportData() { const d = {}; for(const s of OBJECT_STORES){ d[s] = await db.getAll(s); } const t = JSON.stringify(d, null, 2); const b = new Blob([t], { type: 'application/json' }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `home-hub-backup-${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(u); ui.showToast('Data exported.'); },
-    async importData(event) { const f = event.target.files[0]; if (!f) return; if (!confirm('This will overwrite all current data. Proceed?')) { event.target.value = ''; return; } const r = new FileReader(); r.onload = async (e) => { try { const d = JSON.parse(e.target.result); for (const s of OBJECT_STORES) { await db.clear(s); if (d[s]) for(const i of d[s]){ delete i.id; await db.add(s, i); } } ui.showToast('Data imported successfully!'); document.getElementById('manage_modal').close(); ui.renderAll(); } catch (err) { console.error("Import error:", err); ui.showToast('Failed to import data.', 'error'); } }; r.readAsText(f); event.target.value = ''; }
+    addEventListeners() {
+        document.querySelector('#projectForm').addEventListener('submit', this.saveProject.bind(this));
+        document.querySelector('#addMaterialBtn').addEventListener('click', () => this.addMaterialRow());
+        document.querySelector('#addSubtaskBtn').addEventListener('click', () => this.addSubtaskRow());
+        document.querySelectorAll('input[name="projectType"]').forEach(radio => radio.addEventListener('change', this.handleProjectTypeChange.bind(this)));
+        document.getElementById('searchInput').addEventListener('input', (e) => { this.state.searchQuery = e.target.value; this.render(); });
+    },
+
+    getFilteredProjects() {
+        let projects = this.state.projects;
+        if (this.state.activeView === 'list' && this.state.listFilter !== 'All') { projects = projects.filter(p => p.type === this.state.listFilter); }
+        if (!this.state.showDoneInList && this.state.activeView === 'list') { projects = projects.filter(p => p.status !== 'Done'); }
+        if (this.state.searchQuery) { const q = this.state.searchQuery.toLowerCase(); projects = projects.filter(p => p.name.toLowerCase().includes(q) || this.getAssigneeName(p).toLowerCase().includes(q) || (p.projectSize && p.projectSize.toLowerCase().includes(q)) || (p.subtasks || []).some(st => st.name.toLowerCase().includes(q)) ); }
+        return projects;
+    },
+
+    render() { this.renderKanban(); this.renderList(); this.renderCalendar(); this.renderReports(); this.renderShopping(); this.renderSettingsLists(); this.setView(this.state.activeView); },
+    
+    setView(view) {
+        this.state.activeView = view;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('tab-active'));
+        document.querySelector(`.tab[data-view='${view}']`).classList.add('tab-active');
+        ['kanban', 'list', 'calendar', 'reports', 'shopping'].forEach(v => { document.getElementById(`${v}-view`).style.display = (view === v) ? (v === 'calendar' ? 'block' : '') : 'none'; });
+        if (view === 'calendar' && this.calendar) setTimeout(() => this.calendar.render(), 0); 
+    },
+    
+    renderKanban() {
+        const projects = this.getFilteredProjects(); const container = document.getElementById('kanban-view'); const statuses = ['Not Started', 'In Progress', 'Blocked', 'Done'];
+        container.innerHTML = statuses.map(status => `<div class="bg-slate-200 p-4 rounded-lg shadow"><h3 class="font-bold text-lg mb-4 text-slate-600"><span class="status-dot ${this.statusColors[status]}"></span>${status}</h3><div id="kanban-col-${status.replace(/\s+/g, '-')}" class="kanban-column space-y-3" data-status="${status}">${projects.filter(p => p.status === status).sort((a, b) => a.priority - b.priority).map(p => this.createProjectCard(p)).join('')}</div></div>`).join('');
+        statuses.forEach(status => { const col = document.getElementById(`kanban-col-${status.replace(/\s+/g, '-')}`); new Sortable(col, { group: 'projects', animation: 150, onEnd: async (evt) => { const project = this.state.projects.find(p => p.id == evt.item.dataset.id); if (project) { project.status = evt.to.dataset.status; await db.put('projects', project); this.showToast(`${project.name} moved to ${project.status}`); this.render(); } }}); });
+    },
+    createProjectCard(project) {
+        const subtasks = project.subtasks || [];
+        let subtaskInfo = '';
+        if (subtasks.length > 0) {
+            subtaskInfo = `<div class="mt-2 pt-2 border-t border-base-200 space-y-1">${subtasks.slice(0, 3).map(st => `<div class="flex items-center text-sm text-slate-600"><input type="checkbox" class="checkbox checkbox-xs checkbox-primary mr-2" ${st.status === 'Done' ? 'checked' : ''} disabled><span class="flex-grow truncate">${st.name}</span><span class="font-semibold ml-2">${st.assignedTo || 'N/A'}</span></div>`).join('')}${subtasks.length > 3 ? `<div class="text-xs text-center text-slate-500 mt-1">${subtasks.length - 3} more...</div>` : ''}</div>`;
+        }
+        return `<div class="bg-white p-4 rounded-lg shadow-sm cursor-pointer hover:shadow-lg transition-shadow border-l-4 ${this.statusColors[project.status]?.replace('bg-', 'border-')}" data-id="${project.id}" onclick="app.editProject('${project.id}')">
+            <div class="flex justify-between items-start">
+                <h4 class="font-bold text-lg w-4/5">${project.name}</h4>
+                <div class="badge ${this.sizeColors[project.projectSize]} text-sm">${project.projectSize}</div>
+            </div>
+            <p class="text-sm text-gray-500 my-1"><i class="fa-solid fa-user mr-2"></i>${this.getAssigneeName(project)}</p>
+            <div class="flex justify-between items-center text-base mt-2">
+                <span><i class="fa-solid fa-clock mr-1"></i> ${this.getTotalHours(project)} hrs</span>
+                <span class="font-semibold text-green-700">$${this.calculateTotalCost(project).toFixed(2)}</span>
+            </div>
+            ${subtaskInfo}
+        </div>`;
+    },
+
+    renderList() {
+        const projects = this.getFilteredProjects(); const container = document.getElementById('list-view');
+        const datedProjects = projects.filter(p => p.startDate).sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+        const undatedProjects = projects.filter(p => !p.startDate);
+        const tableHeader = `<thead><tr><th>Start Date</th><th>Priority</th><th>Project Name</th><th>Size</th><th>Assigned To</th><th>Status</th><th>Hours</th><th>Cost</th></tr></thead>`;
+        const createRow = p => `<tr class="hover cursor-pointer ${p.type === 'Contractor' ? 'bg-yellow-50' : ''}" onclick="app.editProject('${p.id}')"><td>${p.startDate || ''}</td><td><span class="font-bold ${{1: 'text-red-600', 2: 'text-yellow-600', 3: 'text-blue-600'}[p.priority]}">${{1: 'High', 2: 'Medium', 3: 'Low'}[p.priority]}</span></td><td>${p.name}</td><td><div class="badge ${this.sizeColors[p.projectSize]} text-sm">${p.projectSize}</div></td><td>${this.getAssigneeName(p)}</td><td><span class="status-dot ${this.statusColors[p.status]}"></span>${p.status}</td><td>${this.getTotalHours(p)}</td><td>$${this.calculateTotalCost(p).toFixed(2)}</td></tr>`;
+        
+        let html = `<div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                        <div class="join">${['All', 'DIY', 'Contractor'].map(f => `<button class="btn btn-md join-item ${this.state.listFilter === f ? 'btn-primary' : ''}" onclick="app.state.listFilter = '${f}'; app.render();">${f}</button>`).join('')}</div>
+                        <div class="flex items-center gap-4">
+                            <button class="btn btn-md btn-outline" onclick="app.copyProjectList()"><i class="fa-solid fa-copy mr-2"></i>Copy List</button>
+                            <label class="label cursor-pointer"><span class="label-text mr-2">Show Completed</span><input type="checkbox" ${this.state.showDoneInList ? 'checked' : ''} class="toggle toggle-primary" onchange="app.state.showDoneInList = this.checked; app.render();"></label>
+                        </div>
+                    </div>`;
+        html += `<div class="overflow-x-auto"><table class="table w-full">${tableHeader}<tbody>${datedProjects.map(createRow).join('')}</tbody></table></div>`;
+        if (undatedProjects.length > 0) {
+            html += `<h3 class="text-xl font-bold mt-8 mb-4">Projects with No Date</h3><div class="overflow-x-auto"><table class="table w-full">${tableHeader}<tbody>${undatedProjects.map(createRow).join('')}</tbody></table></div>`;
+        }
+        container.innerHTML = html;
+    },
+
+    renderCalendar() {
+        const projects = this.getFilteredProjects(); const calendarEl = document.getElementById('calendar'); let events = [];
+        const colorMap = new Map(this.state.family.map(f => [f.name, f.color]));
+        projects.forEach(p => {
+            const subtasks = p.subtasks || [];
+            if (subtasks.length > 0) {
+                subtasks.forEach(st => { if (st.startDate) { const color = colorMap.get(st.assignedTo) || '#6b7280'; events.push({ id: p.id, title: `${p.name} - ${st.name}`, start: st.startDate, end: st.endDate ? new Date(new Date(st.endDate).getTime() + 86400000).toISOString().split('T')[0] : st.startDate, backgroundColor: color, textColor: '#ffffff' }); } });
+            } else if (p.startDate) {
+                const color = p.type === 'DIY' && p.familyMembers?.length > 0 ? colorMap.get(p.familyMembers[0]) || '#6b7280' : '#6b7280';
+                events.push({ id: p.id, title: p.name, start: p.startDate, end: p.endDate ? new Date(new Date(p.endDate).getTime() + 86400000).toISOString().split('T')[0] : p.startDate, backgroundColor: color, textColor: '#ffffff' });
+            }
+        });
+        if (this.calendar) this.calendar.destroy();
+        this.calendar = new FullCalendar.Calendar(calendarEl, { initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' }, events: events, eventClick: (info) => this.editProject(info.event.id) });
+        if (this.state.activeView === 'calendar') this.calendar.render();
+    },
+    
+    renderReports() {
+        const container = document.getElementById('reports-view');
+        container.innerHTML = `<h2 class="text-2xl font-bold mb-4">Reports</h2><div class="tabs tabs-lifted" role="tablist"><input type="radio" name="report_tabs" role="tab" class="tab" aria-label="Monthly Outlook" checked /><div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">${this.getMonthlyOutlookReportHTML()}</div><input type="radio" name="report_tabs" role="tab" class="tab" aria-label="Workload by Person" /><div role="tabpanel" class="tab-content bg-base-100 border-base-300 rounded-box p-6">${this.getWorkloadReportHTML()}</div></div>`;
+    },
+    getMonthlyOutlookReportHTML() {
+        const outlookByMonth = this.state.projects.reduce((acc, p) => {
+            const month = p.startDate ? new Date(p.startDate).toLocaleString('default', { month: 'long', year: 'numeric' }) : 'Unscheduled';
+            if (!acc[month]) acc[month] = { totalCost: 0, totalHours: 0, projects: [] };
+            acc[month].totalCost += this.calculateTotalCost(p); acc[month].totalHours += this.getTotalHours(p); acc[month].projects.push(p); return acc;
+        }, {});
+        const sortedMonths = Object.keys(outlookByMonth).sort((a,b) => new Date(a) - new Date(b));
+        return sortedMonths.length > 0 ? sortedMonths.map(month => `<div class="mb-4 collapse collapse-arrow bg-base-200"><input type="checkbox" /><div class="collapse-title text-xl font-medium flex justify-between"><span>${month}</span><div class="flex gap-4"><span class="font-semibold text-blue-700">${outlookByMonth[month].totalHours} hrs</span><span class="font-bold text-green-700">$${outlookByMonth[month].totalCost.toFixed(2)}</span></div></div><div class="collapse-content"><ul class="list-disc pl-5 pt-2">${outlookByMonth[month].projects.map(p => `<li>${p.name}</li>`).join('')}</ul></div></div>`).join('') : `<p class="text-center text-gray-500 py-8">No projects with a start date yet.</p>`;
+    },
+    getWorkloadReportHTML() {
+        const workload = {};
+        this.state.projects.forEach(p => {
+            if (p.type !== 'DIY') return;
+            const subtasks = p.subtasks || [];
+            if (subtasks.length > 0) { subtasks.forEach(st => { if (!st.startDate || !st.assignedTo) return; const person = st.assignedTo; const month = new Date(st.startDate).toLocaleString('default', { month: 'long', year: 'numeric' }); if (!workload[person]) workload[person] = {}; if (!workload[person][month]) workload[person][month] = 0; workload[person][month] += Number(st.hours || 0); });
+            } else { (p.familyMembers || []).forEach(person => { if (!p.startDate) return; const month = new Date(p.startDate).toLocaleString('default', { month: 'long', year: 'numeric' }); if (!workload[person]) workload[person] = {}; if (!workload[person][month]) workload[person][month] = 0; workload[person][month] += Number(p.hours || 0); }); }
+        });
+        return Object.keys(workload).length > 0 ? Object.keys(workload).sort().map(person => `<div class="mb-4 collapse collapse-arrow bg-base-200"><input type="checkbox" /><div class="collapse-title text-xl font-medium">${person}</div><div class="collapse-content"><ul class="list-disc pl-5">${Object.keys(workload[person]).sort((a,b) => new Date(a) - new Date(b)).map(month => `<li><strong>${month}:</strong> ${workload[person][month]} hours</li>`).join('')}</ul></div></div>`).join('') : `<p class="text-center text-gray-500 py-8">No hours assigned to DIY projects yet.</p>`;
+    },
+    
+    renderShopping() {
+        const container = document.getElementById('shopping-view');
+        if (this.state.activeShoppingListId) {
+            this.renderSingleShoppingList(this.state.activeShoppingListId);
+        } else {
+            this.renderShoppingListsDashboard();
+        }
+    },
+    renderShoppingListsDashboard() {
+        const container = document.getElementById('shopping-view');
+        const lists = this.state.shoppingLists;
+        container.innerHTML = `<div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold">Shopping Lists</h2>
+                <button class="btn btn-primary btn-md" onclick="app.showNewListModal()"><i class="fa-solid fa-plus mr-2"></i>New List</button>
+            </div>
+            ${lists.length > 0 ? `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${lists.map(list => {
+                const totalItems = list.items.length;
+                const checkedItems = list.items.filter(i => i.isChecked).length;
+                return `<div class="card bg-base-100 shadow-xl cursor-pointer hover:shadow-2xl" onclick="app.viewShoppingList('${list.id}')">
+                    <div class="card-body">
+                        <h3 class="card-title">${list.storeName}</h3>
+                        <p>${new Date(list.dateCreated).toLocaleDateString()}</p>
+                        <progress class="progress progress-primary w-full mt-2" value="${checkedItems}" max="${totalItems}"></progress>
+                        <p class="text-sm text-right">${checkedItems} of ${totalItems} purchased</p>
+                    </div>
+                </div>`
+            }).join('')}</div>` : `<p class="text-center text-gray-500 py-12">No shopping lists yet. Create one to get started!</p>`}`;
+    },
+    async renderSingleShoppingList(listId) {
+        const container = document.getElementById('shopping-view');
+        const list = await db.get('shoppingLists', listId);
+        const uncheckedItems = list.items.filter(i => !i.isChecked);
+        const checkedItems = list.items.filter(i => i.isChecked);
+        
+        container.innerHTML = `
+            <div class="bg-base-100 p-4 sm:p-6 rounded-lg shadow-lg">
+                <button class="btn btn-ghost mb-4" onclick="app.state.activeShoppingListId = null; app.render()"><i class="fa-solid fa-arrow-left mr-2"></i>Back to All Lists</button>
+                <h2 class="text-3xl font-bold">${list.storeName}</h2>
+                <p class="mb-6">${new Date(list.dateCreated).toLocaleDateString()}</p>
+
+                <div class="join w-full mb-4">
+                    <input id="newItemInput" list="masterItemsDatalist" class="input input-bordered join-item w-full" placeholder="Add new item...">
+                    <button class="btn btn-primary join-item" onclick="app.addItemToShoppingList('${list.id}')">Add</button>
+                </div>
+                <datalist id="masterItemsDatalist">${this.state.masterItems.map(i => `<option value="${i.name}"></option>`).join('')}</datalist>
+
+                <div class="space-y-2">
+                    ${uncheckedItems.map((item, index) => `
+                        <div class="flex items-center p-3 bg-base-200 rounded-lg">
+                            <input type="checkbox" class="checkbox checkbox-primary mr-4" onchange="app.toggleShoppingItem('${list.id}', ${index}, true)">
+                            <span class="text-lg flex-grow">${item.name}</span>
+                        </div>
+                    `).join('')}
+                </div>
+
+                ${checkedItems.length > 0 ? `<div class="divider mt-6">Purchased</div><div class="space-y-2 opacity-60">
+                    ${checkedItems.map((item, index) => `
+                        <div class="flex items-center p-3 bg-base-200 rounded-lg">
+                            <input type="checkbox" class="checkbox checkbox-primary mr-4" onchange="app.toggleShoppingItem('${list.id}', ${uncheckedItems.length + index}, false)" checked>
+                            <span class="text-lg flex-grow line-through">${item.name}</span>
+                        </div>
+                    `).join('')}
+                </div>` : ''}
+                <div class="flex flex-wrap gap-4 mt-8">
+                    <button class="btn btn-outline" onclick="app.copyShoppingList('${list.id}')"><i class="fa-solid fa-copy mr-2"></i>Copy List</button>
+                    <button class="btn btn-outline btn-error" onclick="app.clearPurchasedItems('${list.id}')"><i class="fa-solid fa-eraser mr-2"></i>Clear Purchased</button>
+                    <button class="btn btn-error" onclick="app.deleteShoppingList('${list.id}')"><i class="fa-solid fa-trash mr-2"></i>Delete Entire List</button>
+                </div>
+            </div>`;
+    },
+    
+    openNewProjectForm() { this.state.editingProjectId = null; document.getElementById('projectForm').reset(); this.populateModalForm({}); document.getElementById('projectStatus').value = 'Not Started'; openModal('projectModal'); },
+    editProject(id) { this.state.editingProjectId = id; const p = this.state.projects.find(proj => proj.id == id); if (!p) return; this.populateModalForm(p); openModal('projectModal'); },
+    
+    populateModalForm(p) {
+        document.getElementById('projectModalTitle').innerText = p.id ? "Edit Project" : "New Project";
+        ['id', 'name', 'status', 'priority', 'size', 'startDate', 'endDate', 'quote', 'hours', 'notes'].forEach(key => { const el = document.getElementById(`project${key.charAt(0).toUpperCase() + key.slice(1)}`); if(el) el.value = p[key] || ''; });
+        document.getElementById(p.type === 'Contractor' ? 'projectTypeContractor' : 'projectTypeDIY').checked = true;
+        this.handleProjectTypeChange();
+        this.populateFamilyMembers(p.familyMembers); this.populateContractors(p.contractorId);
+        document.getElementById('materialsList').innerHTML = ''; (p.materials || []).forEach(m => this.addMaterialRow(m));
+        document.getElementById('subtasksContainer').innerHTML = ''; (p.subtasks || []).forEach(st => this.addSubtaskRow(st));
+        this.updateTotalHours();
+        document.getElementById('deleteProjectBtn').style.display = p.id ? 'inline-flex' : 'none';
+        document.getElementById('deleteProjectBtn').onclick = () => this.deleteProject();
+    },
+
+    async saveProject(e) {
+        e.preventDefault(); const id = this.state.editingProjectId || Date.now().toString();
+        const projectData = { id, name: document.getElementById('projectName').value, status: document.getElementById('projectStatus').value, priority: document.getElementById('projectPriority').value, projectSize: document.getElementById('projectSize').value, startDate: document.getElementById('projectStartDate').value, endDate: document.getElementById('projectEndDate').value, type: document.querySelector('input[name="projectType"]:checked').value, contractorId: document.getElementById('projectContractor').value, quote: parseFloat(document.getElementById('projectQuote').value) || 0, hours: parseFloat(document.getElementById('projectHours').value) || 0, familyMembers: Array.from(document.querySelectorAll('#projectFamilyMembers input:checked')).map(el => el.value), materials: Array.from(document.querySelectorAll('.material-row')).map(row => ({ name: row.querySelector('.material-name').value, supplierId: row.querySelector('.material-supplier').value, cost: parseFloat(row.querySelector('.material-cost').value) || 0, owned: row.querySelector('.material-owned').checked, })), subtasks: Array.from(document.querySelectorAll('.subtask-row')).map(row => ({ id: row.dataset.id, name: row.querySelector('.subtask-name').value, status: row.querySelector('.subtask-status').value, assignedTo: row.querySelector('.subtask-assignedTo').value, startDate: row.querySelector('.subtask-startDate').value, endDate: row.querySelector('.subtask-endDate').value, hours: parseFloat(row.querySelector('.subtask-hours').value) || 0 })), notes: document.getElementById('projectNotes').value };
+        await db.put('projects', projectData); await this.loadStateFromDB(); this.render(); closeModal('projectModal'); this.showToast('Project saved!', 'success');
+    },
+    async deleteProject() { if (confirm('Are you sure?')) { await db.delete('projects', this.state.editingProjectId); await this.loadStateFromDB(); this.render(); closeModal('projectModal'); this.showToast('Project deleted', 'error'); } },
+
+    handleProjectTypeChange() { const type = document.querySelector('input[name="projectType"]:checked').value; document.getElementById('diySection').style.display = type === 'DIY' ? 'block' : 'none'; document.getElementById('contractorSection').style.display = type === 'Contractor' ? 'block' : 'none'; },
+    populateFamilyMembers(selected = []) { const container = document.getElementById('projectFamilyMembers'); container.innerHTML = this.state.family.map(member => `<label class="label cursor-pointer gap-2"><input type="checkbox" value="${member.name}" class="checkbox checkbox-sm project-member-checkbox" onchange="app.updateAllSubtaskAssignees()" ${selected.includes(member.name) ? 'checked' : ''}><span>${member.name}</span></label>`).join(''); },
+    populateContractors(selectedId = null) { const select = document.getElementById('projectContractor'); select.innerHTML = '<option disabled selected value="">Select contractor</option>' + this.state.contractors.map(c => `<option value="${c.id}" ${c.id == selectedId ? 'selected' : ''}>${c.name}</option>`).join(''); },
+    populateSuppliers(selectEl, selectedId = null) { selectEl.innerHTML = '<option disabled selected value="">Select supplier</option>' + this.state.suppliers.map(s => `<option value="${s.id}" ${s.id == selectedId ? 'selected' : ''}>${s.name}</option>`).join(''); },
+    addMaterialRow(material = {}) { const container = document.getElementById('materialsList'); const row = document.createElement('div'); row.className = 'material-row grid grid-cols-1 md:grid-cols-10 gap-2 items-center'; const uniqueId = `owned_${Date.now()}`; row.innerHTML = `<input type="text" placeholder="Material Name" class="input input-bordered input-sm md:col-span-3 material-name" value="${material.name || ''}"><select class="select select-bordered select-sm md:col-span-2 material-supplier"></select><input type="number" placeholder="Cost" class="input input-bordered input-sm md:col-span-1 material-cost" value="${material.cost || ''}"><label for="${uniqueId}" class="flex items-center gap-2 cursor-pointer md:col-span-2"><input type="checkbox" id="${uniqueId}" class="checkbox checkbox-sm material-owned" ${material.owned ? 'checked' : ''}><span>Owned</span></label><button type="button" class="btn btn-sm btn-ghost text-red-500 md:col-span-1" onclick="this.parentElement.remove()"><i class="fa-solid fa-trash"></i></button>`; container.appendChild(row); this.populateSuppliers(row.querySelector('.material-supplier'), material.supplierId); },
+    addSubtaskRow(subtask = {}) {
+        const container = document.getElementById('subtasksContainer'); const row = document.createElement('div');
+        row.className = 'subtask-row grid grid-cols-12 gap-2 items-center bg-base-200 p-2 rounded-md'; row.dataset.id = subtask.id || Date.now();
+        const assignees = this.getProjectMemberNames();
+        row.innerHTML = `<input type="text" placeholder="Subtask Name" class="input input-bordered input-sm col-span-12 md:col-span-3 subtask-name" value="${subtask.name || ''}"><select class="select select-bordered select-sm col-span-6 md:col-span-2 subtask-status">${['Not Started', 'In Progress', 'Done'].map(s => `<option ${s === subtask.status ? 'selected':''}>${s}</option>`).join('')}</select><select class="select select-bordered select-sm col-span-6 md:col-span-2 subtask-assignedTo"><option value="">Unassigned</option>${assignees.map(a => `<option ${a === subtask.assignedTo ? 'selected':''}>${a}</option>`).join('')}</select><input type="date" class="input input-bordered input-sm col-span-6 md:col-span-2 subtask-startDate" value="${subtask.startDate || ''}"><input type="date" class="input input-bordered input-sm col-span-6 md:col-span-2 subtask-endDate" value="${subtask.endDate || ''}"><input type="number" placeholder="Hrs" class="input input-bordered input-sm col-span-10 md:col-span-1 subtask-hours" value="${subtask.hours || ''}" oninput="app.updateTotalHours()"><button type="button" class="btn btn-sm btn-ghost text-red-500 col-span-2 md:col-span-1" onclick="this.parentElement.remove(); app.updateTotalHours();"><i class="fa-solid fa-trash"></i></button>`;
+        container.appendChild(row); this.updateTotalHours();
+    },
+    getProjectMemberNames() { return Array.from(document.querySelectorAll('.project-member-checkbox:checked')).map(el => el.value); },
+    updateAllSubtaskAssignees() { const assignees = this.getProjectMemberNames(); document.querySelectorAll('.subtask-assignedTo').forEach(select => { const currentVal = select.value; select.innerHTML = `<option value="">Unassigned</option>${assignees.map(a => `<option ${a === currentVal ? 'selected':''}>${a}</option>`).join('')}`; }); },
+    updateTotalHours() { const subtaskRows = document.querySelectorAll('.subtask-row'); const hoursInput = document.getElementById('projectHours'); if (subtaskRows.length > 0) { const total = Array.from(subtaskRows).reduce((sum, row) => sum + (parseFloat(row.querySelector('.subtask-hours').value) || 0), 0); hoursInput.value = total; hoursInput.readOnly = true; } else { hoursInput.readOnly = false; } },
+    getTotalHours(project) { const subtasks = project.subtasks || []; return subtasks.length > 0 ? subtasks.reduce((sum, st) => sum + (Number(st.hours) || 0), 0) : (Number(project.hours) || 0); },
+    getAssigneeName(project, asArray = false) { if (project.type === 'Contractor' && project.contractorId) { const contractor = this.state.contractors.find(c => c.id == project.contractorId); const name = contractor ? contractor.name : 'Unknown'; return asArray ? [name] : name; } else if (project.type === 'DIY' && project.familyMembers && project.familyMembers.length > 0) { return asArray ? project.familyMembers : project.familyMembers.join(', '); } return asArray ? ['Unassigned'] : 'Unassigned'; },
+    calculateTotalCost(project) { if (project.type === 'Contractor') return project.quote || 0; return (project.materials || []).reduce((sum, item) => sum + (item.owned ? 0 : item.cost), 0); },
+    renderSettingsLists() { document.getElementById('familyList').innerHTML = this.state.family.map(item => `<li class="flex justify-between items-center bg-slate-100 p-2 rounded-lg"><div class="flex items-center gap-3"><span class="color-swatch" style="background-color: ${item.color};"></span><span>${item.name}</span></div><button class="btn btn-xs btn-ghost text-red-500" onclick="app.removeListItem('family', ${item.id})"><i class="fa-solid fa-times"></i></button></li>`).join(''); ['contractors', 'suppliers'].forEach(key => { document.getElementById(`${key.slice(0,-1)}List`).innerHTML = this.state[key].map(item => `<li class="flex justify-between items-center bg-slate-100 p-2 rounded-lg"><span>${item.name}</span><button class="btn btn-xs btn-ghost text-red-500" onclick="app.removeListItem('${key}', ${item.id})"><i class="fa-solid fa-times"></i></button></li>`).join(''); }); },
+    async addListItem(listName) { const inputEl = document.getElementById({ family: 'newFamilyMember', contractors: 'newContractorName', suppliers: 'newSupplierName' }[listName]); const value = inputEl.value.trim(); if (value) { let newItem = { name: value }; if (listName === 'family') { const usedColors = this.state.family.map(f => f.color); newItem.color = this.colorPalette.find(c => !usedColors.includes(c)) || this.colorPalette[0]; } await db.add(listName, newItem); inputEl.value = ''; await this.loadStateFromDB(); this.renderSettingsLists(); } },
+    async removeListItem(listName, id) { if (confirm('Are you sure?')) { await db.delete(listName, id); await this.loadStateFromDB(); this.renderSettingsLists(); } },
+    async copyProjectList() { const projects = this.getFilteredProjects().filter(p => this.state.showDoneInList || p.status !== 'Done'); const dated = projects.filter(p => p.startDate).sort((a, b) => new Date(a.startDate) - new Date(b.startDate)); const undated = projects.filter(p => !p.startDate); const formatProject = p => `${p.startDate || 'No Date'}: ${p.name} (${p.status}) - ${this.getAssigneeName(p)}`; let textToCopy = "Dated Projects:\n" + dated.map(formatProject).join('\n'); if (undated.length > 0) { textToCopy += "\n\nUndated Projects:\n" + undated.map(formatProject).join('\n'); } await navigator.clipboard.writeText(textToCopy); this.showToast('Project list copied!', 'success'); },
+    
+    // --- NEW SHOPPING LIST METHODS ---
+    showNewListModal() { const select = document.getElementById('newStoreSelect'); select.innerHTML = '<option disabled selected value="">Select a store</option>' + this.state.suppliers.map(s => `<option value="${s.name}">${s.name}</option>`).join(''); openModal('newListModal'); },
+    async createNewShoppingList() { const storeName = document.getElementById('newStoreSelect').value; if (!storeName) return; const newList = { id: Date.now().toString(), storeName: storeName, dateCreated: new Date().toISOString(), items: [] }; await db.add('shoppingLists', newList); await this.loadStateFromDB(); this.state.activeShoppingListId = newList.id; this.render(); closeModal('newListModal'); },
+    viewShoppingList(listId) { this.state.activeShoppingListId = listId; this.render(); },
+    async addItemToShoppingList(listId) { const input = document.getElementById('newItemInput'); const itemName = input.value.trim(); if (!itemName) return; let masterItem = this.state.masterItems.find(i => i.name.toLowerCase() === itemName.toLowerCase()); if (!masterItem) { const newId = await db.add('masterItems', { name: itemName }); masterItem = { id: newId, name: itemName }; } const list = await db.get('shoppingLists', listId); list.items.push({ masterItemId: masterItem.id, name: itemName, isChecked: false }); await db.put('shoppingLists', list); await this.loadStateFromDB(); this.render(); input.value = ''; },
+    async toggleShoppingItem(listId, itemIndex, isChecked) { const list = await db.get('shoppingLists', listId); list.items[itemIndex].isChecked = isChecked; await db.put('shoppingLists', list); await this.loadStateFromDB(); this.render(); },
+    async clearPurchasedItems(listId) { if (!confirm('Clear all purchased items from this list?')) return; const list = await db.get('shoppingLists', listId); list.items = list.items.filter(i => !i.isChecked); await db.put('shoppingLists', list); await this.loadStateFromDB(); this.render(); this.showToast('Purchased items cleared!'); },
+    async deleteShoppingList(listId) { if (!confirm('Are you sure you want to permanently delete this entire list?')) return; await db.delete('shoppingLists', listId); this.state.activeShoppingListId = null; await this.loadStateFromDB(); this.render(); this.showToast('Shopping list deleted!', 'error'); },
+    async copyShoppingList(listId) { const list = await db.get('shoppingLists', listId); const itemsToCopy = list.items.filter(i => !i.isChecked).map(i => i.name).join('\n'); await navigator.clipboard.writeText(`${list.storeName} List:\n${itemsToCopy}`); this.showToast('List copied to clipboard!', 'success'); },
+    
+    // --- DATA I/O METHODS ---
+    async exportData() { const dataToExport = { projects: this.state.projects, family: this.state.family, contractors: this.state.contractors, suppliers: this.state.suppliers, masterItems: this.state.masterItems, shoppingLists: this.state.shoppingLists }; const jsonString = JSON.stringify(dataToExport, null, 2); const blob = new Blob([jsonString], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `home-planner-backup-${new Date().toISOString().split('T')[0]}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); this.showToast('Data exported!', 'success'); },
+    async importData(event) {
+        const file = event.target.files[0]; if (!file) return; const reader = new FileReader();
+        reader.onload = async (e) => {
+            try { const data = JSON.parse(e.target.result); if (!data.projects || !data.family) { throw new Error("Invalid file format."); }
+                if (confirm('This will overwrite all current data. Proceed?')) {
+                    await Promise.all(['projects', 'family', 'contractors', 'suppliers', 'masterItems', 'shoppingLists'].map(s => db.clear(s)));
+                    for(const item of data.family) await db.add('family', item); for(const item of data.contractors) await db.add('contractors', item);
+                    for(const item of data.suppliers) await db.add('suppliers', item); for(const item of data.projects) await db.add('projects', item);
+                    for(const item of (data.masterItems || [])) await db.add('masterItems', item); for(const item of (data.shoppingLists || [])) await db.add('shoppingLists', item);
+                    await this.loadStateFromDB(); this.render(); this.showToast('Data imported!', 'success');
+                }
+            } catch (error) { this.showToast('Error importing data: ' + error.message, 'error'); } finally { event.target.value = null; }
+        };
+        reader.readAsText(file);
+    },
+    showToast(message, type = 'info') {
+        const toastColors = { info: 'alert-info', success: 'alert-success', error: 'alert-error' };
+        const toast = document.createElement('div'); toast.className = `toast alert ${toastColors[type]} transition-opacity duration-300 opacity-0`;
+        toast.innerHTML = `<span>${message}</span>`; document.getElementById('toastContainer').appendChild(toast);
+        setTimeout(() => toast.classList.remove('opacity-0'), 10);
+        setTimeout(() => { toast.classList.add('opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
+    }
 };
 
-document.addEventListener('DOMContentLoaded', () => { app.init(); });
+// --- START THE APP --- //
+document.addEventListener('DOMContentLoaded', () => { window.app = app; app.init(); });
 </script>
-
 </body>
 </html>
