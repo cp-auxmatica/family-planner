@@ -1,186 +1,1756 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="cupcake">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Home Hub - Polished Edition</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.2/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Hub - Modern Family Organizer</title>
     
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
 
     <style>
-        html { font-size: 16px; }
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .fc-event { cursor: pointer; }
-        .toast { z-index: 10000; }
-        .fc .fc-toolbar.fc-header-toolbar { flex-direction: column; align-items: center; gap: 0.5rem; }
-        @media (min-width: 768px) { .fc .fc-toolbar.fc-header-toolbar { flex-direction: row; } }
-        .fc { --fc-border-color: #e5e7eb; --fc-page-bg-color: #ffffff; --fc-event-bg-color: #3b82f6; --fc-event-border-color: #2563eb; --fc-today-bg-color: rgba(253, 230, 138, 0.3); }
-        .fc .fc-button-primary { background-color: #2563eb; border-color: #2563eb; }
-        .fc .fc-button-primary:hover { background-color: #1d4ed8; border-color: #1d4ed8; }
-        .fc-bg-event { opacity: 0.3 !important; }
-        .dashboard-item { transition: background-color 0.2s; }
-        .dashboard-item:hover { background-color: #e5e7eb; } 
-        #shopping_list_modal.modal-open .modal-box { width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; border-radius: 0; padding: 1rem; }
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #5856eb;
+            --primary-light: #e0e7ff;
+            --secondary: #10b981;
+            --secondary-hover: #059669;
+            --accent: #f59e0b;
+            --accent-hover: #d97706;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --info: #3b82f6;
+            
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --bg-overlay: rgba(15, 23, 42, 0.1);
+            
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-tertiary: #64748b;
+            --text-light: #94a3b8;
+            
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .navbar {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 0.5rem;
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-lg {
+            padding: 0.875rem 2rem;
+            font-size: 1rem;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 0.25rem;
+            background: var(--bg-primary);
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .nav-tab:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid var(--primary);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-primary);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            padding: 1.5rem 1.5rem 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Widget Styles */
+        .widget-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 0.75rem;
+        }
+
+        .widget-item:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--primary-light);
+            transform: translateX(4px);
+        }
+
+        .widget-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .widget-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .widget-content p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .widget-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: white;
+        }
+
+        .badge-appointment { background: var(--info); }
+        .badge-meeting { background: var(--primary); }
+        .badge-work { background: var(--text-secondary); }
+        .badge-chore { background: var(--success); }
+        .badge-errand { background: var(--warning); }
+        .badge-timeoff { background: var(--error); }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-tertiary);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem 1.5rem 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem 1.5rem 1.5rem;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* Shopping List */
+        .shopping-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--border-light);
+        }
+
+        .shopping-item.completed {
+            opacity: 0.6;
+        }
+
+        .shopping-item.completed .item-name {
+            text-decoration: line-through;
+        }
+
+        .checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            accent-color: var(--primary);
+        }
+
+        .item-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .price-input {
+            width: 5rem;
+            padding: 0.375rem 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            text-align: right;
+        }
+
+        /* Calendar Styles */
+        .fc {
+            background: var(--bg-primary);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .fc .fc-toolbar {
+            background: var(--bg-secondary);
+            padding: 1rem;
+        }
+
+        .fc-button {
+            background: var(--primary) !important;
+            border: none !important;
+            border-radius: var(--radius-sm) !important;
+        }
+
+        .fc-button:hover {
+            background: var(--primary-hover) !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .main-container {
+                padding: 1rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .nav-tabs {
+                margin-bottom: 1rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .modal {
+                padding: 1rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            z-index: 1100;
+            max-width: 300px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--error);
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.info {
+            border-left: 4px solid var(--info);
+        }
+
+        /* Meal planner specific */
+        .meal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .day-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        .day-header {
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            text-align: center;
+            font-weight: 600;
+            color: white;
+        }
+
+        .meal-slot {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .meal-slot:hover {
+            background: var(--bg-secondary);
+        }
+
+        .meal-slot:last-child {
+            border-bottom: none;
+        }
+
+        .meal-type {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .meal-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .meal-empty {
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        /* Toggle switch */
+        .toggle {
+            position: relative;
+            width: 3rem;
+            height: 1.5rem;
+            background: var(--border);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle.active {
+            background: var(--primary);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 1.25rem;
+            height: 1.25rem;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle.active::after {
+            transform: translateX(1.5rem);
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
-<body class="bg-base-200 min-h-screen">
-
-    <header class="bg-base-100 shadow-md sticky top-0 z-40">
-        <div class="navbar container mx-auto px-4">
-            <div class="navbar-start"><h1 class="text-xl md:text-2xl font-bold text-primary"><i class="fas fa-home mr-2"></i> Home Hub</h1></div>
-            <div class="navbar-end">
-                <button class="btn btn-ghost btn-circle" onclick="document.getElementById('manage_modal').showModal()"><i class="fas fa-cog text-xl"></i></button>
-                <button class="btn btn-primary btn-sm md:btn-md" onclick="ui.openTaskModal()"><i class="fas fa-plus md:mr-2"></i><span class="hidden md:inline">New Event</span></button>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fas fa-home"></i>
+                <span>Home Hub</span>
             </div>
-        </div>
+            <div class="nav-actions">
+                <button class="btn btn-ghost" onclick="openModal('settings-modal')">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="btn btn-primary" onclick="openModal('task-modal')">
+                    <i class="fas fa-plus"></i>
+                    <span class="hidden md:inline">New Event</span>
+                </button>
+            </div>
+        </nav>
     </header>
 
-    <main class="container mx-auto p-4 sm:p-6">
-        <div role="tablist" class="tabs tabs-bordered tabs-lg mb-6" id="viewTabs">
-            <a role="tab" class="tab" data-view="dashboard" onclick="app.handleViewChange('dashboard')"><i class="fas fa-tachometer-alt mr-1"></i><span class="hidden sm:inline ml-1">Dashboard</span></a>
-            <a role="tab" class="tab" data-view="shopping" onclick="app.handleViewChange('shopping')"><i class="fas fa-shopping-basket mr-1"></i><span class="hidden sm:inline ml-1">Shopping</span></a>
-            <a role="tab" class="tab" data-view="masterlists" onclick="app.handleViewChange('masterlists')"><i class="fas fa-clipboard-list mr-1"></i><span class="hidden sm:inline ml-1">Master Lists</span></a>
-            <a role="tab" class="tab" data-view="mealplanner" onclick="app.handleViewChange('mealplanner')"><i class="fas fa-utensils mr-1"></i><span class="hidden sm:inline ml-1">Meals</span></a>
-            <a role="tab" class="tab" data-view="history" onclick="app.handleViewChange('history')"><i class="fas fa-history mr-1"></i><span class="hidden sm:inline ml-1">History</span></a>
-            <a role="tab" class="tab" data-view="fullschedule" onclick="app.handleViewChange('fullschedule')"><i class="fas fa-calendar-alt mr-1"></i><span class="hidden sm:inline ml-1">Schedule</span></a>
+    <main class="main-container">
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-view="dashboard" onclick="switchView('dashboard')">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </button>
+            <button class="nav-tab" data-view="schedule" onclick="switchView('schedule')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Schedule</span>
+            </button>
+            <button class="nav-tab" data-view="meals" onclick="switchView('meals')">
+                <i class="fas fa-utensils"></i>
+                <span>Meal Planner</span>
+            </button>
+            <button class="nav-tab" data-view="shopping" onclick="switchView('shopping')">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Shopping</span>
+            </button>
+            <button class="nav-tab" data-view="lists" onclick="switchView('lists')">
+                <i class="fas fa-list"></i>
+                <span>Master Lists</span>
+            </button>
         </div>
 
-        <div id="app-views">
-            <div id="dashboard-view" class="view"><div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title"><i class="fas fa-clock text-info mr-2"></i>Today's Schedule</h2><div id="today-schedule-widget" class="space-y-2"></div></div></div><div class="card bg-base-100 shadow-xl hover:bg-base-200/50 cursor-pointer" onclick="app.handleViewChange('shopping')"><div class="card-body"><h2 class="card-title"><i class="fas fa-shopping-cart text-accent mr-2"></i>Active Shopping Lists</h2><div id="grocery-list-widget" class="space-y-1"></div></div></div><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title" id="dinner-widget-title"><i class="fas fa-drumstick-bite text-warning mr-2"></i>What's for Dinner?</h2><div id="dinner-widget" class="mt-2"></div></div></div><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title"><i class="fas fa-tasks text-success mr-2"></i>Today's Chores</h2><div id="today-chores-widget" class="space-y-2"></div></div></div></div></div>
-            <div id="shopping-view" class="view hidden"><div class="card bg-base-100 shadow-xl"><div class="card-body"><div class="flex justify-between items-center"><h2 class="card-title">Active Shopping Lists</h2><button class="btn btn-primary" onclick="app.createNewShoppingList()"><i class="fas fa-plus mr-2"></i> New List</button></div><div id="active-lists-container" class="space-y-4 mt-4"></div></div></div></div>
-            <div id="masterlists-view" class="view hidden"><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title">My Stores & Master Lists</h2><form id="add-store-form" class="join w-full mt-4"><input type="text" id="new-store-name" placeholder="Add a new store..." class="input input-bordered join-item w-full" required /><button type="submit" class="btn btn-primary join-item">Add</button></form><div id="stores-container" class="mt-4 space-y-4"></div></div></div></div>
-            <div id="mealplanner-view" class="view hidden"><div class="card bg-base-100 shadow-xl mb-6"><div class="card-body"><details class="collapse collapse-arrow bg-base-200"><summary class="collapse-title text-xl font-medium">Plan a New Meal</summary><div class="collapse-content"><form id="meal-page-form" class="space-y-4 pt-4"><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><input type="date" id="meal-page-date" class="input input-bordered w-full" required /><select id="meal-page-type" class="select select-bordered w-full" required><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select></div><input type="text" id="meal-page-recipeName" class="input input-bordered w-full" placeholder="Recipe Name" required /><div class="text-right"><button type="submit" class="btn btn-primary">Save Meal</button></div></form></div></details></div></div><div id="meal-planner-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div></div>
-            <div id="history-view" class="view hidden"><div class="card bg-base-100 shadow-xl"><div class="card-body"><h2 class="card-title">Shopping Trip History</h2><div id="trip-history-container" class="space-y-4 mt-4"></div></div></div></div>
-            <div id="fullschedule-view" class="view hidden"><div class="card bg-base-100 shadow-xl p-2 md:p-4"><div id="calendar"></div></div></div>
+        <div id="dashboard-view" class="view">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-clock" style="color: var(--info);"></i>
+                            Today's Schedule
+                        </h2>
+                    </div>
+                    <div class="card-body" id="today-schedule">
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-day"></i>
+                            <h3>No events today</h3>
+                            <p>Your day is looking clear!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-utensils" style="color: var(--warning);"></i>
+                            Today's Meals
+                        </h2>
+                    </div>
+                    <div class="card-body" id="today-meals">
+                        <div class="empty-state">
+                            <i class="fas fa-plate-wheat"></i>
+                            <h3>No meals planned</h3>
+                            <p>Start planning your day!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="switchView('shopping')" style="cursor: pointer;">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-shopping-cart" style="color: var(--secondary);"></i>
+                            Shopping Lists
+                        </h2>
+                    </div>
+                    <div class="card-body" id="shopping-summary">
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-bag"></i>
+                            <h3>No active lists</h3>
+                            <p>Create a shopping list to get started</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-bolt" style="color: var(--primary);"></i>
+                            Quick Actions
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <button class="btn btn-outline" onclick="openModal('task-modal')">
+                                <i class="fas fa-plus"></i>
+                                Add Event
+                            </button>
+                            <button class="btn btn-outline" onclick="openModal('meal-modal')">
+                                <i class="fas fa-utensils"></i>
+                                Plan Meal
+                            </button>
+                            <button class="btn btn-outline" onclick="switchView('shopping')">
+                                <i class="fas fa-shopping-cart"></i>
+                                Start Shopping
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="schedule-view" class="view hidden">
+            <div class="card">
+                <div id="calendar"></div>
+            </div>
+        </div>
+
+        <div id="meals-view" class="view hidden">
+            <div class="card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-plus-circle" style="color: var(--primary);"></i>
+                        Plan New Meal
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form id="quick-meal-form" class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-input" id="meal-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Meal Type</label>
+                            <select class="form-select" id="meal-type" required>
+                                <option value="Breakfast">Breakfast</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Dinner">Dinner</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label class="form-label">Recipe Name</label>
+                            <input type="text" class="form-input" id="meal-recipe" placeholder="What are you making?" required>
+                        </div>
+                        <div style="grid-column: 1 / -1;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Save Meal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="meal-grid" id="meal-planner-grid">
+                </div>
+        </div>
+
+        <div id="shopping-view" class="view hidden">
+            <div class="card">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 class="card-title">
+                        <i class="fas fa-shopping-cart" style="color: var(--secondary);"></i>
+                        Shopping Lists
+                    </h2>
+                    <button class="btn btn-primary" onclick="openModal('new-list-modal')">
+                        <i class="fas fa-plus"></i>
+                        New List
+                    </button>
+                </div>
+                <div class="card-body" id="shopping-lists">
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-bag"></i>
+                        <h3>No shopping lists</h3>
+                        <p>Create your first shopping list to get started</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="lists-view" class="view hidden">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-store" style="color: var(--accent);"></i>
+                        Stores & Master Lists
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <form id="add-store-form" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                        <input type="text" class="form-input" id="store-name" placeholder="Add a new store..." required>
+                        <button type="submit" class="btn btn-secondary">Add Store</button>
+                    </form>
+                    <div id="stores-container">
+                        <div class="empty-state">
+                            <i class="fas fa-store"></i>
+                            <h3>No stores added</h3>
+                            <p>Add your favorite grocery stores to start building master shopping lists</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
-    
-    <div class="toast toast-top toast-center" id="toast-container"></div>
 
-    <dialog id="shopping_list_modal" class="modal"><div class="modal-box flex flex-col h-full"><div id="shopping-list-modal-header" class="flex justify-between items-center pb-4 border-b"></div><div id="shopping-list-modal-content" class="flex-grow overflow-y-auto py-4 space-y-2"></div><div id="shopping-list-modal-footer" class="pt-4 border-t"></div></div></dialog>
-    <dialog id="new_list_modal" class="modal"><div class="modal-box w-11/12 max-w-sm"><h3 class="font-bold text-lg">Create a New Shopping List</h3><form id="new-list-form" class="space-y-4 mt-4"><select id="new-list-store-select" class="select select-bordered w-full"></select><div class="modal-action"><button type="button" class="btn" onclick="document.getElementById('new_list_modal').close()">Cancel</button><button type="submit" class="btn btn-primary">Start Shopping</button></div></form></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
-    <dialog id="task_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg" id="task-modal-title">New Event</h3><form id="task-form" class="space-y-4 mt-4"><input type="hidden" id="taskId"><input type="text" id="taskName" class="input input-bordered w-full" placeholder="Event Name" required /><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><select id="taskType" class="select select-bordered" required><option disabled selected>Event Type</option><option>Appointment</option><option>Meeting</option><option>Work Schedule</option><option>Chore</option><option>Errand</option><option>Time Off</option></select><select id="taskAssignee" class="select select-bordered"><option disabled selected>Assign To</option></select></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><input type="date" id="taskDueDate" class="input input-bordered" /><input type="time" id="taskDueTime" class="input input-bordered" /></div><div class="flex items-center justify-between"><div class="form-control"><label class="cursor-pointer label"><span class="label-text">Recurring?</span><input type="checkbox" id="taskIsRecurring" class="toggle toggle-primary ml-2" /></label></div><div class="form-control"><label class="cursor-pointer label"><span class="label-text">Completed?</span><input type="checkbox" id="taskIsDone" class="checkbox checkbox-success ml-2" /></label></div></div><div id="recurring-options" class="hidden"><label class="label"><span class="label-text">Repeats on:</span></label><div class="join w-full" id="recurring-day-picker"><button type="button" class="join-item btn btn-sm flex-1" data-day="1">M</button><button type="button" class="join-item btn btn-sm flex-1" data-day="2">T</button><button type="button" class="join-item btn btn-sm flex-1" data-day="3">W</button><button type="button" class="join-item btn btn-sm flex-1" data-day="4">T</button><button type="button" class="join-item btn btn-sm flex-1" data-day="5">F</button><button type="button" class="join-item btn btn-sm flex-1" data-day="6">S</button><button type="button" class="join-item btn btn-sm flex-1" data-day="0">S</button></div></div><textarea id="taskNotes" class="textarea textarea-bordered w-full" placeholder="Notes..."></textarea><div class="modal-action"><button type="button" class="btn" onclick="document.getElementById('task_modal').close()">Cancel</button><button type="submit" class="btn btn-primary">Save Event</button></div></form></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
-    <dialog id="edit_recurring_modal" class="modal"><div class="modal-box w-11/12 max-w-xs text-center"><h3 class="font-bold text-lg">Edit Recurring Event</h3><p class="py-4">Do you want to change only this event, or this and all future events in the series?</p><div class="modal-action justify-center"><button class="btn" id="edit-single-event-btn">Only This Event</button><button class="btn btn-primary" id="edit-future-events-btn">Future Events</button></div></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
-    <dialog id="meal_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg" id="meal-modal-title">Edit Meal</h3><form id="meal-form" class="space-y-4 mt-4"><input type="hidden" id="mealId"><input type="hidden" id="mealDate"><input type="hidden" id="mealType"><input type="text" id="recipeName" class="input input-bordered w-full" placeholder="Recipe Name" required /><input type="url" id="recipeURL" class="input input-bordered w-full" placeholder="https://example.com/recipe" /><div class="divider">Ingredients</div><div id="ingredient-list-container" class="space-y-2 max-h-48 overflow-y-auto pr-2"></div><div class="join w-full"><input type="text" id="new-ingredient-name" placeholder="Add an ingredient" class="input input-bordered join-item w-full" /><button type="button" id="add-ingredient-button" class="btn btn-secondary join-item">Add</button></div><div class="modal-action"><button type="button" id="delete-meal-btn" class="btn btn-error mr-auto" onclick="app.handleDeleteMeal()">Delete</button><button type="button" class="btn" onclick="document.getElementById('meal_modal').close()">Cancel</button><button type="submit" class="btn btn-primary">Save Changes</button></div></form></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
-    <dialog id="manage_modal" class="modal"><div class="modal-box w-11/12 max-w-lg"><h3 class="font-bold text-lg">Manage Data & Family</h3><div class="mt-6"><h4 class="font-semibold text-md">Family Members</h4><div id="family-member-list" class="mt-2 space-y-2"></div><form id="add-family-member-form" class="flex gap-2 mt-2"><input type="text" id="new-member-name" placeholder="New member name" class="input input-bordered w-full" required /><button type="submit" class="btn btn-primary">Add</button></form></div><div class="divider"></div><div class="mt-4"><h4 class="font-semibold text-md">Backup & Restore</h4><p class="text-sm text-base-content/70">Export or import your data.</p><div class="flex gap-4 mt-4"><button class="btn btn-secondary flex-1" onclick="app.exportData()">Export</button><label class="btn btn-accent flex-1">Import<input type="file" id="import-file-input" class="hidden" accept=".json" onchange="app.importData(event)" /></label></div><div class="divider">DANGER ZONE</div><button class="btn btn-error w-full" onclick="app.clearAllData()"><i class="fas fa-exclamation-triangle mr-2"></i>Clear All Application Data</button></div><div class="modal-action"><button type="button" class="btn" onclick="document.getElementById('manage_modal').close()">Close</button></div></div><form method="dialog" class="modal-backdrop"><button>close</button></form></dialog>
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">New Event</h3>
+                <button class="btn btn-ghost" onclick="closeModal('task-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="task-form">
+                    <div class="form-group">
+                        <label class="form-label">Event Name</label>
+                        <input type="text" class="form-input" id="task-name" placeholder="What's the event?" required>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Event Type</label>
+                            <select class="form-select" id="task-type" required>
+                                <option value="">Select type...</option>
+                                <option value="Appointment">Appointment</option>
+                                <option value="Meeting">Meeting</option>
+                                <option value="Work Schedule">Work Schedule</option>
+                                <option value="Chore">Chore</option>
+                                <option value="Errand">Errand</option>
+                                <option value="Time Off">Time Off</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Assign To</label>
+                            <select class="form-select" id="task-assignee">
+                                <option value="">Unassigned</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-input" id="task-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Time</label>
+                            <input type="time" class="form-input" id="task-time">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-input" id="task-notes" placeholder="Additional details..." rows="3" style="resize: vertical;"></textarea>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin: 1rem 0;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="task-recurring" class="checkbox">
+                            <span>Recurring Event</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="task-completed" class="checkbox">
+                            <span>Completed</span>
+                        </label>
+                    </div>
+                    
+                    <div id="recurring-options" class="hidden" style="margin: 1rem 0;">
+                        <label class="form-label">Repeat on:</label>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="0">Sun</button>
+                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="1">Mon</button>
+                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="2">Tue</button>
+                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="3">Wed</button>
+                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="4">Thu</button>
+                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="5">Fri</button>
+                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="6">Sat</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('task-modal')">Cancel</button>
+                <button type="submit" form="task-form" class="btn btn-primary">Save Event</button>
+            </div>
+        </div>
+    </div>
 
-<script>
-// --- GLOBAL CONFIG ---
-const DB_NAME = 'HomeHubDB'; const DB_VERSION = 5;
-const OBJECT_STORES = ['tasks', 'meals', 'groceries', 'familyMembers', 'shoppingTrips', 'stores', 'storeItems'];
+    <div id="meal-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Plan Meal</h3>
+                <button class="btn btn-ghost" onclick="closeModal('meal-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="meal-form">
+                    <input type="hidden" id="meal-id">
+                    <input type="hidden" id="modal-meal-date">
+                    <input type="hidden" id="modal-meal-type">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Recipe Name</label>
+                        <input type="text" class="form-input" id="recipe-name" placeholder="What are you making?" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Recipe URL (optional)</label>
+                        <input type="url" class="form-input" id="recipe-url" placeholder="https://example.com/recipe">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Ingredients</label>
+                        <div id="ingredients-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem;">
+                            <p style="color: var(--text-tertiary); text-align: center; font-style: italic;">No ingredients added yet</p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" class="form-input" id="new-ingredient" placeholder="Add ingredient..." style="flex: 1;">
+                            <button type="button" class="btn btn-secondary" onclick="addIngredient()">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('meal-modal')">Cancel</button>
+                <button type="submit" form="meal-form" class="btn btn-primary">Save Meal</button>
+            </div>
+        </div>
+    </div>
 
-/**
- * =================================================================
- * DATABASE MODULE (db) - Unchanged
- * =================================================================
- */
-const db = { _db: null, async init() { return new Promise((resolve, reject) => { if (this._db) return resolve(this._db); const request = indexedDB.open(DB_NAME, DB_VERSION); request.onerror = e => reject("Database error: " + e.target.errorCode); request.onsuccess = e => { this._db = e.target.result; resolve(this._db); }; request.onupgradeneeded = e => { const db = e.target.result; const transaction = e.target.transaction; const s = db.objectStoreNames; if (!s.contains('tasks')) { const tasksStore = db.createObjectStore('tasks', { keyPath: 'id', autoIncrement: true }); tasksStore.createIndex('seriesId', 'seriesId', { unique: false }); } else if (e.oldVersion < 4) { transaction.objectStore('tasks').createIndex('seriesId', 'seriesId', { unique: false }); } if (!s.contains('meals')) db.createObjectStore('meals', { keyPath: 'id', autoIncrement: true }); if (!s.contains('groceries')) db.createObjectStore('groceries', { keyPath: 'id', autoIncrement: true }); if (!s.contains('familyMembers')) db.createObjectStore('familyMembers', { keyPath: 'id', autoIncrement: true }); if (!s.contains('shoppingTrips')) db.createObjectStore('shoppingTrips', { keyPath: 'id', autoIncrement: true }); if (e.oldVersion < 5) { if (s.contains('masterGroceries')) db.deleteObjectStore('masterGroceries'); if (!s.contains('stores')) db.createObjectStore('stores', { keyPath: 'id', autoIncrement: true }); if (!s.contains('storeItems')) { const storeItemsStore = db.createObjectStore('storeItems', { keyPath: 'id', autoIncrement: true }); storeItemsStore.createIndex('storeId', 'storeId', { unique: false }); } } }; }); }, async _getStore(storeName, mode = 'readonly') { const db = await this.init(); return db.transaction(storeName, mode).objectStore(storeName); }, async add(storeName, item) { const store = await this._getStore(storeName, 'readwrite'); return new Promise((resolve, reject) => { const r = store.add(item); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); }); }, async get(storeName, id) { const store = await this._getStore(storeName); return new Promise((resolve, reject) => { const r = store.get(id); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); }); }, async getAll(storeName) { const store = await this._getStore(storeName); return new Promise((resolve, reject) => { const r = store.getAll(); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); }); }, async update(storeName, item) { const store = await this._getStore(storeName, 'readwrite'); return new Promise((resolve, reject) => { const r = store.put(item); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); }); }, async delete(storeName, id) { const store = await this._getStore(storeName, 'readwrite'); return new Promise((resolve, reject) => { const r = store.delete(id); r.onsuccess = () => resolve(); r.onerror = () => reject(r.error); }); }, async clear(storeName) { const store = await this._getStore(storeName, 'readwrite'); return new Promise((resolve, reject) => { const r = store.clear(); r.onsuccess = () => resolve(); r.onerror = () => reject(r.error); }); }, async query(storeName, indexName, query) { const store = await this._getStore(storeName); const index = store.index(indexName); return new Promise((resolve, reject) => { const r = index.getAll(query); r.onsuccess = () => resolve(r.result); r.onerror = () => reject(r.error); });}};
+    <div id="new-list-modal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">New Shopping List</h3>
+                <button class="btn btn-ghost" onclick="closeModal('new-list-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="new-list-form">
+                    <div class="form-group">
+                        <label class="form-label">Select Store</label>
+                        <select class="form-select" id="list-store" required>
+                            <option value="">Choose a store...</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('new-list-modal')">Cancel</button>
+                <button type="submit" form="new-list-form" class="btn btn-primary">Create List</button>
+            </div>
+        </div>
+    </div>
 
-/**
- * =================================================================
- * UI MODULE (ui)
- * =================================================================
- */
-const ui = {
-    render(state, data) {
-        document.querySelectorAll('#viewTabs .tab').forEach(tab => tab.classList.toggle('tab-active', tab.dataset.view === state.currentView));
-        document.querySelectorAll('#app-views .view').forEach(view => view.classList.toggle('hidden', view.id !== `${state.currentView}-view`));
-        switch (state.currentView) {
-            case 'dashboard': this.renderDashboard(data); break;
-            case 'shopping': this.renderShoppingView(data); break;
-            case 'masterlists': this.renderMasterLists(data, state); break;
-            case 'mealplanner': this.renderMealPlanner(data); break;
-            case 'history': this.renderHistory(data); break;
-            case 'fullschedule': this.renderFullSchedule(data); break;
-        }
-        this.renderFamilyMembers(data);
-        this.populateAssigneeDropdown(data);
-    },
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Settings & Management</h3>
+                <button class="btn btn-ghost" onclick="closeModal('settings-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-users" style="color: var(--primary);"></i>
+                        Family Members
+                    </h4>
+                    <div id="family-members" style="margin-bottom: 1rem;">
+                        <p style="color: var(--text-tertiary); font-style: italic;">No family members added</p>
+                    </div>
+                    <form id="add-member-form" style="display: flex; gap: 0.5rem;">
+                        <input type="text" class="form-input" id="member-name" placeholder="Add family member..." required style="flex: 1;">
+                        <button type="submit" class="btn btn-secondary">Add</button>
+                    </form>
+                </div>
+                
+                <div style="border-top: 1px solid var(--border-light); padding-top: 2rem;">
+                    <h4 style="font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-database" style="color: var(--info);"></i>
+                        Data Management
+                    </h4>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                        <button class="btn btn-outline" onclick="exportData()" style="flex: 1;">
+                            <i class="fas fa-download"></i>
+                            Export Data
+                        </button>
+                        <label class="btn btn-outline" style="flex: 1; cursor: pointer;">
+                            <i class="fas fa-upload"></i>
+                            Import Data
+                            <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
+                        </label>
+                    </div>
+                    
+                    <div style="border: 2px solid var(--error); border-radius: var(--radius); padding: 1rem; background: rgba(239, 68, 68, 0.05);">
+                        <h5 style="color: var(--error); font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Danger Zone
+                        </h5>
+                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">This will permanently delete all your data. This action cannot be undone.</p>
+                        <button class="btn" style="background: var(--error); color: white;" onclick="clearAllData()">
+                            <i class="fas fa-trash"></i>
+                            Clear All Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    renderDashboard(data) { const today = new Date(); const todayStr = today.toISOString().split('T')[0]; const dayName = today.toLocaleDateString(undefined, { weekday: 'long' }); const tasks = data.tasks.filter(t => t.status !== 'Done'); const scheduleContainer = document.getElementById('today-schedule-widget'); const todayEvents = tasks.filter(t => t.dueDate === todayStr && t.type !== 'Chore').sort((a,b) => (a.dueTime || '').localeCompare(b.dueTime || '')); scheduleContainer.innerHTML = todayEvents.length ? todayEvents.map(t => `<div class="p-2 rounded cursor-pointer dashboard-item" onclick="ui.openTaskModal(${t.id})"><div class="flex items-center justify-between"><div><span class="font-bold text-lg">${t.name}</span><span class="text-md text-base-content/70 ml-2">${t.assignee||''}</span></div><div class="badge ${app.getEventTypeColor(t.type,'badge')}">${t.dueTime||t.type}</div></div></div>`).join('') : '<p class="text-base-content/70">No events scheduled today.</p>'; const choresContainer = document.getElementById('today-chores-widget'); const todayChores = tasks.filter(t => t.dueDate === todayStr && t.type === 'Chore'); choresContainer.innerHTML = todayChores.length ? todayChores.map(t => `<div class="p-2 rounded cursor-pointer dashboard-item" onclick="ui.openTaskModal(${t.id})"><div class="font-bold text-lg">${t.name}</div></div>`).join('') : '<p class="text-base-content/70">No chores due today!</p>'; const dinnerWidgetTitle = document.getElementById('dinner-widget-title'); const dinnerContainer = document.getElementById('dinner-widget'); const tonightDinner = data.meals.find(m => m.date === todayStr && m.mealType === 'Dinner'); dinnerWidgetTitle.innerHTML = `<i class="fas fa-drumstick-bite text-warning mr-2"></i> ${dayName}'s Dinner`; if (tonightDinner) { dinnerContainer.innerHTML = `<div class="p-2 rounded cursor-pointer dashboard-item" onclick="ui.openMealModal(${tonightDinner.id})"><div class="flex items-center justify-between w-full"><div><span class="font-bold text-lg">${tonightDinner.recipeName}</span></div></div></div>${tonightDinner.recipeURL ? `<a href="${tonightDinner.recipeURL}" target="_blank" class="link link-primary text-sm mt-2 block">View Recipe</a>` : ''}`; } else { dinnerContainer.innerHTML = '<p class="text-base-content/70">Not planned.</p>'; } const groceryWidget = document.getElementById('grocery-list-widget'); if(data.groceries.length > 0) { const activeListsByStore = data.groceries.reduce((acc, item) => { (acc[item.storeId] = acc[item.storeId] || []).push(item); return acc; }, {}); let widgetHTML = ''; for(const storeId in activeListsByStore) { const store = data.stores.find(s => s.id === parseInt(storeId)); if(store) widgetHTML += `<div class="font-bold text-md text-accent">${store.name} (${activeListsByStore[storeId].length} items)</div>`; } groceryWidget.innerHTML = widgetHTML || '<p class="text-base-content/70">No active shopping lists.</p>'; } else { groceryWidget.innerHTML = '<p class="text-base-content/70">No active shopping lists.</p>'; } },
-    
-    renderShoppingView(data) { const activeListsContainer = document.getElementById('active-lists-container'); const activeListsByStore = data.groceries.reduce((acc, item) => { (acc[item.storeId] = acc[item.storeId] || []).push(item); return acc; }, {}); if (Object.keys(activeListsByStore).length === 0) { activeListsContainer.innerHTML = '<div class="text-center py-8"><p class="text-lg text-base-content/70">You have no active shopping lists.</p><p>Click "New List" to start one!</p></div>'; } else { activeListsContainer.innerHTML = ''; for (const storeId in activeListsByStore) { const store = data.stores.find(s => s.id === parseInt(storeId)); if (store) { const listItems = activeListsByStore[storeId]; const card = document.createElement('div'); card.className = "card bg-base-200 shadow-md cursor-pointer hover:shadow-lg transition-shadow"; card.innerHTML = `<div class="card-body p-6"><h3 class="card-title text-2xl">${store.name}</h3><p class="text-lg">${listItems.length} items on list.</p></div>`; card.onclick = () => app.openShoppingList(store.id); activeListsContainer.appendChild(card); } } } },
-    
-    renderMasterLists(data, state) { const storesContainer = document.getElementById('stores-container'); if (data.stores.length === 0) { storesContainer.innerHTML = '<p class="text-base-content/70 mt-4">No stores created yet. Add one to get started!</p>'; } else { storesContainer.innerHTML = data.stores.map(store => { const itemsForStore = data.storeItems.filter(item => item.storeId === store.id); return ` <details class="collapse collapse-arrow bg-base-200" data-store-id="${store.id}" ${state.openStoreIds.includes(String(store.id)) ? 'open' : ''}><summary class="collapse-title text-xl font-medium flex justify-between items-center">${store.name}<button class="btn btn-sm btn-ghost text-error" onclick="event.stopPropagation(); app.deleteStore(${store.id}, '${store.name}')"><i class="fas fa-trash"></i></button></summary><div class="collapse-content"><form class="join w-full my-4" onsubmit="app.addStoreItem(event, ${store.id})"><input type="text" placeholder="Add new item to ${store.name}" class="input input-bordered join-item w-full" required /><button type="submit" class="btn btn-secondary join-item">Add</button></form><div class="space-y-2 mt-1">${itemsForStore.length > 0 ? itemsForStore.map(item => ` <div class="flex justify-between items-center p-2 rounded group" id="store-item-${item.id}"><div class="store-item-name text-lg">${item.itemName}</div></div>`).join('') : '<p class="text-sm text-base-content/60">No items added yet.</p>'}</div></div></details> `}).join(''); } storesContainer.querySelectorAll('details').forEach(d => d.addEventListener('toggle', (e) => app.updateOpenStoreState(e.target.dataset.storeId, e.target.open))); },
-    
-    async refreshShoppingListModal(storeId, tripId = null) {
-        let store, listItems, masterItems;
-        const header = document.getElementById('shopping-list-modal-header'); const content = document.getElementById('shopping-list-modal-content'); const footer = document.getElementById('shopping-list-modal-footer');
-        if (tripId) { const trip = await db.get('shoppingTrips', tripId); store = { id: trip.storeId, name: trip.storeName }; listItems = trip.items; header.innerHTML = `<h2 class="text-2xl font-bold">Editing Trip for ${store.name}</h2><button class="btn btn-sm btn-circle" onclick="document.getElementById('shopping_list_modal').close()"><i class="fas fa-times"></i></button>`; footer.innerHTML = `<div class="flex justify-between items-center mt-4"><div id="modal-total" class="text-xl font-bold">Total: $0.00</div><button class="btn btn-success btn-lg" onclick="app.handleSaveChangesToTrip(${tripId})"><i class="fas fa-save mr-2"></i>Save Changes</button></div>`; } 
-        else { store = await db.get('stores', storeId); listItems = (await db.getAll('groceries')).filter(i => i.storeId === storeId); masterItems = await db.query('storeItems', 'storeId', storeId); header.innerHTML = `<h2 class="text-2xl font-bold">Shopping at ${store.name}</h2><button class="btn btn-sm btn-circle" onclick="document.getElementById('shopping_list_modal').close()"><i class="fas fa-times"></i></button>`; footer.innerHTML = `<form id="add-to-list-form" class="join w-full" onsubmit="app.addItemToCurrentList(event, ${store.id})"><input list="master-items-datalist" id="new-shopping-item-name" class="input input-bordered join-item w-full" placeholder="Type or select an item" /><datalist id="master-items-datalist">${masterItems.map(i => `<option value="${i.itemName}"></option>`).join('')}</datalist><button class="btn btn-primary join-item">Add</button></form><div class="flex justify-between items-center mt-4"><div id="modal-total" class="text-xl font-bold">Total: $0.00</div><button class="btn btn-success btn-lg" onclick="app.handleCompleteShoppingTrip(${store.id}, '${store.name}')"><i class="fas fa-check-circle mr-2"></i>Complete Trip</button></div>`; }
-        content.innerHTML = listItems.length > 0 ? listItems.map(item => { const itemId = item.id || `trip-item-${Math.random()}`; const lastPrice = item.lastPrice ? `(last: $${item.lastPrice.toFixed(2)})` : ''; return `<div class="flex items-center gap-3 py-2 border-b border-base-200 group" id="shopping-item-${itemId}"><input type="checkbox" data-id="${item.id}" ${item.isChecked ? 'checked' : ''} class="checkbox checkbox-lg checkbox-primary shopping-item-checkbox" data-store-id="${store.id}" data-trip-id="${tripId || ''}" /><div class="flex-grow text-lg ${item.isChecked ? 'line-through text-base-content/60' : ''}">${item.itemName} <span class="text-xs text-base-content/50">${lastPrice}</span></div><div class="tooltip" data-tip="Price change"><input type="number" step="0.01" placeholder="$" value="${item.price || ''}" data-id="${item.id}" data-last-price="${item.lastPrice || ''}" data-store-id="${store.id}" data-trip-id="${tripId || ''}" class="input input-md input-bordered w-28 text-right shopping-item-price" /></div><button class="btn btn-sm btn-ghost text-error" onclick="app.handleRemoveFromShoppingList(${item.id}, ${store.id}, ${tripId || null})">&times;</button></div>`}).join('') : `<div class="text-center py-8"><p class="text-lg text-base-content/70">Your list is empty.</p>${!tripId ? '<p>Use the form below to add items.</p>' : ''}</div>`;
-        this.updateModalTotal(listItems);
-    },
-    
-    updateModalTotal(items) { const total = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0); const totalEl = document.getElementById('modal-total'); if(totalEl) totalEl.textContent = `Total: $${total.toFixed(2)}`; },
-    
-    // Other UI functions...
-    async renderMealPlanner(data) { const mealGrid = document.getElementById('meal-planner-grid'); mealGrid.innerHTML = ''; const today = new Date(); const startOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay()); const days = Array.from({length: 7}, (_, i) => { const d = new Date(startOfWeek); d.setDate(startOfWeek.getDate() + i); return d; }); days.forEach(day => { const dateString = day.toISOString().split('T')[0]; const dayMeals = { Breakfast: data.meals.find(m => m.date === dateString && m.mealType === 'Breakfast'), Lunch: data.meals.find(m => m.date === dateString && m.mealType === 'Lunch'), Dinner: data.meals.find(m => m.date === dateString && m.mealType === 'Dinner'), }; const dayCard = document.createElement('div'); dayCard.className = 'card bg-base-200 shadow'; dayCard.innerHTML = `<div class="card-body p-4"><h3 class="font-bold text-center">${day.toLocaleDateString(undefined, { weekday: 'long' })}</h3><div class="divider my-1"></div><div class="space-y-2">${['Breakfast', 'Lunch', 'Dinner'].map(mt => `<div class="p-2 rounded-lg hover:bg-base-300 cursor-pointer min-h-[4rem] flex flex-col justify-center" onclick="ui.openMealModal('${dateString}', '${mt}', ${dayMeals[mt]?.id || null})"><div class="font-semibold text-sm text-base-content/70">${mt}</div><div class="font-bold truncate">${dayMeals[mt]?.recipeName || '...'}</div></div>`).join('')}</div></div>`; mealGrid.appendChild(dayCard); }); },
-    async renderHistory(data) { const container = document.getElementById('trip-history-container'); const trips = data.shoppingTrips; trips.sort((a, b) => new Date(b.dateCompleted) - new Date(a.dateCompleted)); if (trips.length === 0) { container.innerHTML = '<p class="text-base-content/70">No completed shopping trips found in your history.</p>'; return; } container.innerHTML = trips.map(trip => `<details class="collapse collapse-arrow bg-base-200"><summary class="collapse-title text-xl font-medium">${new Date(trip.dateCompleted).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })} - ${trip.storeName || 'Store'}<span class="ml-4 font-bold text-success">$${trip.totalCost.toFixed(2)}</span></summary><div class="collapse-content"><div class="space-x-2 my-2"><button class="btn btn-md btn-outline btn-secondary" onclick="app.reuseShoppingTrip(${trip.id})"><i class="fas fa-redo-alt mr-2"></i>Reuse</button><button class="btn btn-md btn-outline" onclick="app.editHistoricalTrip(${trip.id})"><i class="fas fa-pencil-alt mr-2"></i>Edit</button></div><ul class="list-disc pl-6 text-lg">${trip.items.map(item => `<li><span class="${item.isChecked ? '' : 'line-through text-base-content/60'}">${item.itemName}</span><span class="ml-2 text-sm font-mono">${item.price ? '$' + item.price.toFixed(2) : '-'}</span></li>`).join('')}</ul></div></details>`).join(''); },
-    async renderFullSchedule(data) { if (this.calendar) this.calendar.destroy(); const calendarEl = document.getElementById('calendar'); const events = [ ...data.tasks.map(task => { const eventObj = { id: `task-${task.id}`, title: `${task.name} (${task.assignee || 'all'})`, start: `${task.dueDate}${task.dueTime ? 'T' + task.dueTime : ''}`, allDay: !task.dueTime, borderColor: app.getEventTypeColor(task.type, 'calendar'), className: task.status === 'Done' ? 'opacity-50' : '' }; if (task.type === 'Time Off') { eventObj.display = 'background'; eventObj.backgroundColor = app.getEventTypeColor(task.type, 'calendar'); } else { eventObj.backgroundColor = app.getEventTypeColor(task.type, 'calendar'); } return eventObj; }), ...data.meals.map(meal => ({ id: `meal-${meal.id}`, title: `${meal.mealType}: ${meal.recipeName}`, start: meal.date, allDay: true, backgroundColor: '#f97316', borderColor: '#ea580c' })) ]; this.calendar = new FullCalendar.Calendar(calendarEl, { initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' }, events: events, eventClick: (info) => { const [type, id] = info.event.id.split('-'); if (type === 'task') this.openTaskModal(parseInt(id)); else if (type === 'meal') { this.openMealModal(info.event.start.toISOString().split('T')[0], info.event.title.split(':')[0], parseInt(id)); } } }); this.calendar.render(); },
-    renderIngredientListItem(ingredient = { name: '', status: 'Need' }) { const container = document.getElementById('ingredient-list-container'); const div = document.createElement('div'); div.className = 'flex items-center gap-2 bg-base-200 p-2 rounded'; div.innerHTML = `<label class="flex-grow flex items-center gap-2 cursor-pointer"><input type="checkbox" class="checkbox checkbox-sm ingredient-status" ${ingredient.status === 'Need' ? 'checked' : ''} /><span class="ingredient-name">${ingredient.name}</span></label><button type="button" class="btn btn-xs btn-ghost text-error ingredient-remove">&times;</button>`; div.querySelector('.ingredient-remove').addEventListener('click', () => div.remove()); container.appendChild(div); },
-    async openMealModal(date, mealType, id = null) { if (!id) return; const form = document.getElementById('meal-form'); form.reset(); document.getElementById('mealId').value = ''; document.getElementById('mealDate').value = date; document.getElementById('mealType').value = mealType; document.getElementById('ingredient-list-container').innerHTML = ''; const meal = await db.get('meals', parseInt(id)); if (meal) { document.getElementById('meal-modal-title').textContent = `Edit: ${meal.recipeName}`; document.getElementById('mealId').value = meal.id; document.getElementById('recipeName').value = meal.recipeName; document.getElementById('recipeURL').value = meal.recipeURL || ''; let ingredients = meal.ingredients || []; if (typeof ingredients === 'string') { ingredients = ingredients.split('\n').filter(Boolean).map(name => ({ name, status: 'Need' })); } ingredients.forEach(ing => this.renderIngredientListItem(ing)); } document.getElementById('meal_modal').showModal(); },
-    async openTaskModal(id = null, templateData = null) { const form = document.getElementById('task-form'); form.reset(); document.getElementById('taskId').value = ''; document.getElementById('recurring-options').classList.add('hidden'); document.getElementById('task-modal-title').textContent = 'New Event'; document.querySelectorAll('#recurring-day-picker .btn').forEach(btn => btn.classList.remove('btn-active')); if (id) { const task = await db.get('tasks', id); if (task) { document.getElementById('task-modal-title').textContent = 'Edit Event'; document.getElementById('taskId').value = task.id; document.getElementById('taskName').value = task.name; document.getElementById('taskType').value = task.type; document.getElementById('taskAssignee').value = task.assignee || ''; document.getElementById('taskDueDate').value = task.dueDate || ''; document.getElementById('taskDueTime').value = task.dueTime || ''; document.getElementById('taskIsRecurring').checked = task.isRecurring; document.getElementById('taskIsDone').checked = task.status === 'Done'; document.getElementById('taskNotes').value = task.notes || ''; if (task.isRecurring) { document.getElementById('recurring-options').classList.remove('hidden'); if (task.recurringDays) { task.recurringDays.forEach(day => document.querySelector(`#recurring-day-picker [data-day='${day}']`)?.classList.add('btn-active')); } } } } else if (templateData) { Object.keys(templateData).forEach(key => { const el = form.querySelector(`#task${key.charAt(0).toUpperCase() + key.slice(1)}`); if(el) el.value = templateData[key]; }); if(templateData.isRecurring) { document.getElementById('taskIsRecurring').checked = true; document.getElementById('recurring-options').classList.remove('hidden'); if(templateData.recurringDays) { templateData.recurringDays.forEach(day => document.querySelector(`#recurring-day-picker [data-day='${day}']`)?.classList.add('btn-active')); } } } document.getElementById('task_modal').showModal(); },
-    renderFamilyMembers(data) { const members = data.familyMembers; document.getElementById('family-member-list').innerHTML = members.length ? members.map(member => `<div class="flex justify-between items-center p-2 bg-base-200 rounded"><span>${member.name}</span><button class="btn btn-sm btn-ghost text-error" onclick="app.deleteFamilyMember(${member.id})"><i class="fas fa-trash"></i></button></div>`).join('') : `<p class="text-base-content/70 text-sm">No family members added.</p>`; },
-    populateAssigneeDropdown(data) { const members = data.familyMembers; const select = document.getElementById('taskAssignee'); select.innerHTML = '<option value="">Unassigned</option>'; members.forEach(member => { select.innerHTML += `<option value="${member.name}">${member.name}</option>`; }); }
-};
+    <div id="toast-container"></div>
 
-/**
- * =================================================================
- * APPLICATION MODULE (app)
- * =================================================================
- */
-const app = {
-    state: { currentView: 'dashboard', openStoreIds: [], loadedData: {} },
-    _tempTaskData: null,
-    async init() { await db.init(); this.setupEventListeners(); await this.reloadDataAndRender(); },
-    
-    async reloadDataAndRender() { try { const dataPromises = OBJECT_STORES.map(store => db.getAll(store)); const results = await Promise.all(dataPromises); OBJECT_STORES.forEach((store, index) => { this.state.loadedData[store] = results[index]; }); ui.render(this.state, this.state.loadedData); } catch (err) { console.error("Failed to load data and render:", err); ui.showToast("Could not load application data.", "error"); } },
+    <script>
+        // --- START: CORRECTED AND DE-DUPLICATED SCRIPT ---
 
-    setupEventListeners() { document.getElementById('task-form').addEventListener('submit', (e) => this.handleFormSubmit(e, this.handleTaskFormSubmit)); document.getElementById('meal-form').addEventListener('submit', (e) => this.handleFormSubmit(e, this.handleMealModalSubmit)); document.getElementById('meal-page-form').addEventListener('submit', (e) => this.handleFormSubmit(e, this.handleMealPageFormSubmit)); document.getElementById('add-store-form').addEventListener('submit', (e) => this.handleFormSubmit(e, this.addStore)); document.getElementById('add-family-member-form').addEventListener('submit', (e) => this.handleFormSubmit(e, this.addFamilyMember)); document.getElementById('new-list-form').addEventListener('submit', (e) => this.handleFormSubmit(e, this.handleCreateNewList)); document.getElementById('taskIsRecurring').addEventListener('change', e => document.getElementById('recurring-options').classList.toggle('hidden', !e.target.checked)); document.getElementById('recurring-day-picker').addEventListener('click', e => { if(e.target.matches('.btn')) e.target.classList.toggle('btn-active'); }); document.getElementById('add-ingredient-button').addEventListener('click', this.handleAddIngredient); document.getElementById('new-ingredient-name').addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); this.handleAddIngredient(); }}); document.getElementById('shopping_list_modal').addEventListener('change', this.handleShoppingListUpdate); document.getElementById('edit-single-event-btn').addEventListener('click', () => this.handleEditSingleRecurring()); document.getElementById('edit-future-events-btn').addEventListener('click', () => this.handleEditFutureRecurring()); },
-    
-    async handleFormSubmit(event, handler) { event.preventDefault(); try { await handler.call(this, event); } catch (err) { console.error("An error occurred:", err); ui.showToast("An unexpected error occurred.", "error"); } },
-    
-    handleViewChange(viewName) { this.state.currentView = viewName; ui.render(this.state, this.state.loadedData); },
-    getEventTypeColor(type, context) { const c = { 'Appointment': { badge: 'badge-info', calendar: '#3b82f6' }, 'Meeting': { badge: 'badge-primary', calendar: '#8b5cf6' }, 'Work Schedule': { badge: 'badge-neutral', calendar: '#4b5563' }, 'Chore': { badge: 'badge-success', calendar: '#22c55e' }, 'Errand': { badge: 'badge-warning', calendar: '#f59e0b' }, 'Time Off': {badge: 'badge-error', calendar: 'rgba(239, 68, 68, 0.5)' }, 'default': { badge: 'badge-ghost', calendar: '#6b7280' } }; return (c[type] || c.default)[context]; },
-    async handleTaskFormSubmit() { const taskId = parseInt(document.getElementById('taskId').value); const isRecurring = document.getElementById('taskIsRecurring').checked; const recurringDays = isRecurring ? Array.from(document.querySelectorAll('#recurring-day-picker .btn-active')).map(btn => parseInt(btn.dataset.day)) : []; if (isRecurring && recurringDays.length === 0) { ui.showToast("Please select at least one day for recurring events.", "error"); return; } const taskData = { name: document.getElementById('taskName').value, type: document.getElementById('taskType').value, assignee: document.getElementById('taskAssignee').value, dueDate: document.getElementById('taskDueDate').value, dueTime: document.getElementById('taskDueTime').value, isRecurring, recurringDays, status: document.getElementById('taskIsDone').checked ? 'Done' : 'To Do', notes: document.getElementById('taskNotes').value, }; if (taskId) { const originalTask = await db.get('tasks', taskId); if (originalTask.isRecurring) { this._tempTaskData = { ...taskData, id: taskId, originalTask }; document.getElementById('edit_recurring_modal').showModal(); return; } taskData.id = taskId; await db.update('tasks', taskData); ui.showToast('Event updated!'); } else { taskData.seriesId = `series-${Date.now()}`; await db.add('tasks', taskData); if (taskData.isRecurring && taskData.recurringDays.length > 0) { const baseTask = { ...taskData }; delete baseTask.id; let currentDate = new Date(baseTask.dueDate + 'T12:00:00Z'); const endDate = new Date(currentDate); endDate.setDate(endDate.getDate() + 60); while(currentDate < endDate) { currentDate.setDate(currentDate.getDate() + 1); if(baseTask.recurringDays.includes(currentDate.getUTCDay())) { const nextTask = { ...baseTask }; nextTask.dueDate = currentDate.toISOString().split('T')[0]; await db.add('tasks', nextTask); } } } ui.showToast('Event(s) added!'); } document.getElementById('task_modal').close(); await this.reloadDataAndRender(); },
-    async handleEditSingleRecurring() { if (!this._tempTaskData) return; const taskData = { ...this._tempTaskData }; document.getElementById('edit_recurring_modal').close(); document.getElementById('task_modal').close(); taskData.isRecurring = false; taskData.recurringDays = []; delete taskData.seriesId; await db.update('tasks', taskData); ui.showToast("Just this event was updated."); this._tempTaskData = null; await this.reloadDataAndRender(); },
-    async handleEditFutureRecurring() { if (!this._tempTaskData) return; const taskData = { ...this._tempTaskData }; const originalTask = taskData.originalTask; delete taskData.originalTask; document.getElementById('edit_recurring_modal').close(); document.getElementById('task_modal').close(); const futureEvents = (await db.query('tasks', 'seriesId', originalTask.seriesId)).filter(t => t.dueDate >= originalTask.dueDate); for(const event of futureEvents) { await db.delete('tasks', event.id); } taskData.seriesId = originalTask.seriesId; delete taskData.id; await db.add('tasks', taskData); if (taskData.isRecurring && taskData.recurringDays.length > 0) { const baseTask = { ...taskData }; let currentDate = new Date(baseTask.dueDate + 'T12:00:00Z'); const endDate = new Date(currentDate); endDate.setDate(endDate.getDate() + 60); while(currentDate < endDate) { currentDate.setDate(currentDate.getDate() + 1); if(baseTask.recurringDays.includes(currentDate.getUTCDay())) { const nextTask = { ...baseTask }; nextTask.dueDate = currentDate.toISOString().split('T')[0]; await db.add('tasks', nextTask); } } } ui.showToast("This and all future events were updated."); this._tempTaskData = null; await this.reloadDataAndRender(); },
+        // Database setup and management
+        const DB_NAME = 'ModernHomeHub';
+        const DB_VERSION = 1;
+        let db = null;
 
-    // --- Grocery & Shopping Handlers ---
-    async addStore() { const nameInput = document.getElementById('new-store-name'); const name = nameInput.value.trim(); if (!name) return; if(this.state.loadedData.stores.some(s => s.name.toLowerCase() === name.toLowerCase())) { return ui.showToast(`Store "${name}" already exists.`, 'error'); } this.updateOpenStoreState(); await db.add('stores', { name }); nameInput.value = ''; ui.showToast("Store added!"); await this.reloadDataAndRender(); },
-    async deleteStore(id, name) { if (confirm(`Delete store "${name}" and all its master items? This cannot be undone.`)) { this.updateOpenStoreState(); await db.delete('stores', id); const itemsToDelete = await db.query('storeItems', 'storeId', id); for(const item of itemsToDelete) { await db.delete('storeItems', item.id); } ui.showToast(`"${name}" deleted.`); await this.reloadDataAndRender(); } },
-    updateOpenStoreState(storeId, isOpen) { if(isOpen) { if(!this.state.openStoreIds.includes(storeId)) this.state.openStoreIds.push(storeId); } else { this.state.openStoreIds = this.state.openStoreIds.filter(id => id !== storeId); } },
-    async addStoreItem(e, storeId) { e.preventDefault(); const input = e.target.querySelector('input'); const itemName = input.value.trim(); if(itemName) { this.updateOpenStoreState(); await db.add('storeItems', { itemName, storeId, lastPrice: null }); input.value = ''; await this.reloadDataAndRender(); } },
-    async createNewShoppingList() { const stores = this.state.loadedData.stores; if (stores.length === 0) { return ui.showToast("Please create a store first on the Master Lists tab.", "error"); } const select = document.getElementById('new-list-store-select'); select.innerHTML = '<option disabled selected>Select a store</option>' + stores.map(s => `<option value="${s.id}">${s.name}</option>`).join(''); document.getElementById('new_list_modal').showModal(); },
-    async handleCreateNewList() { const storeId = parseInt(document.getElementById('new-list-store-select').value); if (isNaN(storeId)) return; if(this.state.loadedData.groceries.some(i => i.storeId === storeId)) { ui.showToast("A list for this store is already active.", "error"); } document.getElementById('new_list_modal').close(); await this.openShoppingList(storeId); },
-    async openShoppingList(storeId, tripId = null) { const items = tripId ? (await db.get('shoppingTrips', tripId)).items : (this.state.loadedData.groceries).filter(i => i.storeId === storeId); await ui.refreshShoppingListModal(storeId, tripId, items); document.getElementById('shopping_list_modal').showModal(); },
-    async addItemToCurrentList(event, storeId) { event.preventDefault(); const input = document.getElementById('new-shopping-item-name'); const itemName = input.value.trim(); if(!itemName) return; if(this.state.loadedData.groceries.some(i => i.storeId === storeId && i.itemName.toLowerCase() === itemName.toLowerCase())) { ui.showToast(`${itemName} is already on this list.`, 'error'); input.value = ''; return; } const masterItems = await db.query('storeItems', 'storeId', storeId); const existingMasterItem = masterItems.find(i => i.itemName.toLowerCase() === itemName.toLowerCase()); let lastPrice = null; if (existingMasterItem) { lastPrice = existingMasterItem.lastPrice; } else { await db.add('storeItems', { storeId, itemName, lastPrice: null }); ui.showToast(`Added "${itemName}" to master list!`); } await db.add('groceries', { storeId, itemName, isChecked: false, price: lastPrice, lastPrice: lastPrice }); input.value = ''; await this.reloadDataAndRender(); const updatedList = this.state.loadedData.groceries.filter(i => i.storeId === storeId); await ui.refreshShoppingListModal(storeId, null, updatedList); },
-    async handleCompleteShoppingTrip(storeId, storeName) { const listToComplete = this.state.loadedData.groceries.filter(i => i.storeId === storeId); if (listToComplete.length === 0) return; if (confirm(`Complete trip for ${storeName}? This will save it to history and clear the list.`)) { document.getElementById('shopping_list_modal').close(); const totalCost = listToComplete.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0); for (const item of listToComplete) { if (item.price) { const masterItem = (await db.query('storeItems', 'storeId', item.storeId)).find(mi => mi.itemName.toLowerCase() === item.itemName.toLowerCase()); if (masterItem) { masterItem.lastPrice = item.price; await db.update('storeItems', masterItem); } } } const newTrip = { dateCompleted: new Date().toISOString(), items: listToComplete, totalCost: totalCost, storeId: storeId, storeName: storeName }; await db.add('shoppingTrips', newTrip); for (const item of listToComplete) { await db.delete('groceries', item.id); } ui.showToast('Shopping trip saved to history!'); await this.reloadDataAndRender(); } },
-    async reuseShoppingTrip(tripId) { const trip = await db.get('shoppingTrips', tripId); if (this.state.loadedData.groceries.some(i => i.storeId === trip.storeId)) { if (!confirm(`You have an active list for ${trip.storeName}. Replace it?`)) return; const toDelete = this.state.loadedData.groceries.filter(i => i.storeId === trip.storeId); for (const item of toDelete) { await db.delete('groceries', item.id); } } for (const item of trip.items) { const newItem = { ...item, isChecked: false, price: item.price, lastPrice: item.price }; delete newItem.id; await db.add('groceries', newItem); } ui.showToast(`Loaded list from trip to ${trip.storeName}.`); this.state.currentView = 'shopping'; await this.reloadDataAndRender(); },
-    async handleShoppingListUpdate(e) { const target = e.target; if (!target.matches('.shopping-item-checkbox, .shopping-item-price')) return; const id = parseInt(target.dataset.id); const storeId = parseInt(target.dataset.storeId); const tripId = target.dataset.tripId && target.dataset.tripId !== 'null' ? parseInt(target.dataset.tripId) : null; if (tripId) { const trip = await db.get('shoppingTrips', tripId); const item = trip.items.find(i => i.id === id); if (!item) return; if (target.matches('.shopping-item-checkbox')) item.isChecked = target.checked; else if (target.matches('.shopping-item-price')) item.price = parseFloat(target.value) || null; await db.update('shoppingTrips', trip); ui.updateModalTotal(trip.items); } else { const item = await db.get('groceries', id); if(!item) return; if (target.matches('.shopping-item-checkbox')) item.isChecked = target.checked; else if (target.matches('.shopping-item-price')) { const newPrice = parseFloat(target.value) || null; item.price = newPrice; const lastPrice = parseFloat(target.dataset.lastPrice); target.classList.remove('border-error', 'border-success', 'border-2', 'tooltip'); target.removeAttribute('data-tip'); if (newPrice && lastPrice) { if(newPrice > lastPrice) { target.classList.add('border-error', 'border-2', 'tooltip'); target.dataset.tip = `Up $${(newPrice - lastPrice).toFixed(2)}`; } if(newPrice < lastPrice) { target.classList.add('border-success', 'border-2', 'tooltip'); target.dataset.tip = `Down $${(lastPrice - newPrice).toFixed(2)}`; } } } await db.update('groceries', item); const items = (await db.getAll('groceries')).filter(i => i.storeId === storeId); ui.updateModalTotal(items); } },
-    async handleRemoveFromShoppingList(id, storeId, tripId = null) { if (tripId) { const trip = await db.get('shoppingTrips', tripId); trip.items = trip.items.filter(i => i.id !== id); await db.update('shoppingTrips', trip); await ui.refreshShoppingListModal(storeId, tripId, trip.items); } else { await db.delete('groceries', id); const updatedList = (await db.getAll('groceries')).filter(i => i.storeId === storeId); await ui.refreshShoppingListModal(storeId, null, updatedList); } },
-    async editHistoricalTrip(tripId) { const trip = await db.get('shoppingTrips', tripId); if(trip) this.openShoppingList(trip.storeId, tripId); },
-    async handleSaveChangesToTrip(tripId) { const trip = await db.get('shoppingTrips', tripId); trip.totalCost = trip.items.reduce((sum, item) => sum + (item.price || 0), 0); await db.update('shoppingTrips', trip); document.getElementById('shopping_list_modal').close(); ui.showToast("Trip updated successfully!"); await this.reloadDataAndRender(); },
-    async handleMealModalSubmit() { const mealId = parseInt(document.getElementById('mealId').value); if (!mealId) return; const ingredients = []; document.querySelectorAll('#ingredient-list-container > div').forEach(div => { ingredients.push({ name: div.querySelector('.ingredient-name').textContent, status: div.querySelector('.ingredient-status').checked ? 'Need' : 'Have' }); }); const meal = { id: mealId, date: document.getElementById('mealDate').value, mealType: document.getElementById('mealType').value, recipeName: document.getElementById('recipeName').value, recipeURL: document.getElementById('recipeURL').value, ingredients }; await db.update('meals', meal); const addedToGrocery = await this.addNeededIngredientsToGroceries(meal); let toastMessage = 'Meal saved!'; if(addedToGrocery > 0) toastMessage += ` Added ${addedToGrocery} item(s) to grocery list.`; ui.showToast(toastMessage); document.getElementById('meal_modal').close(); await this.reloadDataAndRender(); },
-    async handleMealPageFormSubmit() { const form = document.getElementById('meal-page-form'); const date = form.querySelector('#meal-page-date').value; const mealType = form.querySelector('#meal-page-type').value; const allMeals = await db.getAll('meals'); const existingMeal = allMeals.find(m => m.date === date && m.mealType === mealType); if (existingMeal) { ui.showToast('A meal already exists for this date and time.', 'error'); return; } const meal = { date, mealType, recipeName: form.querySelector('#meal-page-recipeName').value, recipeURL: '', ingredients: [] }; await db.add('meals', meal); ui.showToast('Meal created!'); form.reset(); form.closest('details').open = false; await this.reloadDataAndRender(); },
-    handleAddIngredient() { const input = document.getElementById('new-ingredient-name'); const name = input.value.trim(); if (name) { ui.renderIngredientListItem({ name, status: 'Need' }); input.value = ''; input.focus(); } },
-    async addNeededIngredientsToGroceries(meal) { const currentGroceries = this.state.loadedData.groceries; const stores = this.state.loadedData.stores; if (stores.length === 0) { ui.showToast(`Cannot add ingredients. Please create a grocery store first.`, "error"); return 0; } const activeStoreIds = [...new Set(currentGroceries.map(i => i.storeId))]; if (activeStoreIds.length > 1) { ui.showToast(`Cannot auto-add to multiple lists. Please add ingredients manually.`, "error"); return 0; } else if (activeStoreIds.length === 0) { ui.showToast("Cannot add ingredients without an active shopping list.", "error"); return 0; } const activeStoreId = activeStoreIds[0]; let itemsAddedCount = 0; const neededIngredients = meal.ingredients.filter(ing => ing.status === 'Need'); for (const ingredient of neededIngredients) { const exists = currentGroceries.some(g => g.itemName.toLowerCase() === ingredient.name.toLowerCase()); if (!exists) { await db.add('groceries', { storeId: activeStoreId, itemName: ingredient.name, isChecked: false, price: null, fromRecipe: meal.recipeName }); itemsAddedCount++; } } if (itemsAddedCount > 0) this.reloadDataAndRender(); return itemsAddedCount; },
-    async handleDeleteMeal() { const mealId = parseInt(document.getElementById('mealId').value); if (confirm('Are you sure you want to delete this meal?')) { await db.delete('meals', mealId); document.getElementById('meal_modal').close(); ui.showToast('Meal deleted.'); await this.reloadDataAndRender(); } },
-    async addFamilyMember() { const nameInput = document.getElementById('new-member-name'); const name = nameInput.value.trim(); if (name) { await db.add('familyMembers', { name }); ui.showToast('Family member added.'); nameInput.value = ''; await this.reloadDataAndRender(); } },
-    async deleteFamilyMember(id) { if(confirm('Are you sure?')){ await db.delete('familyMembers', id); ui.showToast('Family member removed.'); await this.reloadDataAndRender(); } },
-    async clearAllData() { if (confirm("DANGER: This will permanently delete ALL data in the application. Are you absolutely sure?")) { for (const storeName of OBJECT_STORES) { await db.clear(storeName); } ui.showToast('All application data has been cleared.'); document.getElementById('manage_modal').close(); await this.reloadDataAndRender(); } },
-    async exportData() { const d = {}; for(const s of OBJECT_STORES){ d[s] = await db.getAll(s); } const t = JSON.stringify(d, null, 2); const b = new Blob([t], { type: 'application/json' }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = `home-hub-backup-${new Date().toISOString().split('T')[0]}.json`; a.click(); URL.revokeObjectURL(u); ui.showToast('Data exported.'); },
-    async importData(event) { const f = event.target.files[0]; if (!f) return; if (!confirm('This will overwrite all current data. Proceed?')) { event.target.value = ''; return; } const r = new FileReader(); r.onload = async (e) => { try { const d = JSON.parse(e.target.result); for (const s of OBJECT_STORES) { await db.clear(s); if (d[s]) for(const i of d[s]){ delete i.id; await db.add(s, i); } } ui.showToast('Data imported successfully!'); document.getElementById('manage_modal').close(); await this.reloadDataAndRender(); } catch (err) { console.error("Import error:", err); ui.showToast('Failed to import data.', 'error'); } }; r.readAsText(f); event.target.value = ''; }
-};
+        const initDB = () => {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    db = event.target.result;
+                    if (!db.objectStoreNames.contains('tasks')) {
+                        const tasksStore = db.createObjectStore('tasks', { keyPath: 'id', autoIncrement: true });
+                        tasksStore.createIndex('date', 'date', { unique: false });
+                        tasksStore.createIndex('type', 'type', { unique: false });
+                    }
+                    if (!db.objectStoreNames.contains('meals')) {
+                        const mealsStore = db.createObjectStore('meals', { keyPath: 'id', autoIncrement: true });
+                        mealsStore.createIndex('date', 'date', { unique: false });
+                    }
+                    if (!db.objectStoreNames.contains('stores')) {
+                        db.createObjectStore('stores', { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!db.objectStoreNames.contains('shoppingLists')) {
+                        const listStore = db.createObjectStore('shoppingLists', { keyPath: 'id', autoIncrement: true });
+                        listStore.createIndex('storeId', 'storeId', { unique: false });
+                    }
+                    if (!db.objectStoreNames.contains('familyMembers')) {
+                        db.createObjectStore('familyMembers', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+            });
+        };
 
-document.addEventListener('DOMContentLoaded', () => { app.init(); });
-</script>
+        const dbOperations = {
+            async add(storeName, data) {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                return store.add(data);
+            },
+            async getAll(storeName) {
+                const transaction = db.transaction([storeName], 'readonly');
+                const store = transaction.objectStore(storeName);
+                return new Promise((resolve, reject) => {
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            },
+            async update(storeName, data) {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                return store.put(data);
+            },
+            async delete(storeName, id) {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                return store.delete(id);
+            },
+            async clear(storeName) {
+                const transaction = db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                return store.clear();
+            }
+        };
 
+        // Global state
+        let currentView = 'dashboard';
+        let appData = {
+            tasks: [],
+            meals: [],
+            stores: [],
+            shoppingLists: [],
+            familyMembers: []
+        };
+
+        // Utility functions
+        const showToast = (message, type = 'info') => {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<div style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i><span>${message}</span></div>`;
+            document.getElementById('toast-container').appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        };
+
+        const openModal = (modalId) => document.getElementById(modalId).classList.add('active');
+        const closeModal = (modalId) => document.getElementById(modalId).classList.remove('active');
+
+        const formatDate = (date) => new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        
+        const formatTime = (time) => {
+            if (!time) return '';
+            const [hours, minutes] = time.split(':');
+            const date = new Date();
+            date.setHours(parseInt(hours), parseInt(minutes));
+            return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        };
+
+        const getEventTypeColor = (type) => ({
+            'Appointment': 'var(--info)', 'Meeting': 'var(--primary)', 'Work Schedule': 'var(--text-secondary)',
+            'Chore': 'var(--success)', 'Errand': 'var(--warning)', 'Time Off': 'var(--error)'
+        }[type] || 'var(--text-secondary)');
+
+        // View switching
+        const switchView = (viewName) => {
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.toggle('active', tab.dataset.view === viewName));
+            document.querySelectorAll('.view').forEach(view => view.classList.add('hidden'));
+            document.getElementById(`${viewName}-view`).classList.remove('hidden');
+            currentView = viewName;
+            renderCurrentView();
+        };
+
+        // Data loading and rendering
+        const loadData = async () => {
+            try {
+                appData.tasks = await dbOperations.getAll('tasks');
+                appData.meals = await dbOperations.getAll('meals');
+                appData.stores = await dbOperations.getAll('stores');
+                appData.shoppingLists = await dbOperations.getAll('shoppingLists');
+                appData.familyMembers = await dbOperations.getAll('familyMembers');
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showToast('Error loading data', 'error');
+            }
+        };
+
+        const renderCurrentView = () => {
+            switch (currentView) {
+                case 'dashboard': renderDashboard(); break;
+                case 'schedule': renderSchedule(); break;
+                case 'meals': renderMeals(); break;
+                case 'shopping': renderShopping(); break;
+                case 'lists': renderLists(); break;
+            }
+        };
+
+        const renderDashboard = () => {
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Today's schedule
+            const todayTasks = appData.tasks.filter(task => task.date === today && !task.completed);
+            const scheduleContainer = document.getElementById('today-schedule');
+            scheduleContainer.innerHTML = todayTasks.length === 0 ? `
+                <div class="empty-state"><i class="fas fa-calendar-day"></i><h3>No events today</h3><p>Your day is looking clear!</p></div>` :
+                todayTasks.map(task => `
+                <div class="widget-item" onclick="editTask(${task.id})">
+                    <div class="widget-content">
+                        <h3>${task.name}</h3><p>${task.assignee || 'Unassigned'} ${task.time ? '• ' + formatTime(task.time) : ''}</p>
+                    </div>
+                    <div class="widget-badge" style="background: ${getEventTypeColor(task.type)};">${task.type}</div>
+                </div>`).join('');
+
+            // Today's meals
+            const todayMeals = appData.meals.filter(meal => meal.date === today);
+            const mealsContainer = document.getElementById('today-meals');
+            mealsContainer.innerHTML = todayMeals.length === 0 ? `
+                <div class="empty-state"><i class="fas fa-plate-wheat"></i><h3>No meals planned</h3><p>Start planning your day!</p></div>` :
+                todayMeals.map(meal => `
+                <div class="widget-item" onclick="editMeal(${meal.id})">
+                    <div class="widget-content"><h3>${meal.recipeName}</h3><p>${meal.type}</p></div>
+                </div>`).join('');
+
+            // Shopping summary
+            const shoppingSummary = document.getElementById('shopping-summary');
+            const activeStores = [...new Set(appData.shoppingLists.map(item => item.storeId))];
+            shoppingSummary.innerHTML = activeStores.length === 0 ? `
+                <div class="empty-state"><i class="fas fa-shopping-bag"></i><h3>No active lists</h3><p>Create a shopping list to get started</p></div>` :
+                activeStores.map(storeId => {
+                    const store = appData.stores.find(s => s.id === storeId);
+                    const items = appData.shoppingLists.filter(item => item.storeId === storeId);
+                    return `<div class="widget-item"><div class="widget-content"><h3>${store?.name || 'Unknown Store'}</h3><p>${items.length} items</p></div></div>`;
+                }).join('');
+        };
+
+        const renderMeals = () => {
+            document.getElementById('meal-date').valueAsDate = new Date();
+            const today = new Date();
+            const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+            const mealGrid = document.getElementById('meal-planner-grid');
+            let gridHTML = '';
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(startOfWeek);
+                date.setDate(startOfWeek.getDate() + i);
+                const dateStr = date.toISOString().split('T')[0];
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+                const dayMeals = {
+                    Breakfast: appData.meals.find(m => m.date === dateStr && m.type === 'Breakfast'),
+                    Lunch: appData.meals.find(m => m.date === dateStr && m.type === 'Lunch'),
+                    Dinner: appData.meals.find(m => m.date === dateStr && m.type === 'Dinner')
+                };
+                gridHTML += `
+                    <div class="day-card">
+                        <div class="day-header">${dayName}</div>
+                        ${['Breakfast', 'Lunch', 'Dinner'].map(mealType => `
+                            <div class="meal-slot" onclick="planMeal('${dateStr}', '${mealType}', ${dayMeals[mealType]?.id || 'null'})">
+                                <div class="meal-type">${mealType}</div>
+                                <div class="meal-name ${!dayMeals[mealType] ? 'meal-empty' : ''}">${dayMeals[mealType]?.recipeName || 'Not planned'}</div>
+                            </div>`).join('')}
+                    </div>`;
+            }
+            mealGrid.innerHTML = gridHTML;
+        };
+
+        const renderShopping = () => {
+            const container = document.getElementById('shopping-lists');
+            const activeStores = [...new Set(appData.shoppingLists.map(item => item.storeId))];
+            container.innerHTML = activeStores.length === 0 ? `
+                <div class="empty-state"><i class="fas fa-shopping-bag"></i><h3>No shopping lists</h3><p>Create your first shopping list</p></div>` :
+                activeStores.map(storeId => {
+                    const store = appData.stores.find(s => s.id === storeId);
+                    const items = appData.shoppingLists.filter(item => item.storeId === storeId);
+                    const completedCount = items.filter(item => item.completed).length;
+                    return `
+                        <div class="card" style="margin-bottom: 1rem; cursor: pointer;" onclick="openShoppingList(${storeId})">
+                            <div class="card-body" style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">${store?.name || 'Unknown'}</h3>
+                                    <p style="color: var(--text-secondary);">${items.length} items • ${completedCount} completed</p>
+                                </div>
+                                <div style="width: 4rem; height: 4rem; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 600;">
+                                    ${Math.round((completedCount / items.length) * 100) || 0}%
+                                </div>
+                            </div>
+                        </div>`;
+                }).join('');
+            
+            const storeSelect = document.getElementById('list-store');
+            storeSelect.innerHTML = '<option value="">Choose a store...</option>' + appData.stores.map(store => `<option value="${store.id}">${store.name}</option>`).join('');
+        };
+
+        const renderLists = () => {
+            const container = document.getElementById('stores-container');
+            container.innerHTML = appData.stores.length === 0 ? `
+                <div class="empty-state"><i class="fas fa-store"></i><h3>No stores added</h3><p>Add stores to build master lists</p></div>` :
+                appData.stores.map(store => `
+                    <div class="card" style="margin-bottom: 1rem;">
+                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="font-size: 1.125rem; font-weight: 600;">${store.name}</h3>
+                            <button class="btn btn-ghost" style="color: var(--error);" onclick="deleteStore(${store.id})"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <div class="card-body">
+                            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Master items list for ${store.name}</p>
+                            <button class="btn btn-outline" onclick="manageStoreItems(${store.id})"><i class="fas fa-edit"></i>Manage Items</button>
+                        </div>
+                    </div>`).join('');
+        };
+        
+        const renderSchedule = () => {
+            const calendarEl = document.getElementById('calendar');
+            calendarEl.innerHTML = '';
+            new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
+                events: appData.tasks.map(task => ({
+                    id: task.id, title: task.name, start: task.date + (task.time ? 'T' + task.time : ''),
+                    allDay: !task.time, color: getEventTypeColor(task.type)
+                })),
+                eventClick: (info) => editTask(parseInt(info.event.id)),
+                dateClick: (info) => {
+                    document.getElementById('task-date').value = info.dateStr;
+                    openModal('task-modal');
+                }
+            }).render();
+        };
+
+        // Action Handlers
+        const addIngredient = () => {
+            const input = document.getElementById('new-ingredient');
+            const ingredientText = input.value.trim();
+            if (!ingredientText) return;
+            const container = document.getElementById('ingredients-list');
+            if (container.querySelector('p')) container.innerHTML = '';
+            const ingredientDiv = document.createElement('div');
+            ingredientDiv.className = 'shopping-item';
+            ingredientDiv.innerHTML = `<input type="checkbox" class="checkbox ingredient-checkbox"><span class="item-name">${ingredientText}</span><button type="button" class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+            container.appendChild(ingredientDiv);
+            input.value = '';
+            input.focus();
+        };
+        
+        const editTask = (taskId) => {
+            const task = appData.tasks.find(t => t.id === taskId);
+            if (!task) return;
+            document.getElementById('task-form').dataset.editId = taskId;
+            document.getElementById('task-name').value = task.name;
+            document.getElementById('task-type').value = task.type;
+            document.getElementById('task-assignee').value = task.assignee || '';
+            document.getElementById('task-date').value = task.date;
+            document.getElementById('task-time').value = task.time || '';
+            document.getElementById('task-notes').value = task.notes || '';
+            document.getElementById('task-completed').checked = task.completed || false;
+            document.getElementById('task-recurring').checked = task.recurring || false;
+            openModal('task-modal');
+        };
+
+        const editMeal = (mealId) => {
+            const meal = appData.meals.find(m => m.id === mealId);
+            if (meal) planMeal(meal.date, meal.type, mealId);
+        };
+        
+        const planMeal = (date, type, mealId) => {
+            document.getElementById('meal-form').reset();
+            document.getElementById('modal-meal-date').value = date;
+            document.getElementById('modal-meal-type').value = type;
+            const ingredientsContainer = document.getElementById('ingredients-list');
+            ingredientsContainer.innerHTML = '<p style="color: var(--text-tertiary); text-align: center; font-style: italic;">No ingredients added yet</p>';
+
+            if (mealId && mealId !== 'null') {
+                const meal = appData.meals.find(m => m.id === parseInt(mealId));
+                if (meal) {
+                    document.getElementById('meal-id').value = meal.id;
+                    document.getElementById('recipe-name').value = meal.recipeName;
+                    document.getElementById('recipe-url').value = meal.recipeUrl || '';
+                    if (meal.ingredients && meal.ingredients.length > 0) {
+                        ingredientsContainer.innerHTML = meal.ingredients.map(ing => `
+                            <div class="shopping-item">
+                                <input type="checkbox" class="checkbox ingredient-checkbox" ${ing.needed ? 'checked' : ''}>
+                                <span class="item-name">${ing.name}</span>
+                                <button type="button" class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+                            </div>`).join('');
+                    }
+                }
+                document.querySelector('#meal-modal .modal-title').textContent = 'Edit Meal';
+            } else {
+                document.getElementById('meal-id').value = '';
+                document.querySelector('#meal-modal .modal-title').textContent = `Plan ${type} for ${formatDate(date)}`;
+            }
+            openModal('meal-modal');
+        };
+
+        // Form Submit Handlers
+        document.getElementById('task-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editId = e.target.dataset.editId;
+            const taskData = {
+                name: document.getElementById('task-name').value, type: document.getElementById('task-type').value,
+                assignee: document.getElementById('task-assignee').value, date: document.getElementById('task-date').value,
+                time: document.getElementById('task-time').value, notes: document.getElementById('task-notes').value,
+                recurring: document.getElementById('task-recurring').checked, completed: document.getElementById('task-completed').checked,
+                updatedAt: new Date().toISOString()
+            };
+            try {
+                if (editId) {
+                    taskData.id = parseInt(editId);
+                    await dbOperations.update('tasks', taskData);
+                    showToast('Event updated successfully!', 'success');
+                    delete e.target.dataset.editId;
+                } else {
+                    taskData.createdAt = new Date().toISOString();
+                    await dbOperations.add('tasks', taskData);
+                    showToast('Event created successfully!', 'success');
+                }
+                closeModal('task-modal');
+                await loadData();
+                renderCurrentView();
+                e.target.reset();
+            } catch (error) {
+                console.error('Error saving task:', error);
+                showToast('Error saving event', 'error');
+            }
+        });
+
+        document.getElementById('quick-meal-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const date = document.getElementById('meal-date').value;
+            const type = document.getElementById('meal-type').value;
+            if (appData.meals.find(m => m.date === date && m.type === type)) {
+                showToast('A meal is already planned for this date and type', 'error');
+                return;
+            }
+            try {
+                await dbOperations.add('meals', { date, type, recipeName: document.getElementById('meal-recipe').value, createdAt: new Date().toISOString() });
+                showToast('Meal planned successfully!', 'success');
+                await loadData();
+                renderCurrentView();
+                e.target.reset();
+            } catch (error) {
+                console.error('Error creating meal:', error);
+                showToast('Error planning meal', 'error');
+            }
+        });
+
+        document.getElementById('meal-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const mealId = document.getElementById('meal-id').value;
+            const ingredients = Array.from(document.querySelectorAll('#ingredients-list .shopping-item')).map(item => ({
+                name: item.querySelector('.item-name').textContent, needed: item.querySelector('.ingredient-checkbox').checked
+            }));
+            const mealData = {
+                date: document.getElementById('modal-meal-date').value, type: document.getElementById('modal-meal-type').value,
+                recipeName: document.getElementById('recipe-name').value, recipeUrl: document.getElementById('recipe-url').value,
+                ingredients, updatedAt: new Date().toISOString()
+            };
+            try {
+                if (mealId) {
+                    mealData.id = parseInt(mealId);
+                    await dbOperations.update('meals', mealData);
+                    showToast('Meal updated successfully!', 'success');
+                } else {
+                    mealData.createdAt = new Date().toISOString();
+                    await dbOperations.add('meals', mealData);
+                    showToast('Meal created successfully!', 'success');
+                }
+                closeModal('meal-modal');
+                await loadData();
+                renderCurrentView();
+            } catch (error) {
+                console.error('Error saving meal:', error);
+                showToast('Error saving meal', 'error');
+            }
+        });
+
+        document.getElementById('add-store-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const storeName = document.getElementById('store-name').value.trim();
+            if (!storeName || appData.stores.find(s => s.name.toLowerCase() === storeName.toLowerCase())) {
+                showToast(storeName ? 'Store already exists' : 'Store name cannot be empty', 'error');
+                return;
+            }
+            try {
+                await dbOperations.add('stores', { name: storeName, createdAt: new Date().toISOString() });
+                showToast('Store added successfully!', 'success');
+                await loadData();
+                renderCurrentView();
+                e.target.reset();
+            } catch (error) {
+                showToast('Error adding store', 'error');
+            }
+        });
+
+        document.getElementById('new-list-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const storeId = parseInt(document.getElementById('list-store').value);
+            if (!storeId) return;
+            closeModal('new-list-modal');
+            switchView('shopping');
+            setTimeout(() => openShoppingList(storeId), 100);
+        });
+
+        document.getElementById('add-member-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const memberName = document.getElementById('member-name').value.trim();
+            if (!memberName) return;
+            try {
+                await dbOperations.add('familyMembers', { name: memberName, createdAt: new Date().toISOString() });
+                showToast('Family member added!', 'success');
+                await loadData();
+                renderFamilyMembers();
+                updateAssigneeDropdown();
+                e.target.reset();
+            } catch (error) {
+                showToast('Error adding family member', 'error');
+            }
+        });
+        
+        // Shopping List Functions
+        const openShoppingList = (storeId) => {
+            const store = appData.stores.find(s => s.id === storeId);
+            const items = appData.shoppingLists.filter(item => item.storeId === storeId);
+            const modal = document.createElement('div');
+            modal.id = 'shopping-list-modal';
+            modal.className = 'modal active';
+            const total = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0).toFixed(2);
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 600px; max-height: 90vh;">
+                    <div class="modal-header"><h3 class="modal-title">Shopping at ${store.name}</h3><button class="btn btn-ghost" onclick="closeShoppingList()"><i class="fas fa-times"></i></button></div>
+                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+                        <div id="shopping-items">${items.length === 0 ? '<div class="empty-state" style="padding: 1rem;"><i class="fas fa-shopping-cart"></i><h3>Empty list</h3><p>Add items below</p></div>' : items.map(item => `
+                            <div class="shopping-item ${item.completed ? 'completed' : ''}" data-item-id="${item.id}">
+                                <input type="checkbox" class="checkbox" ${item.completed ? 'checked' : ''} onchange="toggleShoppingItem(${item.id}, this.checked)">
+                                <span class="item-name">${item.name}</span>
+                                <input type="number" class="price-input" placeholder="$0.00" step="0.01" value="${item.price || ''}" onchange="updateItemPrice(${item.id}, this.value)">
+                                <button class="btn btn-ghost btn-sm" onclick="removeShoppingItem(${item.id})"><i class="fas fa-times"></i></button>
+                            </div>`).join('')}
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="flex-direction: column; gap: 1rem;">
+                        <div style="display: flex; gap: 0.5rem; width: 100%;"><input type="text" class="form-input" id="new-item-name" placeholder="Add item..." style="flex: 1;"><button class="btn btn-secondary" onclick="addShoppingItem(${storeId})"><i class="fas fa-plus"></i></button></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <div id="total-cost" style="font-size: 1.125rem; font-weight: 600;">Total: $${total}</div>
+                            <button class="btn btn-primary" onclick="completeShoppingTrip(${storeId})"><i class="fas fa-check"></i>Complete Trip</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+            modal.querySelector('#new-item-name').addEventListener('keypress', (e) => { if (e.key === 'Enter') addShoppingItem(storeId); });
+        };
+        const closeShoppingList = () => document.getElementById('shopping-list-modal')?.remove();
+        const addShoppingItem = async (storeId) => {
+            const input = document.getElementById('new-item-name');
+            const itemName = input.value.trim();
+            if (!itemName) return;
+            if (appData.shoppingLists.find(i => i.storeId === storeId && i.name.toLowerCase() === itemName.toLowerCase())) {
+                showToast('Item already in list', 'error'); return;
+            }
+            try {
+                await dbOperations.add('shoppingLists', { storeId, name: itemName, completed: false, price: null, createdAt: new Date().toISOString() });
+                await loadData();
+                closeShoppingList();
+                openShoppingList(storeId);
+            } catch (error) { showToast('Error adding item', 'error'); }
+        };
+        const toggleShoppingItem = async (itemId, completed) => {
+            const item = appData.shoppingLists.find(i => i.id === itemId);
+            if (item) { item.completed = completed; await dbOperations.update('shoppingLists', item); }
+        };
+        const updateItemPrice = async (itemId, price) => {
+            const item = appData.shoppingLists.find(i => i.id === itemId);
+            if (item) {
+                item.price = price ? parseFloat(price) : null;
+                await dbOperations.update('shoppingLists', item);
+                await loadData();
+                const total = appData.shoppingLists.filter(i => i.storeId === item.storeId).reduce((sum, i) => sum + (parseFloat(i.price) || 0), 0);
+                document.getElementById('total-cost').textContent = `Total: $${total.toFixed(2)}`;
+            }
+        };
+        const removeShoppingItem = async (itemId) => {
+            const item = appData.shoppingLists.find(i => i.id === itemId);
+            if (!item) return;
+            await dbOperations.delete('shoppingLists', itemId);
+            await loadData();
+            closeShoppingList();
+            openShoppingList(item.storeId);
+        };
+        const completeShoppingTrip = async (storeId) => {
+            if (!confirm('Complete shopping trip and clear the list?')) return;
+            const items = appData.shoppingLists.filter(item => item.storeId === storeId);
+            for (const item of items) await dbOperations.delete('shoppingLists', item.id);
+            await loadData();
+            closeShoppingList();
+            renderCurrentView();
+            showToast('Shopping trip completed!', 'success');
+        };
+
+        // Settings & Management Functions
+        const renderFamilyMembers = () => {
+            const container = document.getElementById('family-members');
+            container.innerHTML = appData.familyMembers.length === 0 ? '<p style="color: var(--text-tertiary); font-style: italic;">No family members added</p>' :
+                appData.familyMembers.map(member => `<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);"><span>${member.name}</span><button class="btn btn-ghost btn-sm" style="color: var(--error);" onclick="deleteFamilyMember(${member.id})"><i class="fas fa-times"></i></button></div>`).join('');
+        };
+        const updateAssigneeDropdown = () => {
+            const select = document.getElementById('task-assignee');
+            select.innerHTML = '<option value="">Unassigned</option>' + appData.familyMembers.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
+        };
+        const deleteFamilyMember = async (memberId) => {
+            if (!confirm('Remove this family member?')) return;
+            await dbOperations.delete('familyMembers', memberId);
+            await loadData();
+            renderFamilyMembers();
+            updateAssigneeDropdown();
+            showToast('Family member removed', 'success');
+        };
+        const deleteStore = async (storeId) => {
+            if (!confirm('Delete this store and all associated shopping lists?')) return;
+            await dbOperations.delete('stores', storeId);
+            const itemsToDelete = appData.shoppingLists.filter(item => item.storeId === storeId);
+            for (const item of itemsToDelete) await dbOperations.delete('shoppingLists', item.id);
+            await loadData();
+            renderCurrentView();
+            showToast('Store deleted', 'success');
+        };
+        const manageStoreItems = (storeId) => openShoppingList(storeId);
+        const exportData = async () => {
+            const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `home-hub-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showToast('Data exported successfully!', 'success');
+        };
+        const importData = (event) => {
+            const file = event.target.files[0];
+            if (!file || !confirm('This will replace all existing data. Continue?')) { event.target.value = ''; return; }
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    await Promise.all(Object.keys(appData).map(key => dbOperations.clear(key.replace(/s$/, 'Lists').replace(/Members$/, 's'))));
+                    await Promise.all(Object.keys(imported).map(async key => {
+                        const storeName = key.replace(/s$/, 'Lists').replace(/Members$/, 's'); // Simple pluralization for store names
+                        for(const item of imported[key] || []) { delete item.id; await dbOperations.add(storeName, item); }
+                    }));
+                    await loadData();
+                    renderCurrentView();
+                    closeModal('settings-modal');
+                    showToast('Data imported successfully!', 'success');
+                } catch { showToast('Error importing data.', 'error'); }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        };
+        const clearAllData = async () => {
+            if (!confirm('DELETE ALL DATA? This cannot be undone.')) return;
+            await Promise.all(Object.keys(appData).map(key => dbOperations.clear(key.replace(/s$/, 'Lists').replace(/Members$/, 's'))));
+            await loadData();
+            renderCurrentView();
+            closeModal('settings-modal');
+            showToast('All data cleared', 'success');
+        };
+
+        // Other UI Event Listeners
+        document.getElementById('task-recurring').addEventListener('change', (e) => {
+            document.getElementById('recurring-options').classList.toggle('hidden', !e.target.checked);
+        });
+        document.getElementById('new-ingredient').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); addIngredient(); }
+        });
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('day-btn')) {
+                e.target.classList.toggle('btn-primary');
+                e.target.classList.toggle('btn-outline');
+            }
+            if (e.target.classList.contains('modal')) e.target.classList.remove('active');
+        });
+
+        // Initialize the application
+        const initApp = async () => {
+            try {
+                await initDB();
+                await loadData();
+                renderFamilyMembers();
+                updateAssigneeDropdown();
+                renderCurrentView();
+                showToast('Home Hub loaded!', 'success');
+            } catch (error) {
+                console.error('Error initializing app:', error);
+                showToast('Error loading application', 'error');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', initApp);
+
+        // --- END: CORRECTED SCRIPT ---
+    </script>
 </body>
 </html>
