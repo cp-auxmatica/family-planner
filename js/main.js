@@ -1,19 +1,14 @@
 // --- MAIN APP MODULE (main.js) ---
-// Initializes the app, manages state, and handles events.
+// Initializes the app, manages state, and handles all events.
 
 import { initDB, dbOperations, seedInitialData } from './db.js';
-import { 
-    renderDashboard, renderShopping, renderListDetail, renderCalendar, renderJournal,
-    renderTaskModal, renderSettingsModal, renderJournalEntryModal
-} from './ui.js';
-import { formatTime, getTaskIcon } from './utils.js';
+import * as UI from './ui.js';
 
 // --- GLOBAL STATE & VARIABLES ---
 export let appData = {};
 export let currentView = 'dashboard';
-let calendar;
 
-// --- CORE FUNCTIONS ---
+// --- CORE APP LOGIC ---
 
 export const loadAppData = async () => {
     const stores = ['tasks', 'stores', 'shoppingLists', 'familyMembers', 'journalEntries'];
@@ -33,29 +28,31 @@ export const switchView = (viewName, params = {}) => {
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewName));
     document.querySelectorAll('.view').forEach(v => v.classList.toggle('hidden', v.id !== `${viewName}-view`));
     document.getElementById('fab').classList.toggle('hidden', ['list-detail', 'shopping'].includes(viewName));
-    document.getElementById('fab').onclick = { 
+    
+    const fabActions = { 
         'dashboard': () => openModal('add-item-modal'), 
         'journal': () => openModal('journal-entry-modal'), 
         'calendar': () => openModal('add-item-modal') 
-    }[viewName] || (() => {});
+    };
+    document.getElementById('fab').onclick = fabActions[viewName] || (() => {});
     
     const renderMap = { 
-        'dashboard': renderDashboard, 
-        'shopping': renderShopping, 
-        'list-detail': () => renderListDetail(params.storeId, appData), 
-        'calendar': renderCalendar, 
-        'journal': renderJournal 
+        'dashboard': UI.renderDashboard, 
+        'shopping': UI.renderShopping, 
+        'list-detail': () => UI.renderListDetail(params.storeId, appData), 
+        'calendar': UI.renderCalendar, 
+        'journal': UI.renderJournal 
     };
     renderMap[viewName]?.(appData);
 };
 
 export const openModal = (modalId, params = {}) => {
     const renderMap = { 
-        'settings-modal': renderSettingsModal, 
-        'add-item-modal': () => renderTaskModal(params.id), 
-        'journal-entry-modal': () => renderJournalEntryModal(params) 
+        'settings-modal': UI.renderSettingsModal, 
+        'add-item-modal': () => UI.renderTaskModal(params.id, appData), 
+        'journal-entry-modal': () => UI.renderJournalEntryModal(params, appData) 
     };
-    renderMap[modalId]?.(appData);
+    renderMap[modalId]?.();
     document.getElementById(modalId)?.classList.add('active');
 };
 
@@ -68,28 +65,105 @@ export const toggleShoppingItem = async (itemId, isChecked) => {
     if(item) { 
         item.completed = isChecked; 
         await dbOperations.put('shoppingLists', item);
-        // No full reload needed, just a visual update
-        const itemElement = document.querySelector(`input[onchange="toggleShoppingItem(${itemId}, this.checked)"]`);
-        if (itemElement) {
-            itemElement.closest('.shopping-item').classList.toggle('completed', isChecked);
-        }
+        // The checkbox's parent element will be visually updated via CSS
     }
 };
 
-// --- INITIALIZATION ---
+// --- EVENT HANDLERS ---
+function masterClickHandler(event) {
+    const target = event.target;
+    const actionTarget = target.closest('[data-action]');
+    if (!actionTarget) return;
 
+    const { action, view, modalId, taskId, storeId } = actionTarget.dataset;
+
+    if (action === 'switch-view') switchView(view, { storeId: parseInt(storeId) });
+    if (action === 'open-modal') openModal(modalId, { id: parseInt(taskId) });
+    if (action === 'close-modal') closeModal(modalId);
+    if (action === 'toggle-shopping-item') {
+        const checkbox = actionTarget;
+        toggleShoppingItem(parseInt(checkbox.dataset.itemId), checkbox.checked);
+        checkbox.closest('.shopping-item').classList.toggle('completed', checkbox.checked);
+    }
+}
+
+async function masterSubmitHandler(event) {
+    event.preventDefault();
+    const form = event.target;
+
+    if (form.id === 'task-form') {
+        const taskId = parseInt(form.querySelector('#task-id').value);
+        const taskData = {
+            id: isNaN(taskId) ? undefined : taskId,
+            name: form.querySelector('#task-name').value,
+            type: form.querySelector('#task-type').value,
+            assignee: form.querySelector('#task-assignee').value,
+            date: form.querySelector('#task-date').value,
+            time: form.querySelector('#task-time').value,
+        };
+        if (taskData.id) await dbOperations.put('tasks', taskData);
+        else await dbOperations.add('tasks', taskData);
+        await loadAppData();
+        switchView(currentView);
+        closeModal('add-item-modal');
+    }
+
+    if (form.id === 'add-member-form') {
+        const name = form.querySelector('#member-name').value.trim();
+        if (!name) return;
+        await dbOperations.add('familyMembers', { name, birthday: form.querySelector('#member-birthday').value || undefined });
+        await loadAppData();
+        UI.renderSettingsModal(appData); // Re-render the modal content
+    }
+    
+    if (form.id === 'add-list-form') {
+        const storeName = form.querySelector('#new-store-name').value.trim();
+        if(!storeName) return;
+        let store = appData.stores.find(s => s.name.toLowerCase() === storeName.toLowerCase());
+        const storeId = store ? store.id : await dbOperations.add('stores', { name: storeName });
+        await loadAppData();
+        switchView('list-detail', { storeId });
+    }
+
+    if (form.id === 'add-item-form') {
+        const input = form.querySelector('#new-item-name');
+        const storeId = parseInt(form.dataset.storeId);
+        if(!input.value.trim() || isNaN(storeId)) return;
+        await dbOperations.add('shoppingLists', { storeId, name: input.value.trim(), completed: false });
+        await loadAppData();
+        UI.renderListDetail(storeId, appData);
+    }
+
+    if (form.id === 'journal-form') {
+        const entryData = {
+            id: parseInt(form.dataset.journalId) || undefined,
+            taskId: parseInt(form.dataset.taskId) || undefined,
+            date: new Date().toISOString().split('T')[0],
+            title: form.querySelector('#journal-title').value,
+            content: form.querySelector('#journal-content').value
+        };
+        const savedJournalId = await dbOperations.put('journalEntries', entryData);
+        if (entryData.taskId) {
+            const task = await dbOperations.get('tasks', entryData.taskId);
+            if(task) { task.journalEntryId = savedJournalId; await dbOperations.put('tasks', task); }
+        }
+        await loadAppData();
+        if(currentView === 'journal') UI.renderJournal(appData);
+        closeModal('journal-entry-modal');
+    }
+}
+
+// --- INITIALIZATION ---
 const initApp = async () => {
     try {
         await initDB();
         await seedInitialData();
         await loadAppData();
         
-        // Setup initial event listeners
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
-        document.getElementById('fab').addEventListener('click', () => openModal('add-item-modal'));
-        document.getElementById('settings-btn').addEventListener('click', () => openModal('settings-modal'));
+        document.addEventListener('click', masterClickHandler);
+        document.addEventListener('submit', masterSubmitHandler);
         
-        switchView('dashboard'); // Start the app on the dashboard
+        switchView('dashboard');
     } catch (error) {
         console.error('Error initializing app:', error);
         document.body.innerHTML = `<div style="padding:2rem;text-align:center;"><h1>Error Loading Application</h1><p>${error.message}</p></div>`;
@@ -97,4 +171,3 @@ const initApp = async () => {
 };
 
 document.addEventListener('DOMContentLoaded', initApp);
-
