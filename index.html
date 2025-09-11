@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Hub - Modern Family Organizer</title>
+    <title>Home Hub - Family Organizer</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
 
@@ -15,1742 +17,421 @@
             --primary-hover: #5856eb;
             --primary-light: #e0e7ff;
             --secondary: #10b981;
-            --secondary-hover: #059669;
             --accent: #f59e0b;
-            --accent-hover: #d97706;
             --error: #ef4444;
             --warning: #f59e0b;
             --success: #10b981;
             --info: #3b82f6;
             
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8fafc;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
             --bg-tertiary: #f1f5f9;
-            --bg-overlay: rgba(15, 23, 42, 0.1);
             
-            --text-primary: #0f172a;
+            --text-primary: #1e293b;
             --text-secondary: #475569;
-            --text-tertiary: #64748b;
-            --text-light: #94a3b8;
+            --text-tertiary: #94a3b8;
             
             --border: #e2e8f0;
-            --border-light: #f1f5f9;
             
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
             
             --radius: 12px;
             --radius-sm: 8px;
-            --radius-lg: 16px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.6;
-            min-height: 100vh;
+            line-height: 1.5;
         }
 
-        /* Header */
         .header {
-            background: var(--bg-primary);
+            background: var(--bg-secondary);
             border-bottom: 1px solid var(--border);
-            backdrop-filter: blur(12px);
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: var(--shadow-sm);
         }
 
         .navbar {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1rem 1.5rem;
+            padding: 0.75rem 1rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
         .logo {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--primary);
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.625rem 1.25rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border-radius: var(--radius-sm);
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            white-space: nowrap;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-secondary {
-            background: var(--secondary);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: var(--secondary-hover);
-            transform: translateY(-1px);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--border);
-            color: var(--text-secondary);
-        }
-
-        .btn-outline:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: var(--text-secondary);
-            border: none;
-            padding: 0.5rem;
-        }
-
-        .btn-ghost:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.8rem;
-        }
-
-        .btn-lg {
-            padding: 0.875rem 2rem;
-            font-size: 1rem;
-        }
-
-        /* Main Container */
+        
         .main-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            padding: 0 0 5rem 0; /* Remove top/side padding to eliminate space */
         }
-
-        /* Navigation Tabs */
+        
         .nav-tabs {
             display: flex;
-            gap: 0.25rem;
-            background: var(--bg-primary);
-            padding: 0.5rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 2rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
             overflow-x: auto;
         }
 
         .nav-tab {
+            flex: 1;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
-            padding: 0.75rem 1.25rem;
-            border-radius: var(--radius-sm);
+            padding: 1rem 0.5rem;
             background: transparent;
             color: var(--text-secondary);
             border: none;
+            border-bottom: 3px solid transparent;
             cursor: pointer;
             transition: all 0.2s ease;
             font-weight: 500;
             white-space: nowrap;
-            position: relative;
         }
 
-        .nav-tab:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
+        .nav-tab:hover { background: var(--bg-tertiary); }
+        .nav-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 
-        .nav-tab.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: var(--shadow-sm);
+        .list-header {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary);
+            padding: 1.5rem 1rem 0.75rem 1rem;
+            background-color: var(--bg-primary);
         }
-
-        .nav-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -0.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-top: 6px solid var(--primary);
-        }
-
-        /* Cards */
-        .card {
-            background: var(--bg-primary);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-md);
-            border: 1px solid var(--border-light);
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-2px);
-        }
-
-        .card-header {
-            padding: 1.5rem 1.5rem 1rem 1.5rem;
-            border-bottom: 1px solid var(--border-light);
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
+        
+        .list-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        /* Dashboard Grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        /* Widget Styles */
-        .widget-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            border-radius: var(--radius-sm);
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-light);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-bottom: 0.75rem;
-        }
-
-        .widget-item:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--primary-light);
-            transform: translateX(4px);
-        }
-
-        .widget-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .widget-content h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
-        }
-
-        .widget-content p {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        .widget-badge {
-            padding: 0.375rem 0.75rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: white;
-        }
-
-        .badge-appointment { background: var(--info); }
-        .badge-meeting { background: var(--primary); }
-        .badge-work { background: var(--text-secondary); }
-        .badge-chore { background: var(--success); }
-        .badge-errand { background: var(--warning); }
-        .badge-timeoff { background: var(--error); }
-
-        /* Empty States */
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1.5rem;
-            color: var(--text-tertiary);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            font-size: 1.125rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: var(--text-secondary);
-        }
-
-        /* Forms */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 0.875rem;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            transition: all 0.2s ease;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .form-select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 0.875rem;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            cursor: pointer;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid var(--border);
+            background-color: var(--bg-secondary);
         }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            padding: 2rem;
-            overflow-y: auto;
-        }
-
-        .modal.active {
+        
+        .list-item:hover { background-color: var(--bg-tertiary); }
+        .list-item-icon { font-size: 1.25rem; width: 2rem; text-align: center; color: var(--text-secondary); }
+        .list-item-content { flex: 1; line-height: 1.4; }
+        .list-item-title { font-weight: 500; color: var(--text-primary); }
+        .list-item-subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+        .list-item-aside { font-size: 0.85rem; color: var(--text-tertiary); }
+        .list-item-chevron { color: var(--text-tertiary); }
+        
+        .fab {
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .modal-content {
-            background: var(--bg-primary);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-xl);
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            padding: 1.5rem 1.5rem 1rem 1.5rem;
-            border-bottom: 1px solid var(--border-light);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-        }
-
-        .modal-footer {
-            padding: 1rem 1.5rem 1.5rem 1.5rem;
-            border-top: 1px solid var(--border-light);
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-        }
-
-        /* Shopping List */
-        .shopping-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--bg-secondary);
-            border-radius: var(--radius-sm);
-            margin-bottom: 0.75rem;
-            border: 1px solid var(--border-light);
-        }
-
-        .shopping-item.completed {
-            opacity: 0.6;
-        }
-
-        .shopping-item.completed .item-name {
-            text-decoration: line-through;
-        }
-
-        .checkbox {
-            width: 1.25rem;
-            height: 1.25rem;
-            accent-color: var(--primary);
-        }
-
-        .item-name {
-            flex: 1;
-            font-weight: 500;
-        }
-
-        .price-input {
-            width: 5rem;
-            padding: 0.375rem 0.5rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            text-align: right;
-        }
-
-        /* Calendar Styles */
-        .fc {
-            background: var(--bg-primary);
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-        }
-
-        .fc .fc-toolbar {
-            background: var(--bg-secondary);
-            padding: 1rem;
-        }
-
-        .fc-button {
-            background: var(--primary) !important;
-            border: none !important;
-            border-radius: var(--radius-sm) !important;
-        }
-
-        .fc-button:hover {
-            background: var(--primary-hover) !important;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 1rem;
-            }
-
-            .main-container {
-                padding: 1rem;
-            }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .nav-tabs {
-                margin-bottom: 1rem;
-            }
-
-            .card-body {
-                padding: 1rem;
-            }
-
-            .modal {
-                padding: 1rem;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Animations */
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .slide-in {
-            animation: slideIn 0.3s ease-out;
-        }
-
-        /* Toast notifications */
-        .toast {
-            position: fixed;
-            top: 2rem;
-            right: 2rem;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            padding: 1rem 1.5rem;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
-            z-index: 1100;
-            max-width: 300px;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.error {
-            border-left: 4px solid var(--error);
-        }
-
-        .toast.success {
-            border-left: 4px solid var(--success);
-        }
-
-        .toast.info {
-            border-left: 4px solid var(--info);
-        }
-
-        /* Meal planner specific */
-        .meal-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .day-card {
-            background: var(--bg-primary);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-light);
-            overflow: hidden;
-        }
-
-        .day-header {
-            padding: 1rem;
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
-            text-align: center;
-            font-weight: 600;
-            color: white;
-        }
-
-        .meal-slot {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-light);
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-
-        .meal-slot:hover {
-            background: var(--bg-secondary);
-        }
-
-        .meal-slot:last-child {
-            border-bottom: none;
-        }
-
-        .meal-type {
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: var(--text-tertiary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.25rem;
-        }
-
-        .meal-name {
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        .meal-empty {
-            color: var(--text-light);
-            font-style: italic;
-        }
-
-        /* Toggle switch */
-        .toggle {
-            position: relative;
-            width: 3rem;
-            height: 1.5rem;
-            background: var(--border);
-            border-radius: 0.75rem;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .toggle.active {
-            background: var(--primary);
-        }
-
-        .toggle::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 1.25rem;
-            height: 1.25rem;
-            background: white;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
-            transition: transform 0.3s ease;
+            background-color: var(--primary);
+            color: white;
+            font-size: 1.5rem;
+            border: none;
+            box-shadow: var(--shadow-lg);
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 900;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .toggle.active::after {
-            transform: translateX(1.5rem);
-        }
+        .fab:hover { background-color: var(--primary-hover); transform: scale(1.05); }
+        
+        .empty-state { text-align: center; padding: 3rem 1.5rem; background-color: var(--bg-secondary); color: var(--text-tertiary); }
+        .empty-state i { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5; }
+        .empty-state h3 { font-size: 1rem; font-weight: 500; color: var(--text-secondary); }
 
-        /* Hidden class */
-        .hidden {
-            display: none;
-        }
+        .hidden { display: none; }
+        
+        /* Styles for Modals, Forms, Buttons etc. */
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.625rem 1.25rem;font-size:0.875rem;font-weight:500;border-radius:var(--radius-sm);border:none;cursor:pointer;transition:all .2s ease;text-decoration:none;white-space:nowrap}.btn-primary{background:var(--primary);color:white}.btn-primary:hover{background:var(--primary-hover)}.btn-outline{background:0 0;border:1px solid var(--border);color:var(--text-secondary)}.btn-outline:hover{background:var(--bg-tertiary);color:var(--primary)}.btn-ghost{background:0 0;color:var(--text-secondary);border:none;padding:.5rem}.btn-ghost:hover{background:var(--bg-tertiary);color:var(--text-primary)}.modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.7);backdrop-filter:blur(4px);z-index:1000;padding:1rem;overflow-y:auto}.modal.active{display:flex;align-items:center;justify-content:center}.modal-content{background:var(--bg-secondary);border-radius:var(--radius);box-shadow:var(--shadow-lg);max-width:500px;width:100%;max-height:90vh;overflow-y:auto;animation:modal-slide-up .3s ease}.modal-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}.modal-title{font-size:1.1rem;font-weight:500}.modal-body{padding:1.5rem}.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:1rem;justify-content:flex-end}.form-group{margin-bottom:1.5rem}.form-label{display:block;font-size:.875rem;font-weight:500;color:var(--text-primary);margin-bottom:.5rem}.form-input,.form-select{width:100%;padding:.75rem 1rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.875rem;background:var(--bg-primary);color:var(--text-primary);transition:all .2s ease}.form-input:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}@keyframes modal-slide-up{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+        .shopping-item{display:flex;align-items:center;gap:1rem;padding:.75rem;margin-bottom:.5rem;border-radius:var(--radius-sm);background:var(--bg-tertiary)}.shopping-item.completed{opacity:.6}.shopping-item.completed .item-name{text-decoration:line-through}.checkbox{width:1.25rem;height:1.25rem;accent-color:var(--primary)}.item-name{flex:1;font-weight:500}
     </style>
 </head>
 <body>
     <header class="header">
         <nav class="navbar">
-            <div class="logo">
-                <i class="fas fa-home"></i>
-                <span>Home Hub</span>
-            </div>
-            <div class="nav-actions">
-                <button class="btn btn-ghost" onclick="openModal('settings-modal')">
-                    <i class="fas fa-cog"></i>
-                </button>
-                <button class="btn btn-primary" onclick="openModal('task-modal')">
-                    <i class="fas fa-plus"></i>
-                    <span class="hidden md:inline">New Event</span>
-                </button>
-            </div>
+            <div class="logo"><i class="fas fa-home"></i><span>Home Hub</span></div>
+            <div class="nav-actions"><button class="btn btn-ghost" onclick="openModal('settings-modal')"><i class="fas fa-cog"></i></button></div>
         </nav>
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-view="dashboard" onclick="switchView('dashboard')"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></button>
+            <button class="nav-tab" data-view="shopping" onclick="switchView('shopping')"><i class="fas fa-shopping-cart"></i><span>Shopping</span></button>
+        </div>
     </header>
 
     <main class="main-container">
-        <div class="nav-tabs">
-            <button class="nav-tab active" data-view="dashboard" onclick="switchView('dashboard')">
-                <i class="fas fa-tachometer-alt"></i>
-                <span>Dashboard</span>
-            </button>
-            <button class="nav-tab" data-view="schedule" onclick="switchView('schedule')">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Schedule</span>
-            </button>
-            <button class="nav-tab" data-view="meals" onclick="switchView('meals')">
-                <i class="fas fa-utensils"></i>
-                <span>Meal Planner</span>
-            </button>
-            <button class="nav-tab" data-view="shopping" onclick="switchView('shopping')">
-                <i class="fas fa-shopping-cart"></i>
-                <span>Shopping</span>
-            </button>
-            <button class="nav-tab" data-view="lists" onclick="switchView('lists')">
-                <i class="fas fa-list"></i>
-                <span>Master Lists</span>
-            </button>
-        </div>
-
         <div id="dashboard-view" class="view">
-            <div class="dashboard-grid">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">
-                            <i class="fas fa-clock" style="color: var(--info);"></i>
-                            Today's Schedule
-                        </h2>
-                    </div>
-                    <div class="card-body" id="today-schedule">
-                        <div class="empty-state">
-                            <i class="fas fa-calendar-day"></i>
-                            <h3>No events today</h3>
-                            <p>Your day is looking clear!</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">
-                            <i class="fas fa-utensils" style="color: var(--warning);"></i>
-                            Today's Meals
-                        </h2>
-                    </div>
-                    <div class="card-body" id="today-meals">
-                        <div class="empty-state">
-                            <i class="fas fa-plate-wheat"></i>
-                            <h3>No meals planned</h3>
-                            <p>Start planning your day!</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card" onclick="switchView('shopping')" style="cursor: pointer;">
-                    <div class="card-header">
-                        <h2 class="card-title">
-                            <i class="fas fa-shopping-cart" style="color: var(--secondary);"></i>
-                            Shopping Lists
-                        </h2>
-                    </div>
-                    <div class="card-body" id="shopping-summary">
-                        <div class="empty-state">
-                            <i class="fas fa-shopping-bag"></i>
-                            <h3>No active lists</h3>
-                            <p>Create a shopping list to get started</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">
-                            <i class="fas fa-bolt" style="color: var(--primary);"></i>
-                            Quick Actions
-                        </h2>
-                    </div>
-                    <div class="card-body">
-                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                            <button class="btn btn-outline" onclick="openModal('task-modal')">
-                                <i class="fas fa-plus"></i>
-                                Add Event
-                            </button>
-                            <button class="btn btn-outline" onclick="openModal('meal-modal')">
-                                <i class="fas fa-utensils"></i>
-                                Plan Meal
-                            </button>
-                            <button class="btn btn-outline" onclick="switchView('shopping')">
-                                <i class="fas fa-shopping-cart"></i>
-                                Start Shopping
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div id="today-list"></div>
+            <div id="upcoming-list"></div>
         </div>
-
-        <div id="schedule-view" class="view hidden">
-            <div class="card">
-                <div id="calendar"></div>
-            </div>
-        </div>
-
-        <div id="meals-view" class="view hidden">
-            <div class="card" style="margin-bottom: 2rem;">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-plus-circle" style="color: var(--primary);"></i>
-                        Plan New Meal
-                    </h2>
-                </div>
-                <div class="card-body">
-                    <form id="quick-meal-form" class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">Date</label>
-                            <input type="date" class="form-input" id="meal-date" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Meal Type</label>
-                            <select class="form-select" id="meal-type" required>
-                                <option value="Breakfast">Breakfast</option>
-                                <option value="Lunch">Lunch</option>
-                                <option value="Dinner">Dinner</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="grid-column: 1 / -1;">
-                            <label class="form-label">Recipe Name</label>
-                            <input type="text" class="form-input" id="meal-recipe" placeholder="What are you making?" required>
-                        </div>
-                        <div style="grid-column: 1 / -1;">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i>
-                                Save Meal
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="meal-grid" id="meal-planner-grid">
-                </div>
-        </div>
-
         <div id="shopping-view" class="view hidden">
-            <div class="card">
-                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h2 class="card-title">
-                        <i class="fas fa-shopping-cart" style="color: var(--secondary);"></i>
-                        Shopping Lists
-                    </h2>
-                    <button class="btn btn-primary" onclick="openModal('new-list-modal')">
-                        <i class="fas fa-plus"></i>
-                        New List
-                    </button>
-                </div>
-                <div class="card-body" id="shopping-lists">
-                    <div class="empty-state">
-                        <i class="fas fa-shopping-bag"></i>
-                        <h3>No shopping lists</h3>
-                        <p>Create your first shopping list to get started</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="lists-view" class="view hidden">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-store" style="color: var(--accent);"></i>
-                        Stores & Master Lists
-                    </h2>
-                </div>
-                <div class="card-body">
-                    <form id="add-store-form" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-                        <input type="text" class="form-input" id="store-name" placeholder="Add a new store..." required>
-                        <button type="submit" class="btn btn-secondary">Add Store</button>
-                    </form>
-                    <div id="stores-container">
-                        <div class="empty-state">
-                            <i class="fas fa-store"></i>
-                            <h3>No stores added</h3>
-                            <p>Add your favorite grocery stores to start building master shopping lists</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+             <div id="shopping-lists-container"></div>
         </div>
     </main>
 
+    <button id="fab" class="fab" onclick="openModal('task-modal')"><i class="fas fa-plus"></i></button>
+    
     <div id="task-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">New Event</h3>
-                <button class="btn btn-ghost" onclick="closeModal('task-modal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="task-form">
-                    <div class="form-group">
-                        <label class="form-label">Event Name</label>
-                        <input type="text" class="form-input" id="task-name" placeholder="What's the event?" required>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">Event Type</label>
-                            <select class="form-select" id="task-type" required>
-                                <option value="">Select type...</option>
-                                <option value="Appointment">Appointment</option>
-                                <option value="Meeting">Meeting</option>
-                                <option value="Work Schedule">Work Schedule</option>
-                                <option value="Chore">Chore</option>
-                                <option value="Errand">Errand</option>
-                                <option value="Time Off">Time Off</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Assign To</label>
-                            <select class="form-select" id="task-assignee">
-                                <option value="">Unassigned</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">Date</label>
-                            <input type="date" class="form-input" id="task-date" required>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Time</label>
-                            <input type="time" class="form-input" id="task-time">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Notes</label>
-                        <textarea class="form-input" id="task-notes" placeholder="Additional details..." rows="3" style="resize: vertical;"></textarea>
-                    </div>
-                    
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin: 1rem 0;">
-                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" id="task-recurring" class="checkbox">
-                            <span>Recurring Event</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" id="task-completed" class="checkbox">
-                            <span>Completed</span>
-                        </label>
-                    </div>
-                    
-                    <div id="recurring-options" class="hidden" style="margin: 1rem 0;">
-                        <label class="form-label">Repeat on:</label>
-                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="0">Sun</button>
-                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="1">Mon</button>
-                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="2">Tue</button>
-                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="3">Wed</button>
-                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="4">Thu</button>
-                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="5">Fri</button>
-                            <button type="button" class="btn btn-sm btn-outline day-btn" data-day="6">Sat</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline" onclick="closeModal('task-modal')">Cancel</button>
-                <button type="submit" form="task-form" class="btn btn-primary">Save Event</button>
-            </div>
+            <div class="modal-header"><h3 class="modal-title">New Event</h3><button class="btn btn-ghost" onclick="closeModal('task-modal')"><i class="fas fa-times"></i></button></div>
+            <div class="modal-body"><form id="task-form"><div class="form-group"><label class="form-label">Event Name</label><input type="text" class="form-input" id="task-name" required></div><div class="form-group"><label class="form-label">Event Type</label><select class="form-input" id="task-type" required><option value="Appointment">Appointment</option><option value="Meeting">Meeting</option><option value="Work Schedule">Work Schedule</option><option value="Chore">Chore</option><option value="Errand">Errand</option></select></div><div class="form-group"><label class="form-label">Assign To</label><select class="form-input" id="task-assignee"><option value="">Unassigned</option></select></div><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="task-date" required></div><div class="form-group"><label class="form-label">Time</label><input type="time" class="form-input" id="task-time"></div></form></div>
+            <div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal('task-modal')">Cancel</button><button type="submit" form="task-form" class="btn btn-primary">Save Event</button></div>
         </div>
     </div>
-
-    <div id="meal-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Plan Meal</h3>
-                <button class="btn btn-ghost" onclick="closeModal('meal-modal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="meal-form">
-                    <input type="hidden" id="meal-id">
-                    <input type="hidden" id="modal-meal-date">
-                    <input type="hidden" id="modal-meal-type">
-                    
-                    <div class="form-group">
-                        <label class="form-label">Recipe Name</label>
-                        <input type="text" class="form-input" id="recipe-name" placeholder="What are you making?" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Recipe URL (optional)</label>
-                        <input type="url" class="form-input" id="recipe-url" placeholder="https://example.com/recipe">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Ingredients</label>
-                        <div id="ingredients-list" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem;">
-                            <p style="color: var(--text-tertiary); text-align: center; font-style: italic;">No ingredients added yet</p>
-                        </div>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <input type="text" class="form-input" id="new-ingredient" placeholder="Add ingredient..." style="flex: 1;">
-                            <button type="button" class="btn btn-secondary" onclick="addIngredient()">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline" onclick="closeModal('meal-modal')">Cancel</button>
-                <button type="submit" form="meal-form" class="btn btn-primary">Save Meal</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="new-list-modal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <div class="modal-header">
-                <h3 class="modal-title">New Shopping List</h3>
-                <button class="btn btn-ghost" onclick="closeModal('new-list-modal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="new-list-form">
-                    <div class="form-group">
-                        <label class="form-label">Select Store</label>
-                        <select class="form-select" id="list-store" required>
-                            <option value="">Choose a store...</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline" onclick="closeModal('new-list-modal')">Cancel</button>
-                <button type="submit" form="new-list-form" class="btn btn-primary">Create List</button>
-            </div>
-        </div>
-    </div>
-
     <div id="settings-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Settings & Management</h3>
-                <button class="btn btn-ghost" onclick="closeModal('settings-modal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
+            <div class="modal-header"><h3 class="modal-title">Settings</h3><button class="btn btn-ghost" onclick="closeModal('settings-modal')"><i class="fas fa-times"></i></button></div>
             <div class="modal-body">
-                <div style="margin-bottom: 2rem;">
-                    <h4 style="font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-users" style="color: var(--primary);"></i>
-                        Family Members
-                    </h4>
-                    <div id="family-members" style="margin-bottom: 1rem;">
-                        <p style="color: var(--text-tertiary); font-style: italic;">No family members added</p>
-                    </div>
-                    <form id="add-member-form" style="display: flex; gap: 0.5rem;">
-                        <input type="text" class="form-input" id="member-name" placeholder="Add family member..." required style="flex: 1;">
-                        <button type="submit" class="btn btn-secondary">Add</button>
-                    </form>
-                </div>
-                
-                <div style="border-top: 1px solid var(--border-light); padding-top: 2rem;">
-                    <h4 style="font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-database" style="color: var(--info);"></i>
-                        Data Management
-                    </h4>
-                    <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
-                        <button class="btn btn-outline" onclick="exportData()" style="flex: 1;">
-                            <i class="fas fa-download"></i>
-                            Export Data
-                        </button>
-                        <label class="btn btn-outline" style="flex: 1; cursor: pointer;">
-                            <i class="fas fa-upload"></i>
-                            Import Data
-                            <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
-                        </label>
-                    </div>
-                    
-                    <div style="border: 2px solid var(--error); border-radius: var(--radius); padding: 1rem; background: rgba(239, 68, 68, 0.05);">
-                        <h5 style="color: var(--error); font-weight: 600; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Danger Zone
-                        </h5>
-                        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">This will permanently delete all your data. This action cannot be undone.</p>
-                        <button class="btn" style="background: var(--error); color: white;" onclick="clearAllData()">
-                            <i class="fas fa-trash"></i>
-                            Clear All Data
-                        </button>
-                    </div>
-                </div>
+                <h4>Stores</h4><div id="stores-list" style="margin-top: 1rem;"></div><form id="add-store-form" style="display: flex; gap: 0.5rem; margin-top: 1rem;"><input type="text" class="form-input" id="store-name" placeholder="Add store..." required><button type="submit" class="btn btn-primary">Add</button></form>
+                <h4 style="margin-top: 2rem;">Family Members</h4><div id="family-members" style="margin-top: 1rem;"></div><form id="add-member-form" style="display: flex; gap: 0.5rem; margin-top: 1rem;"><input type="text" class="form-input" id="member-name" placeholder="Add member..." required><button type="submit" class="btn btn-primary">Add</button></form>
             </div>
         </div>
     </div>
-
-    <div id="toast-container"></div>
-
+    <div id="new-list-modal" class="modal">
+         <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header"><h3 class="modal-title">New Shopping Trip</h3><button class="btn btn-ghost" onclick="closeModal('new-list-modal')"><i class="fas fa-times"></i></button></div>
+            <div class="modal-body"><form id="new-list-form"><div class="form-group"><label class="form-label">Start a list for which store?</label><select class="form-input" id="list-store" required><option value="">Choose a store...</option></select></div></form></div>
+            <div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal('new-list-modal')">Cancel</button><button type="submit" form="new-list-form" class="btn btn-primary">Start Shopping</button></div>
+        </div>
+    </div>
+    
     <script>
-        // --- START: CORRECTED AND DE-DUPLICATED SCRIPT ---
-
-        // Database setup and management
-        const DB_NAME = 'ModernHomeHub';
+        const DB_NAME = 'HomeHubDB_v3';
         const DB_VERSION = 1;
         let db = null;
 
-        const initDB = () => {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, DB_VERSION);
-                
-                request.onerror = () => reject(request.error);
-                request.onsuccess = () => {
-                    db = request.result;
-                    resolve(db);
-                };
-                
-                request.onupgradeneeded = (event) => {
-                    db = event.target.result;
-                    if (!db.objectStoreNames.contains('tasks')) {
-                        const tasksStore = db.createObjectStore('tasks', { keyPath: 'id', autoIncrement: true });
-                        tasksStore.createIndex('date', 'date', { unique: false });
-                        tasksStore.createIndex('type', 'type', { unique: false });
+        const initDB = () => new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onerror = e => reject(e.target.error);
+            request.onsuccess = e => { db = e.target.result; resolve(db); };
+            request.onupgradeneeded = e => {
+                db = e.target.result;
+                const stores = ['tasks', 'meals', 'stores', 'shoppingLists', 'familyMembers'];
+                stores.forEach(name => {
+                    if (!db.objectStoreNames.contains(name)) {
+                        const store = db.createObjectStore(name, { keyPath: 'id', autoIncrement: true });
+                        if (['tasks', 'meals'].includes(name)) store.createIndex('date', 'date');
+                        if (name === 'shoppingLists') store.createIndex('storeId', 'storeId');
                     }
-                    if (!db.objectStoreNames.contains('meals')) {
-                        const mealsStore = db.createObjectStore('meals', { keyPath: 'id', autoIncrement: true });
-                        mealsStore.createIndex('date', 'date', { unique: false });
-                    }
-                    if (!db.objectStoreNames.contains('stores')) {
-                        db.createObjectStore('stores', { keyPath: 'id', autoIncrement: true });
-                    }
-                    if (!db.objectStoreNames.contains('shoppingLists')) {
-                        const listStore = db.createObjectStore('shoppingLists', { keyPath: 'id', autoIncrement: true });
-                        listStore.createIndex('storeId', 'storeId', { unique: false });
-                    }
-                    if (!db.objectStoreNames.contains('familyMembers')) {
-                        db.createObjectStore('familyMembers', { keyPath: 'id', autoIncrement: true });
-                    }
-                };
-            });
-        };
+                });
+            };
+        });
+
+        const promisifyRequest = request => new Promise((resolve, reject) => {
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
 
         const dbOperations = {
-            async add(storeName, data) {
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
-                return store.add(data);
-            },
-            async getAll(storeName) {
-                const transaction = db.transaction([storeName], 'readonly');
-                const store = transaction.objectStore(storeName);
-                return new Promise((resolve, reject) => {
-                    const request = store.getAll();
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            },
-            async update(storeName, data) {
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
-                return store.put(data);
-            },
-            async delete(storeName, id) {
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
-                return store.delete(id);
-            },
-            async clear(storeName) {
-                const transaction = db.transaction([storeName], 'readwrite');
-                const store = transaction.objectStore(storeName);
-                return store.clear();
-            }
+            add: (storeName, data) => promisifyRequest(db.transaction(storeName, 'readwrite').objectStore(storeName).add(data)),
+            getAll: (storeName) => promisifyRequest(db.transaction(storeName, 'readonly').objectStore(storeName).getAll()),
+            put: (storeName, data) => promisifyRequest(db.transaction(storeName, 'readwrite').objectStore(storeName).put(data)),
         };
-
-        // Global state
-        let currentView = 'dashboard';
-        let appData = {
-            tasks: [],
-            meals: [],
-            stores: [],
-            shoppingLists: [],
-            familyMembers: []
-        };
-
-        // Utility functions
-        const showToast = (message, type = 'info') => {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<div style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i><span>${message}</span></div>`;
-            document.getElementById('toast-container').appendChild(toast);
-            setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        };
-
-        const openModal = (modalId) => document.getElementById(modalId).classList.add('active');
-        const closeModal = (modalId) => document.getElementById(modalId).classList.remove('active');
-
-        const formatDate = (date) => new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         
-        const formatTime = (time) => {
-            if (!time) return '';
-            const [hours, minutes] = time.split(':');
-            const date = new Date();
-            date.setHours(parseInt(hours), parseInt(minutes));
-            return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        const seedInitialData = async () => {
+            const tasks = await dbOperations.getAll('tasks');
+            if (tasks && tasks.length > 0) return;
+
+            const today = new Date();
+            const tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
+
+            await dbOperations.add('familyMembers', { name: 'Alex' });
+            await dbOperations.add('familyMembers', { name: 'Jordan' });
+            const storeId = await dbOperations.add('stores', { name: 'Corner Grocer' });
+            await dbOperations.add('tasks', { name: 'Team Sync Meeting', date: today.toISOString().split('T')[0], time: '09:00', type: 'Work Schedule', assignee: 'Alex' });
+            await dbOperations.add('tasks', { name: 'Dentist Appointment', date: today.toISOString().split('T')[0], time: '14:30', type: 'Appointment', assignee: 'Jordan' });
+            await dbOperations.add('tasks', { name: 'Kids\' Soccer Practice', date: tomorrow.toISOString().split('T')[0], time: '17:00', type: 'Appointment', assignee: 'Jordan' });
+            await dbOperations.add('meals', { date: today.toISOString().split('T')[0], type: 'Dinner', recipeName: 'Spaghetti Bolognese' });
+            await dbOperations.add('shoppingLists', { storeId, name: 'Milk', completed: false });
+            await dbOperations.add('shoppingLists', { storeId, name: 'Eggs', completed: false });
+            await dbOperations.add('shoppingLists', { storeId, name: 'Bread', completed: true });
         };
 
-        const getEventTypeColor = (type) => ({
-            'Appointment': 'var(--info)', 'Meeting': 'var(--primary)', 'Work Schedule': 'var(--text-secondary)',
-            'Chore': 'var(--success)', 'Errand': 'var(--warning)', 'Time Off': 'var(--error)'
-        }[type] || 'var(--text-secondary)');
-
-        // View switching
+        let appData = {};
+        const openModal = (modalId) => {
+            if (modalId === 'settings-modal') renderSettings();
+            document.getElementById(modalId).classList.add('active');
+        };
+        const closeModal = (modalId) => document.getElementById(modalId).classList.remove('active');
+        const formatTime = (time) => !time ? '' : new Date(`1970-01-01T${time}`).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        const getEventTypeColor = (type) => ({'Appointment':'var(--info)','Meeting':'var(--primary)','Work Schedule':'var(--text-secondary)','Chore':'var(--success)','Errand':'var(--warning)'}[type]||'var(--text-secondary)');
+        
         const switchView = (viewName) => {
-            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.toggle('active', tab.dataset.view === viewName));
-            document.querySelectorAll('.view').forEach(view => view.classList.add('hidden'));
-            document.getElementById(`${viewName}-view`).classList.remove('hidden');
-            currentView = viewName;
-            renderCurrentView();
-        };
-
-        // Data loading and rendering
-        const loadData = async () => {
-            try {
-                appData.tasks = await dbOperations.getAll('tasks');
-                appData.meals = await dbOperations.getAll('meals');
-                appData.stores = await dbOperations.getAll('stores');
-                appData.shoppingLists = await dbOperations.getAll('shoppingLists');
-                appData.familyMembers = await dbOperations.getAll('familyMembers');
-            } catch (error) {
-                console.error('Error loading data:', error);
-                showToast('Error loading data', 'error');
-            }
-        };
-
-        const renderCurrentView = () => {
-            switch (currentView) {
-                case 'dashboard': renderDashboard(); break;
-                case 'schedule': renderSchedule(); break;
-                case 'meals': renderMeals(); break;
-                case 'shopping': renderShopping(); break;
-                case 'lists': renderLists(); break;
-            }
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.view === viewName));
+            document.querySelectorAll('.view').forEach(v => v.classList.toggle('hidden', v.id !== `${viewName}-view`));
+            document.getElementById('fab').classList.toggle('hidden', viewName !== 'dashboard');
+            if (viewName === 'dashboard') renderDashboard();
+            if (viewName === 'shopping') renderShopping();
         };
 
         const renderDashboard = () => {
-            const today = new Date().toISOString().split('T')[0];
-            
-            // Today's schedule
-            const todayTasks = appData.tasks.filter(task => task.date === today && !task.completed);
-            const scheduleContainer = document.getElementById('today-schedule');
-            scheduleContainer.innerHTML = todayTasks.length === 0 ? `
-                <div class="empty-state"><i class="fas fa-calendar-day"></i><h3>No events today</h3><p>Your day is looking clear!</p></div>` :
-                todayTasks.map(task => `
-                <div class="widget-item" onclick="editTask(${task.id})">
-                    <div class="widget-content">
-                        <h3>${task.name}</h3><p>${task.assignee || 'Unassigned'} ${task.time ? '• ' + formatTime(task.time) : ''}</p>
-                    </div>
-                    <div class="widget-badge" style="background: ${getEventTypeColor(task.type)};">${task.type}</div>
-                </div>`).join('');
-
-            // Today's meals
-            const todayMeals = appData.meals.filter(meal => meal.date === today);
-            const mealsContainer = document.getElementById('today-meals');
-            mealsContainer.innerHTML = todayMeals.length === 0 ? `
-                <div class="empty-state"><i class="fas fa-plate-wheat"></i><h3>No meals planned</h3><p>Start planning your day!</p></div>` :
-                todayMeals.map(meal => `
-                <div class="widget-item" onclick="editMeal(${meal.id})">
-                    <div class="widget-content"><h3>${meal.recipeName}</h3><p>${meal.type}</p></div>
-                </div>`).join('');
-
-            // Shopping summary
-            const shoppingSummary = document.getElementById('shopping-summary');
-            const activeStores = [...new Set(appData.shoppingLists.map(item => item.storeId))];
-            shoppingSummary.innerHTML = activeStores.length === 0 ? `
-                <div class="empty-state"><i class="fas fa-shopping-bag"></i><h3>No active lists</h3><p>Create a shopping list to get started</p></div>` :
-                activeStores.map(storeId => {
-                    const store = appData.stores.find(s => s.id === storeId);
-                    const items = appData.shoppingLists.filter(item => item.storeId === storeId);
-                    return `<div class="widget-item"><div class="widget-content"><h3>${store?.name || 'Unknown Store'}</h3><p>${items.length} items</p></div></div>`;
-                }).join('');
-        };
-
-        const renderMeals = () => {
-            document.getElementById('meal-date').valueAsDate = new Date();
+            let todayHtml = '', upcomingHtml = '';
             const today = new Date();
-            const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-            const mealGrid = document.getElementById('meal-planner-grid');
-            let gridHTML = '';
-            for (let i = 0; i < 7; i++) {
-                const date = new Date(startOfWeek);
-                date.setDate(startOfWeek.getDate() + i);
-                const dateStr = date.toISOString().split('T')[0];
-                const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-                const dayMeals = {
-                    Breakfast: appData.meals.find(m => m.date === dateStr && m.type === 'Breakfast'),
-                    Lunch: appData.meals.find(m => m.date === dateStr && m.type === 'Lunch'),
-                    Dinner: appData.meals.find(m => m.date === dateStr && m.type === 'Dinner')
-                };
-                gridHTML += `
-                    <div class="day-card">
-                        <div class="day-header">${dayName}</div>
-                        ${['Breakfast', 'Lunch', 'Dinner'].map(mealType => `
-                            <div class="meal-slot" onclick="planMeal('${dateStr}', '${mealType}', ${dayMeals[mealType]?.id || 'null'})">
-                                <div class="meal-type">${mealType}</div>
-                                <div class="meal-name ${!dayMeals[mealType] ? 'meal-empty' : ''}">${dayMeals[mealType]?.recipeName || 'Not planned'}</div>
-                            </div>`).join('')}
-                    </div>`;
-            }
-            mealGrid.innerHTML = gridHTML;
-        };
+            const todayStr = today.toISOString().split('T')[0];
 
-        const renderShopping = () => {
-            const container = document.getElementById('shopping-lists');
-            const activeStores = [...new Set(appData.shoppingLists.map(item => item.storeId))];
-            container.innerHTML = activeStores.length === 0 ? `
-                <div class="empty-state"><i class="fas fa-shopping-bag"></i><h3>No shopping lists</h3><p>Create your first shopping list</p></div>` :
-                activeStores.map(storeId => {
-                    const store = appData.stores.find(s => s.id === storeId);
-                    const items = appData.shoppingLists.filter(item => item.storeId === storeId);
-                    const completedCount = items.filter(item => item.completed).length;
-                    return `
-                        <div class="card" style="margin-bottom: 1rem; cursor: pointer;" onclick="openShoppingList(${storeId})">
-                            <div class="card-body" style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">${store?.name || 'Unknown'}</h3>
-                                    <p style="color: var(--text-secondary);">${items.length} items • ${completedCount} completed</p>
-                                </div>
-                                <div style="width: 4rem; height: 4rem; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 600;">
-                                    ${Math.round((completedCount / items.length) * 100) || 0}%
-                                </div>
-                            </div>
-                        </div>`;
-                }).join('');
+            const todayItems = [...appData.tasks.filter(t=>t.date===todayStr), ...appData.meals.filter(m=>m.date===todayStr)].sort((a,b) => (a.time||a.type).localeCompare(b.time||b.type));
+            if (todayItems.length > 0) {
+                todayHtml = `<h2 class="list-header">Today, ${today.toLocaleDateString([],{month:'long',day:'numeric'})}</h2>`;
+                todayItems.forEach(item => {
+                    todayHtml += item.recipeName ? `<div class="list-item"><i class="list-item-icon fas fa-utensils" style="color:var(--warning)"></i><div class="list-item-content"><p class="list-item-title">${item.recipeName}</p><p class="list-item-subtitle">${item.type}</p></div></div>`
+                    : `<div class="list-item"><i class="list-item-icon fas fa-circle" style="font-size:0.8rem;color:${getEventTypeColor(item.type)}"></i><div class="list-item-content"><p class="list-item-title">${item.name}</p><p class="list-item-subtitle">${item.assignee||item.type}</p></div><p class="list-item-aside">${formatTime(item.time) || 'All-day'}</p></div>`;
+                });
+            } else {
+                 todayHtml = `<h2 class="list-header">Today</h2><div class="empty-state"><i class="fas fa-check-circle"></i><h3>Nothing scheduled for today.</h3></div>`;
+            }
             
+            const upcomingItems = [];
+            for (let i = 1; i <= 7; i++) {
+                const date = new Date(); date.setDate(today.getDate() + i);
+                const itemsForDay = appData.tasks.filter(t => t.date === date.toISOString().split('T')[0]);
+                if (itemsForDay.length > 0) upcomingItems.push({ date, items: itemsForDay });
+            }
+            if (upcomingItems.length > 0) {
+                upcomingHtml = `<h2 class="list-header">Upcoming</h2>`;
+                upcomingItems.forEach(day => {
+                    upcomingHtml += `<p style="font-weight:500;font-size:0.9rem;padding:1rem 1rem .5rem;background:var(--bg-tertiary);">${day.date.toLocaleDateString([],{weekday:'long',month:'short',day:'numeric'})}</p>`;
+                    day.items.forEach(item => {
+                        upcomingHtml += `<div class="list-item"><i class="list-item-icon fas fa-circle" style="font-size:0.8rem;color:${getEventTypeColor(item.type)}"></i><div class="list-item-content"><p class="list-item-title">${item.name}</p><p class="list-item-subtitle">${item.assignee||item.type}</p></div><p class="list-item-aside">${formatTime(item.time)}</p></div>`;
+                    });
+                });
+            }
+            document.getElementById('today-list').innerHTML = todayHtml;
+            document.getElementById('upcoming-list').innerHTML = upcomingHtml;
+        };
+        
+        const renderShopping = () => {
+            const container = document.getElementById('shopping-lists-container');
+            let html = '<h2 class="list-header">Active Shopping Lists</h2>';
+            const activeStoreIds = [...new Set(appData.shoppingLists.map(item => item.storeId))];
+
+            if (activeStoreIds.length === 0) {
+                html += `<div class="empty-state"><i class="fas fa-cart-plus"></i><h3>No active shopping lists.</h3><p>Add a store in Settings, then start a new trip here.</p><button class="btn btn-primary" onclick="openModal('new-list-modal')" style="margin-top: 1rem;">Start a New Trip</button></div>`;
+            } else {
+                activeStoreIds.forEach(storeId => {
+                    const store = appData.stores.find(s => s.id === storeId);
+                    const items = appData.shoppingLists.filter(i => i.storeId === storeId);
+                    const itemsNeeded = items.filter(i => !i.completed).length;
+                    html += `<div class="list-item" onclick="openShoppingList(${storeId})">
+                        <i class="list-item-icon fas fa-store" style="color: var(--secondary);"></i>
+                        <div class="list-item-content">
+                            <p class="list-item-title">${store?.name || 'Unknown Store'}</p>
+                            <p class="list-item-subtitle">${itemsNeeded} of ${items.length} items needed</p>
+                        </div>
+                        <i class="list-item-chevron fas fa-chevron-right"></i>
+                    </div>`;
+                });
+                html += `<button class="btn btn-primary" onclick="openModal('new-list-modal')" style="margin: 1rem; width: calc(100% - 2rem);">Start a New Trip</button>`;
+            }
+            container.innerHTML = html;
             const storeSelect = document.getElementById('list-store');
             storeSelect.innerHTML = '<option value="">Choose a store...</option>' + appData.stores.map(store => `<option value="${store.id}">${store.name}</option>`).join('');
         };
 
-        const renderLists = () => {
-            const container = document.getElementById('stores-container');
-            container.innerHTML = appData.stores.length === 0 ? `
-                <div class="empty-state"><i class="fas fa-store"></i><h3>No stores added</h3><p>Add stores to build master lists</p></div>` :
-                appData.stores.map(store => `
-                    <div class="card" style="margin-bottom: 1rem;">
-                        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                            <h3 style="font-size: 1.125rem; font-weight: 600;">${store.name}</h3>
-                            <button class="btn btn-ghost" style="color: var(--error);" onclick="deleteStore(${store.id})"><i class="fas fa-trash"></i></button>
-                        </div>
-                        <div class="card-body">
-                            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Master items list for ${store.name}</p>
-                            <button class="btn btn-outline" onclick="manageStoreItems(${store.id})"><i class="fas fa-edit"></i>Manage Items</button>
-                        </div>
-                    </div>`).join('');
-        };
-        
-        const renderSchedule = () => {
-            const calendarEl = document.getElementById('calendar');
-            calendarEl.innerHTML = '';
-            new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
-                events: appData.tasks.map(task => ({
-                    id: task.id, title: task.name, start: task.date + (task.time ? 'T' + task.time : ''),
-                    allDay: !task.time, color: getEventTypeColor(task.type)
-                })),
-                eventClick: (info) => editTask(parseInt(info.event.id)),
-                dateClick: (info) => {
-                    document.getElementById('task-date').value = info.dateStr;
-                    openModal('task-modal');
-                }
-            }).render();
-        };
-
-        // Action Handlers
-        const addIngredient = () => {
-            const input = document.getElementById('new-ingredient');
-            const ingredientText = input.value.trim();
-            if (!ingredientText) return;
-            const container = document.getElementById('ingredients-list');
-            if (container.querySelector('p')) container.innerHTML = '';
-            const ingredientDiv = document.createElement('div');
-            ingredientDiv.className = 'shopping-item';
-            ingredientDiv.innerHTML = `<input type="checkbox" class="checkbox ingredient-checkbox"><span class="item-name">${ingredientText}</span><button type="button" class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
-            container.appendChild(ingredientDiv);
-            input.value = '';
-            input.focus();
-        };
-        
-        const editTask = (taskId) => {
-            const task = appData.tasks.find(t => t.id === taskId);
-            if (!task) return;
-            document.getElementById('task-form').dataset.editId = taskId;
-            document.getElementById('task-name').value = task.name;
-            document.getElementById('task-type').value = task.type;
-            document.getElementById('task-assignee').value = task.assignee || '';
-            document.getElementById('task-date').value = task.date;
-            document.getElementById('task-time').value = task.time || '';
-            document.getElementById('task-notes').value = task.notes || '';
-            document.getElementById('task-completed').checked = task.completed || false;
-            document.getElementById('task-recurring').checked = task.recurring || false;
-            openModal('task-modal');
-        };
-
-        const editMeal = (mealId) => {
-            const meal = appData.meals.find(m => m.id === mealId);
-            if (meal) planMeal(meal.date, meal.type, mealId);
-        };
-        
-        const planMeal = (date, type, mealId) => {
-            document.getElementById('meal-form').reset();
-            document.getElementById('modal-meal-date').value = date;
-            document.getElementById('modal-meal-type').value = type;
-            const ingredientsContainer = document.getElementById('ingredients-list');
-            ingredientsContainer.innerHTML = '<p style="color: var(--text-tertiary); text-align: center; font-style: italic;">No ingredients added yet</p>';
-
-            if (mealId && mealId !== 'null') {
-                const meal = appData.meals.find(m => m.id === parseInt(mealId));
-                if (meal) {
-                    document.getElementById('meal-id').value = meal.id;
-                    document.getElementById('recipe-name').value = meal.recipeName;
-                    document.getElementById('recipe-url').value = meal.recipeUrl || '';
-                    if (meal.ingredients && meal.ingredients.length > 0) {
-                        ingredientsContainer.innerHTML = meal.ingredients.map(ing => `
-                            <div class="shopping-item">
-                                <input type="checkbox" class="checkbox ingredient-checkbox" ${ing.needed ? 'checked' : ''}>
-                                <span class="item-name">${ing.name}</span>
-                                <button type="button" class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
-                            </div>`).join('');
-                    }
-                }
-                document.querySelector('#meal-modal .modal-title').textContent = 'Edit Meal';
-            } else {
-                document.getElementById('meal-id').value = '';
-                document.querySelector('#meal-modal .modal-title').textContent = `Plan ${type} for ${formatDate(date)}`;
-            }
-            openModal('meal-modal');
-        };
-
-        // Form Submit Handlers
-        document.getElementById('task-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const editId = e.target.dataset.editId;
-            const taskData = {
-                name: document.getElementById('task-name').value, type: document.getElementById('task-type').value,
-                assignee: document.getElementById('task-assignee').value, date: document.getElementById('task-date').value,
-                time: document.getElementById('task-time').value, notes: document.getElementById('task-notes').value,
-                recurring: document.getElementById('task-recurring').checked, completed: document.getElementById('task-completed').checked,
-                updatedAt: new Date().toISOString()
-            };
-            try {
-                if (editId) {
-                    taskData.id = parseInt(editId);
-                    await dbOperations.update('tasks', taskData);
-                    showToast('Event updated successfully!', 'success');
-                    delete e.target.dataset.editId;
-                } else {
-                    taskData.createdAt = new Date().toISOString();
-                    await dbOperations.add('tasks', taskData);
-                    showToast('Event created successfully!', 'success');
-                }
-                closeModal('task-modal');
-                await loadData();
-                renderCurrentView();
-                e.target.reset();
-            } catch (error) {
-                console.error('Error saving task:', error);
-                showToast('Error saving event', 'error');
-            }
-        });
-
-        document.getElementById('quick-meal-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const date = document.getElementById('meal-date').value;
-            const type = document.getElementById('meal-type').value;
-            if (appData.meals.find(m => m.date === date && m.type === type)) {
-                showToast('A meal is already planned for this date and type', 'error');
-                return;
-            }
-            try {
-                await dbOperations.add('meals', { date, type, recipeName: document.getElementById('meal-recipe').value, createdAt: new Date().toISOString() });
-                showToast('Meal planned successfully!', 'success');
-                await loadData();
-                renderCurrentView();
-                e.target.reset();
-            } catch (error) {
-                console.error('Error creating meal:', error);
-                showToast('Error planning meal', 'error');
-            }
-        });
-
-        document.getElementById('meal-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const mealId = document.getElementById('meal-id').value;
-            const ingredients = Array.from(document.querySelectorAll('#ingredients-list .shopping-item')).map(item => ({
-                name: item.querySelector('.item-name').textContent, needed: item.querySelector('.ingredient-checkbox').checked
-            }));
-            const mealData = {
-                date: document.getElementById('modal-meal-date').value, type: document.getElementById('modal-meal-type').value,
-                recipeName: document.getElementById('recipe-name').value, recipeUrl: document.getElementById('recipe-url').value,
-                ingredients, updatedAt: new Date().toISOString()
-            };
-            try {
-                if (mealId) {
-                    mealData.id = parseInt(mealId);
-                    await dbOperations.update('meals', mealData);
-                    showToast('Meal updated successfully!', 'success');
-                } else {
-                    mealData.createdAt = new Date().toISOString();
-                    await dbOperations.add('meals', mealData);
-                    showToast('Meal created successfully!', 'success');
-                }
-                closeModal('meal-modal');
-                await loadData();
-                renderCurrentView();
-            } catch (error) {
-                console.error('Error saving meal:', error);
-                showToast('Error saving meal', 'error');
-            }
-        });
-
-        document.getElementById('add-store-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const storeName = document.getElementById('store-name').value.trim();
-            if (!storeName || appData.stores.find(s => s.name.toLowerCase() === storeName.toLowerCase())) {
-                showToast(storeName ? 'Store already exists' : 'Store name cannot be empty', 'error');
-                return;
-            }
-            try {
-                await dbOperations.add('stores', { name: storeName, createdAt: new Date().toISOString() });
-                showToast('Store added successfully!', 'success');
-                await loadData();
-                renderCurrentView();
-                e.target.reset();
-            } catch (error) {
-                showToast('Error adding store', 'error');
-            }
-        });
-
-        document.getElementById('new-list-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const storeId = parseInt(document.getElementById('list-store').value);
-            if (!storeId) return;
-            closeModal('new-list-modal');
-            switchView('shopping');
-            setTimeout(() => openShoppingList(storeId), 100);
-        });
-
-        document.getElementById('add-member-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const memberName = document.getElementById('member-name').value.trim();
-            if (!memberName) return;
-            try {
-                await dbOperations.add('familyMembers', { name: memberName, createdAt: new Date().toISOString() });
-                showToast('Family member added!', 'success');
-                await loadData();
-                renderFamilyMembers();
-                updateAssigneeDropdown();
-                e.target.reset();
-            } catch (error) {
-                showToast('Error adding family member', 'error');
-            }
-        });
-        
-        // Shopping List Functions
         const openShoppingList = (storeId) => {
             const store = appData.stores.find(s => s.id === storeId);
             const items = appData.shoppingLists.filter(item => item.storeId === storeId);
             const modal = document.createElement('div');
             modal.id = 'shopping-list-modal';
             modal.className = 'modal active';
-            const total = items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0).toFixed(2);
-            modal.innerHTML = `
-                <div class="modal-content" style="max-width: 600px; max-height: 90vh;">
-                    <div class="modal-header"><h3 class="modal-title">Shopping at ${store.name}</h3><button class="btn btn-ghost" onclick="closeShoppingList()"><i class="fas fa-times"></i></button></div>
-                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
-                        <div id="shopping-items">${items.length === 0 ? '<div class="empty-state" style="padding: 1rem;"><i class="fas fa-shopping-cart"></i><h3>Empty list</h3><p>Add items below</p></div>' : items.map(item => `
-                            <div class="shopping-item ${item.completed ? 'completed' : ''}" data-item-id="${item.id}">
-                                <input type="checkbox" class="checkbox" ${item.completed ? 'checked' : ''} onchange="toggleShoppingItem(${item.id}, this.checked)">
-                                <span class="item-name">${item.name}</span>
-                                <input type="number" class="price-input" placeholder="$0.00" step="0.01" value="${item.price || ''}" onchange="updateItemPrice(${item.id}, this.value)">
-                                <button class="btn btn-ghost btn-sm" onclick="removeShoppingItem(${item.id})"><i class="fas fa-times"></i></button>
-                            </div>`).join('')}
-                        </div>
-                    </div>
-                    <div class="modal-footer" style="flex-direction: column; gap: 1rem;">
-                        <div style="display: flex; gap: 0.5rem; width: 100%;"><input type="text" class="form-input" id="new-item-name" placeholder="Add item..." style="flex: 1;"><button class="btn btn-secondary" onclick="addShoppingItem(${storeId})"><i class="fas fa-plus"></i></button></div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                            <div id="total-cost" style="font-size: 1.125rem; font-weight: 600;">Total: $${total}</div>
-                            <button class="btn btn-primary" onclick="completeShoppingTrip(${storeId})"><i class="fas fa-check"></i>Complete Trip</button>
-                        </div>
-                    </div>
-                </div>`;
+            modal.innerHTML = `<div class="modal-content" style="max-width: 600px;">
+                <div class="modal-header"><h3 class="modal-title">${store.name}</h3><button class="btn btn-ghost" onclick="this.closest('.modal').remove()"><i class="fas fa-times"></i></button></div>
+                <div class="modal-body" id="shopping-items-modal-list">${items.map(item => `<div class="shopping-item ${item.completed ? 'completed' : ''}" data-item-id="${item.id}"><input type="checkbox" class="checkbox" ${item.completed?'checked':''} onchange="toggleShoppingItem(${item.id}, this.checked)"><span class="item-name">${item.name}</span></div>`).join('')}</div>
+                <div class="modal-footer" style="padding: 0.5rem 1rem 1rem;"><form id="add-item-form" style="display:flex;width:100%;gap:0.5rem;"><input type="text" class="form-input" id="new-item-name" placeholder="Add item..." required><button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i></button></form></div>
+            </div>`;
             document.body.appendChild(modal);
-            modal.querySelector('#new-item-name').addEventListener('keypress', (e) => { if (e.key === 'Enter') addShoppingItem(storeId); });
+            modal.querySelector('#add-item-form').addEventListener('submit', async e => {
+                e.preventDefault();
+                const input = modal.querySelector('#new-item-name');
+                if (!input.value.trim()) return;
+                const newItem = { storeId, name: input.value.trim(), completed: false };
+                const newId = await dbOperations.add('shoppingLists', newItem);
+                appData.shoppingLists.push({ ...newItem, id: newId });
+                input.value = '';
+                openShoppingList(storeId); // Refresh modal
+                modal.remove();
+            });
         };
-        const closeShoppingList = () => document.getElementById('shopping-list-modal')?.remove();
-        const addShoppingItem = async (storeId) => {
-            const input = document.getElementById('new-item-name');
-            const itemName = input.value.trim();
-            if (!itemName) return;
-            if (appData.shoppingLists.find(i => i.storeId === storeId && i.name.toLowerCase() === itemName.toLowerCase())) {
-                showToast('Item already in list', 'error'); return;
-            }
-            try {
-                await dbOperations.add('shoppingLists', { storeId, name: itemName, completed: false, price: null, createdAt: new Date().toISOString() });
-                await loadData();
-                closeShoppingList();
-                openShoppingList(storeId);
-            } catch (error) { showToast('Error adding item', 'error'); }
-        };
-        const toggleShoppingItem = async (itemId, completed) => {
-            const item = appData.shoppingLists.find(i => i.id === itemId);
-            if (item) { item.completed = completed; await dbOperations.update('shoppingLists', item); }
-        };
-        const updateItemPrice = async (itemId, price) => {
+        const toggleShoppingItem = async (itemId, isChecked) => {
             const item = appData.shoppingLists.find(i => i.id === itemId);
             if (item) {
-                item.price = price ? parseFloat(price) : null;
-                await dbOperations.update('shoppingLists', item);
-                await loadData();
-                const total = appData.shoppingLists.filter(i => i.storeId === item.storeId).reduce((sum, i) => sum + (parseFloat(i.price) || 0), 0);
-                document.getElementById('total-cost').textContent = `Total: $${total.toFixed(2)}`;
+                item.completed = isChecked;
+                await dbOperations.put('shoppingLists', item);
+                document.querySelector(`.shopping-item[data-item-id="${itemId}"]`).classList.toggle('completed', isChecked);
             }
         };
-        const removeShoppingItem = async (itemId) => {
-            const item = appData.shoppingLists.find(i => i.id === itemId);
-            if (!item) return;
-            await dbOperations.delete('shoppingLists', itemId);
-            await loadData();
-            closeShoppingList();
-            openShoppingList(item.storeId);
-        };
-        const completeShoppingTrip = async (storeId) => {
-            if (!confirm('Complete shopping trip and clear the list?')) return;
-            const items = appData.shoppingLists.filter(item => item.storeId === storeId);
-            for (const item of items) await dbOperations.delete('shoppingLists', item.id);
-            await loadData();
-            closeShoppingList();
-            renderCurrentView();
-            showToast('Shopping trip completed!', 'success');
+
+        const renderSettings = () => {
+            document.getElementById('family-members').innerHTML = appData.familyMembers.map(m => `<div>${m.name}</div>`).join('');
+            document.getElementById('stores-list').innerHTML = appData.stores.map(s => `<div>${s.name}</div>`).join('');
         };
 
-        // Settings & Management Functions
-        const renderFamilyMembers = () => {
-            const container = document.getElementById('family-members');
-            container.innerHTML = appData.familyMembers.length === 0 ? '<p style="color: var(--text-tertiary); font-style: italic;">No family members added</p>' :
-                appData.familyMembers.map(member => `<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border-light);"><span>${member.name}</span><button class="btn btn-ghost btn-sm" style="color: var(--error);" onclick="deleteFamilyMember(${member.id})"><i class="fas fa-times"></i></button></div>`).join('');
-        };
-        const updateAssigneeDropdown = () => {
-            const select = document.getElementById('task-assignee');
-            select.innerHTML = '<option value="">Unassigned</option>' + appData.familyMembers.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
-        };
-        const deleteFamilyMember = async (memberId) => {
-            if (!confirm('Remove this family member?')) return;
-            await dbOperations.delete('familyMembers', memberId);
-            await loadData();
-            renderFamilyMembers();
-            updateAssigneeDropdown();
-            showToast('Family member removed', 'success');
-        };
-        const deleteStore = async (storeId) => {
-            if (!confirm('Delete this store and all associated shopping lists?')) return;
-            await dbOperations.delete('stores', storeId);
-            const itemsToDelete = appData.shoppingLists.filter(item => item.storeId === storeId);
-            for (const item of itemsToDelete) await dbOperations.delete('shoppingLists', item.id);
-            await loadData();
-            renderCurrentView();
-            showToast('Store deleted', 'success');
-        };
-        const manageStoreItems = (storeId) => openShoppingList(storeId);
-        const exportData = async () => {
-            const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `home-hub-backup-${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            URL.revokeObjectURL(a.href);
-            showToast('Data exported successfully!', 'success');
-        };
-        const importData = (event) => {
-            const file = event.target.files[0];
-            if (!file || !confirm('This will replace all existing data. Continue?')) { event.target.value = ''; return; }
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    await Promise.all(Object.keys(appData).map(key => dbOperations.clear(key.replace(/s$/, 'Lists').replace(/Members$/, 's'))));
-                    await Promise.all(Object.keys(imported).map(async key => {
-                        const storeName = key.replace(/s$/, 'Lists').replace(/Members$/, 's'); // Simple pluralization for store names
-                        for(const item of imported[key] || []) { delete item.id; await dbOperations.add(storeName, item); }
-                    }));
-                    await loadData();
-                    renderCurrentView();
-                    closeModal('settings-modal');
-                    showToast('Data imported successfully!', 'success');
-                } catch { showToast('Error importing data.', 'error'); }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
-        };
-        const clearAllData = async () => {
-            if (!confirm('DELETE ALL DATA? This cannot be undone.')) return;
-            await Promise.all(Object.keys(appData).map(key => dbOperations.clear(key.replace(/s$/, 'Lists').replace(/Members$/, 's'))));
-            await loadData();
-            renderCurrentView();
-            closeModal('settings-modal');
-            showToast('All data cleared', 'success');
-        };
-
-        // Other UI Event Listeners
-        document.getElementById('task-recurring').addEventListener('change', (e) => {
-            document.getElementById('recurring-options').classList.toggle('hidden', !e.target.checked);
-        });
-        document.getElementById('new-ingredient').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') { e.preventDefault(); addIngredient(); }
-        });
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('day-btn')) {
-                e.target.classList.toggle('btn-primary');
-                e.target.classList.toggle('btn-outline');
-            }
-            if (e.target.classList.contains('modal')) e.target.classList.remove('active');
-        });
-
-        // Initialize the application
         const initApp = async () => {
             try {
                 await initDB();
-                await loadData();
-                renderFamilyMembers();
-                updateAssigneeDropdown();
-                renderCurrentView();
-                showToast('Home Hub loaded!', 'success');
+                await seedInitialData();
+                appData.tasks = await dbOperations.getAll('tasks') || [];
+                appData.meals = await dbOperations.getAll('meals') || [];
+                appData.stores = await dbOperations.getAll('stores') || [];
+                appData.shoppingLists = await dbOperations.getAll('shoppingLists') || [];
+                appData.familyMembers = await dbOperations.getAll('familyMembers') || [];
+                
+                const select = document.getElementById('task-assignee');
+                if (select) select.innerHTML = '<option value="">Unassigned</option>' + appData.familyMembers.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
+                
+                switchView('dashboard');
             } catch (error) {
                 console.error('Error initializing app:', error);
-                showToast('Error loading application', 'error');
+                document.body.innerHTML = `<div style="padding:2rem;text-align:center;"><h1>Error Loading Application</h1><p>There was a problem starting the app. Please try clearing your browser cache for this site.</p><p style="color:#666;font-size:0.8rem;margin-top:1rem;">Error details: ${error.message}</p></div>`;
             }
         };
 
-        document.addEventListener('DOMContentLoaded', initApp);
+        document.getElementById('add-member-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const input = document.getElementById('member-name');
+            if(!input.value.trim()) return;
+            const newId = await dbOperations.add('familyMembers', { name: input.value.trim() });
+            appData.familyMembers.push({ id: newId, name: input.value.trim() });
+            renderSettings();
+            input.value = '';
+        });
+        document.getElementById('add-store-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const input = document.getElementById('store-name');
+            if(!input.value.trim()) return;
+            const newId = await dbOperations.add('stores', { name: input.value.trim() });
+            appData.stores.push({ id: newId, name: input.value.trim() });
+            renderSettings();
+            input.value = '';
+        });
+        document.getElementById('new-list-form').addEventListener('submit', e => {
+            e.preventDefault();
+            const storeId = parseInt(document.getElementById('list-store').value);
+            if (!storeId) return;
+            openShoppingList(storeId);
+            closeModal('new-list-modal');
+        });
 
-        // --- END: CORRECTED SCRIPT ---
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
