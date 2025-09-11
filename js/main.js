@@ -9,17 +9,17 @@ import {
 import { formatTime, getTaskIcon } from './utils.js';
 
 // --- GLOBAL STATE & VARIABLES ---
-window.appData = {};
-window.currentView = 'dashboard';
+export let appData = {};
+export let currentView = 'dashboard';
 let calendar;
 
 // --- CORE FUNCTIONS ---
 
-const loadAppData = async () => {
+export const loadAppData = async () => {
     const stores = ['tasks', 'stores', 'shoppingLists', 'familyMembers', 'journalEntries'];
     const dataPromises = stores.map(s => dbOperations.getAll(s));
     const [tasks, storesData, shoppingLists, familyMembers, journalEntries] = await Promise.all(dataPromises);
-    window.appData = { 
+    appData = { 
         tasks: tasks || [], 
         stores: storesData || [], 
         shoppingLists: shoppingLists || [], 
@@ -27,10 +27,9 @@ const loadAppData = async () => {
         journalEntries: journalEntries || [] 
     };
 };
-window.loadAppData = loadAppData; // Expose to UI module
 
-const switchView = (viewName, params = {}) => {
-    window.currentView = viewName;
+export const switchView = (viewName, params = {}) => {
+    currentView = viewName;
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewName));
     document.querySelectorAll('.view').forEach(v => v.classList.toggle('hidden', v.id !== `${viewName}-view`));
     document.getElementById('fab').classList.toggle('hidden', ['list-detail', 'shopping'].includes(viewName));
@@ -43,43 +42,39 @@ const switchView = (viewName, params = {}) => {
     const renderMap = { 
         'dashboard': renderDashboard, 
         'shopping': renderShopping, 
-        'list-detail': () => renderListDetail(params.storeId, window.appData), 
+        'list-detail': () => renderListDetail(params.storeId, appData), 
         'calendar': renderCalendar, 
         'journal': renderJournal 
     };
-    renderMap[viewName]?.(window.appData);
+    renderMap[viewName]?.(appData);
 };
-window.switchView = switchView; // Expose to global scope for inline onclicks
 
-const openModal = (modalId, params = {}) => {
+export const openModal = (modalId, params = {}) => {
     const renderMap = { 
         'settings-modal': renderSettingsModal, 
         'add-item-modal': () => renderTaskModal(params.id), 
         'journal-entry-modal': () => renderJournalEntryModal(params) 
     };
-    renderMap[modalId]?.();
+    renderMap[modalId]?.(appData);
     document.getElementById(modalId)?.classList.add('active');
 };
-window.openModal = openModal;
 
-const closeModal = (modalId) => {
+export const closeModal = (modalId) => {
     document.getElementById(modalId)?.classList.remove('active');
 };
-window.closeModal = closeModal;
 
-const toggleShoppingItem = async (itemId, isChecked) => {
-    const item = window.appData.shoppingLists.find(i => i.id === itemId);
+export const toggleShoppingItem = async (itemId, isChecked) => {
+    const item = appData.shoppingLists.find(i => i.id === itemId);
     if(item) { 
         item.completed = isChecked; 
         await dbOperations.put('shoppingLists', item);
         // No full reload needed, just a visual update
-        const itemElement = document.querySelector(`input[onchange="window.toggleShoppingItem(${itemId}, this.checked)"]`);
+        const itemElement = document.querySelector(`input[onchange="toggleShoppingItem(${itemId}, this.checked)"]`);
         if (itemElement) {
             itemElement.closest('.shopping-item').classList.toggle('completed', isChecked);
         }
     }
 };
-window.toggleShoppingItem = toggleShoppingItem;
 
 // --- INITIALIZATION ---
 
@@ -102,3 +97,4 @@ const initApp = async () => {
 };
 
 document.addEventListener('DOMContentLoaded', initApp);
+
