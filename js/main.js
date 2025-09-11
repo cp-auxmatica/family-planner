@@ -5,12 +5,12 @@ import { initDB, dbOperations, seedInitialData } from './db.js';
 import * as UI from './ui.js';
 
 // --- GLOBAL STATE & VARIABLES ---
-export let appData = {};
-export let currentView = 'dashboard';
+let appData = {};
+let currentView = 'dashboard';
 
 // --- CORE APP LOGIC ---
 
-export const loadAppData = async () => {
+const loadAppData = async () => {
     const stores = ['tasks', 'stores', 'shoppingLists', 'familyMembers', 'journalEntries'];
     const dataPromises = stores.map(s => dbOperations.getAll(s));
     const [tasks, storesData, shoppingLists, familyMembers, journalEntries] = await Promise.all(dataPromises);
@@ -23,7 +23,7 @@ export const loadAppData = async () => {
     };
 };
 
-export const switchView = (viewName, params = {}) => {
+const switchView = (viewName, params = {}) => {
     currentView = viewName;
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewName));
     document.querySelectorAll('.view').forEach(v => v.classList.toggle('hidden', v.id !== `${viewName}-view`));
@@ -46,39 +46,40 @@ export const switchView = (viewName, params = {}) => {
     renderMap[viewName]?.(appData);
 };
 
-export const openModal = (modalId, params = {}) => {
+const openModal = (modalId, params = {}) => {
     const renderMap = { 
         'settings-modal': UI.renderSettingsModal, 
         'add-item-modal': () => UI.renderTaskModal(params.id, appData), 
         'journal-entry-modal': () => UI.renderJournalEntryModal(params, appData) 
     };
-    renderMap[modalId]?.();
+    renderMap[modalId]?.(appData);
     document.getElementById(modalId)?.classList.add('active');
 };
 
-export const closeModal = (modalId) => {
+const closeModal = (modalId) => {
     document.getElementById(modalId)?.classList.remove('active');
 };
 
-export const toggleShoppingItem = async (itemId, isChecked) => {
+const toggleShoppingItem = async (itemId, isChecked) => {
     const item = appData.shoppingLists.find(i => i.id === itemId);
     if(item) { 
         item.completed = isChecked; 
         await dbOperations.put('shoppingLists', item);
-        // The checkbox's parent element will be visually updated via CSS
+        // The visual update is handled by the event listener to avoid a full re-render
     }
 };
 
-// --- EVENT HANDLERS ---
+// --- EVENT HANDLERS (MASTER DELEGATION PATTERN) ---
+
 function masterClickHandler(event) {
     const target = event.target;
     const actionTarget = target.closest('[data-action]');
     if (!actionTarget) return;
 
-    const { action, view, modalId, taskId, storeId } = actionTarget.dataset;
+    const { action, view, modalId, taskId, storeId, journalId } = actionTarget.dataset;
 
     if (action === 'switch-view') switchView(view, { storeId: parseInt(storeId) });
-    if (action === 'open-modal') openModal(modalId, { id: parseInt(taskId) });
+    if (action === 'open-modal') openModal(modalId, { id: parseInt(taskId), journalId: parseInt(journalId) });
     if (action === 'close-modal') closeModal(modalId);
     if (action === 'toggle-shopping-item') {
         const checkbox = actionTarget;
@@ -93,6 +94,7 @@ async function masterSubmitHandler(event) {
 
     if (form.id === 'task-form') {
         const taskId = parseInt(form.querySelector('#task-id').value);
+        const task = isNaN(taskId) ? {} : await dbOperations.get('tasks', taskId);
         const taskData = {
             id: isNaN(taskId) ? undefined : taskId,
             name: form.querySelector('#task-name').value,
@@ -100,9 +102,9 @@ async function masterSubmitHandler(event) {
             assignee: form.querySelector('#task-assignee').value,
             date: form.querySelector('#task-date').value,
             time: form.querySelector('#task-time').value,
+            journalEntryId: task.journalEntryId || null
         };
-        if (taskData.id) await dbOperations.put('tasks', taskData);
-        else await dbOperations.add('tasks', taskData);
+        await dbOperations.put('tasks', taskData);
         await loadAppData();
         switchView(currentView);
         closeModal('add-item-modal');
@@ -113,7 +115,7 @@ async function masterSubmitHandler(event) {
         if (!name) return;
         await dbOperations.add('familyMembers', { name, birthday: form.querySelector('#member-birthday').value || undefined });
         await loadAppData();
-        UI.renderSettingsModal(appData); // Re-render the modal content
+        UI.renderSettingsModal(appData); // Re-render just the modal content
     }
     
     if (form.id === 'add-list-form') {
@@ -137,14 +139,15 @@ async function masterSubmitHandler(event) {
     if (form.id === 'journal-form') {
         const entryData = {
             id: parseInt(form.dataset.journalId) || undefined,
-            taskId: parseInt(form.dataset.taskId) || undefined,
             date: new Date().toISOString().split('T')[0],
             title: form.querySelector('#journal-title').value,
             content: form.querySelector('#journal-content').value
         };
         const savedJournalId = await dbOperations.put('journalEntries', entryData);
-        if (entryData.taskId) {
-            const task = await dbOperations.get('tasks', entryData.taskId);
+        
+        const taskId = parseInt(form.dataset.taskId);
+        if (taskId) {
+            const task = await dbOperations.get('tasks', taskId);
             if(task) { task.journalEntryId = savedJournalId; await dbOperations.put('tasks', task); }
         }
         await loadAppData();
@@ -160,6 +163,7 @@ const initApp = async () => {
         await seedInitialData();
         await loadAppData();
         
+        // Centralized event listeners
         document.addEventListener('click', masterClickHandler);
         document.addEventListener('submit', masterSubmitHandler);
         
