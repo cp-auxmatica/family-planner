@@ -106,7 +106,7 @@
     
     <script>
         // --- DATABASE AND CORE APP LOGIC ---
-        const DB_NAME = 'HomeHubDB_v25';
+        const DB_NAME = 'HomeHubDB_v26';
         const DB_VERSION = 1;
         let db = null, currentView = 'dashboard', appData = {}, calendar, currentStoreId = null;
 
@@ -144,17 +144,21 @@
             const today = new Date();
             const tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
             const yesterday = new Date(); yesterday.setDate(today.getDate() - 1);
+            const nextWeek = new Date(); nextWeek.setDate(today.getDate() + 7);
             const formatDate = (date) => date.toISOString().split('T')[0];
             
-            await dbOps.add('tasks', { name: 'Morning Standup', date: formatDate(today), time: '09:00', type: 'Work' });
-            await dbOps.add('tasks', { name: 'Pick up kids', date: formatDate(today), time: '15:30', type: 'School' });
-
+            await dbOps.add('tasks', { name: 'Morning Standup', date: formatDate(today), time: '09:00', type: 'Work', priority: 'high' });
+            await dbOps.add('tasks', { name: 'Pick up kids', date: formatDate(today), time: '15:30', type: 'School', priority: 'high' });
+            await dbOps.add('tasks', { name: 'Project Deadline', date: formatDate(tomorrow), time: '17:00', type: 'Work', priority: 'urgent' });
+            await dbOps.add('tasks', { name: 'Dentist Appointment', date: formatDate(nextWeek), time: '11:00', type: 'Dentist', priority: 'high' });
+            await dbOps.add('tasks', { name: 'Take out trash', date: formatDate(today), type: 'Chore' });
+            
             const groceryId = await dbOps.add('stores', { name: 'Grocery Store' });
             await dbOps.add('shoppingLists', { storeId: groceryId, name: 'Milk', completed: false });
-            await dbOps.add('shoppingLists', { storeId: groceryId, name: 'Bread', completed: false });
-
-            await dbOps.add('meals', { date: formatDate(today), type: 'Dinner', name: 'Spaghetti and Meatballs' });
             
+            await dbOps.add('meals', { date: formatDate(today), type: 'Dinner', name: 'Spaghetti and Meatballs' });
+            await dbOps.add('meals', { date: formatDate(tomorrow), type: 'Dinner', name: 'Taco Night' });
+
             await dbOps.add('journalEntries', { date: formatDate(yesterday), title: 'A Good Day', content: 'We went to the park and had a great time. The weather was perfect.' });
         };
         
@@ -225,7 +229,6 @@
         const getTaskIcon = (type) => ({ 'School':'fa-school', 'Chore':'fa-broom', 'Appointment':'fa-calendar-check', 'Work': 'fa-briefcase', 'Dentist': 'fa-tooth', 'Doctor': 'fa-user-doctor' }[type] || 'fa-calendar-day');
         
         // --- UI RENDERING FUNCTIONS ---
-        
         function renderDashboard() {
             const container = document.getElementById('dashboard-view');
             const today = new Date();
@@ -389,14 +392,78 @@
             }
             container.innerHTML = html;
         }
+        
+        function renderCalendar() {
+            const container = document.getElementById('calendar-view');
+            container.innerHTML = `<div class="card"><div class="card-body"><div id="calendar-container"></div></div></div>`;
+            const calendarEl = document.getElementById('calendar-container');
+            if (calendar) calendar.destroy();
+            const isMobile = window.innerWidth < 768;
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: isMobile ? 'listDay' : 'dayGridMonth',
+                headerToolbar: isMobile 
+                    ? { left: 'prev,next today', center: 'title', right: '' }
+                    : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,workWeek,timeGridDay' },
+                events: appData.tasks.map(task => ({
+                    id: task.id, title: task.name,
+                    start: task.time ? `${task.date}T${task.time}` : task.date
+                })),
+                eventClick: (info) => openModal('task', { id: parseInt(info.event.id) }),
+                dateClick: (info) => openModal('task', { date: info.dateStr.split('T')[0] }),
+                viewDidMount: (info) => {
+                    if (isMobile) updateActiveCalendarButton(info.view.type);
+                }
+            });
+            calendar.render();
+            if (isMobile) {
+                const mobileControls = document.createElement('div');
+                mobileControls.className = 'calendar-mobile-controls';
+                mobileControls.innerHTML = `
+                    <button class="btn btn-outline" data-view="listDay">Day</button>
+                    <button class="btn btn-outline" data-view="listWeek">Week</button>
+                    <button class="btn btn-outline" data-view="dayGridMonth">Month</button>
+                `;
+                calendarEl.querySelector('.fc-toolbar').insertAdjacentElement('afterend', mobileControls);
+                mobileControls.querySelectorAll('button').forEach(btn => {
+                    btn.addEventListener('click', () => calendar.changeView(btn.dataset.view));
+                });
+            }
+        }
 
-        // --- All other render functions and MODAL_CONFIG remain unchanged ---
-        function renderCalendar() { /* ... same as previous version ... */ }
-        function renderMealPlanner() { /* ... same as previous version ... */ }
+        function updateActiveCalendarButton(activeView) {
+            document.querySelectorAll('.calendar-mobile-controls button').forEach(btn => {
+                btn.classList.toggle('hidden', btn.dataset.view === activeView);
+            });
+        }
+        
+        function renderMealPlanner() {
+            const container = document.getElementById('meals-view');
+            let html = `<div class="view-header"><h1 class="view-title">Meal Plan</h1></div>`;
+            const mealsByDate = appData.meals.reduce((acc, meal) => {
+                (acc[meal.date] = acc[meal.date] || []).push(meal);
+                return acc;
+            }, {});
+            const sortedDates = Object.keys(mealsByDate).sort();
+            if (sortedDates.length > 0) {
+                 sortedDates.forEach(date => {
+                    html += `<div class="card">
+                        <div class="card-header">${formatDate(date)}</div>
+                        <div class="card-body">${mealsByDate[date].map(createMealListItem).join('')}</div>
+                    </div>`;
+                });
+            } else {
+                 html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No meals planned. Use the '+' button to add one.</p></div></div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        // --- MODAL CONFIGURATION ---
         const MODAL_CONFIG = {
             'task': {
                 render: async ({id, date}) => {
                     const task = id ? await dbOps.get('tasks', id) : {};
+                    const types = ['Appointment', 'Chore', 'Errand', 'School', 'Work', 'Meeting', 'Doctor', 'Dentist'];
+                    const typeOptions = types.map(t => `<option value="${t}" ${task.type === t ? 'selected' : ''}>${t}</option>`).join('');
                     return `<div class="modal-content"><form id="task-form">
                         <div class="modal-header"><h3 class="modal-title">${id ? 'Edit Task' : 'New Task'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div>
                         <div class="modal-body">
@@ -404,6 +471,7 @@
                             <div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="task-name" value="${task.name || ''}" required></div>
                             <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="task-date" value="${task.date || date || new Date().toISOString().split('T')[0]}" required></div>
                             <div class="form-group"><label class="form-label">Time (optional)</label><input type="time" class="form-input" id="task-time" value="${task.time || ''}"></div>
+                            <div class="form-group"><label class="form-label">Type</label><select class="form-input" id="task-type">${typeOptions}</select></div>
                         </div>
                         <div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-task-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div>
                     </form></div>`;
@@ -412,7 +480,7 @@
                     document.getElementById('task-form').addEventListener('submit', async (e) => {
                         e.preventDefault();
                         const taskData = {
-                            id: parseInt(document.getElementById('task-id').value) || undefined, name: document.getElementById('task-name').value,
+                            id: parseInt(document.getElementById('task-id').value) || undefined, name: document.getElementById('task-name').value, type: document.getElementById('task-type').value,
                             date: document.getElementById('task-date').value, time: document.getElementById('task-time').value
                         };
                         if (taskData.id) await dbOps.put('tasks', taskData);
@@ -430,10 +498,27 @@
                 }
             },
             'store': {
-                 render: () => `<div class="modal-content"><form id="store-form"><div class="modal-header"><h3 class="modal-title">New Store</h3></div><div class="modal-body"><input type="text" class="form-input" id="store-name" placeholder="Store Name" required></div><div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Add</button></div></form></div>`,
+                 render: () => `<div class="modal-content"><form id="store-form"><div class="modal-header"><h3 class="modal-title">New Store</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="text" class="form-input" id="store-name" placeholder="Store Name" required></div><div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Add</button></div></form></div>`,
                  postRender: () => { document.getElementById('store-form').addEventListener('submit', async e => { e.preventDefault(); const name = document.getElementById('store-name').value.trim(); if(name) await dbOps.add('stores', {name}); await loadAppData(); refreshCurrentView(); closeModal(); }); }
             },
-            'meal': { /* ... same as previous version ... */ },
+            'meal': {
+                render: async ({id}) => {
+                    const meal = id ? await dbOps.get('meals', id) : {};
+                    const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+                    const typeOptions = mealTypes.map(t => `<option value="${t}" ${meal.type === t ? 'selected' : ''}>${t}</option>`).join('');
+                    return `<div class="modal-content"><form id="meal-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Meal' : 'New Meal'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="meal-id" value="${id || ''}"><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="meal-date" value="${meal.date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Meal Type</label><select class="form-input" id="meal-type">${typeOptions}</select></div><div class="form-group"><label class="form-label">Meal Name</label><input type="text" class="form-input" id="meal-name" value="${meal.name || ''}" required placeholder="e.g., Tacos, Cereal..."></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-meal-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
+                },
+                postRender: ({id}) => {
+                    document.getElementById('meal-form').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const mealData = { id: parseInt(document.getElementById('meal-id').value) || undefined, date: document.getElementById('meal-date').value, type: document.getElementById('meal-type').value, name: document.getElementById('meal-name').value };
+                        if (mealData.id) await dbOps.put('meals', mealData);
+                        else { delete mealData.id; await dbOps.add('meals', mealData); }
+                        await loadAppData(); refreshCurrentView(); closeModal();
+                    });
+                    if (id) { document.getElementById('delete-meal-btn').addEventListener('click', async () => { if (confirm('Delete this meal?')) { await dbOps.delete('meals', id); await loadAppData(); refreshCurrentView(); closeModal(); } }); }
+                }
+            },
             'journal': {
                 render: async ({id}) => {
                     const entry = id ? await dbOps.get('journalEntries', id) : {};
@@ -451,24 +536,12 @@
                 postRender: ({id}) => {
                     document.getElementById('journal-form').addEventListener('submit', async (e) => {
                         e.preventDefault();
-                        const entryData = {
-                            id: parseInt(document.getElementById('journal-id').value) || undefined,
-                            date: document.getElementById('journal-date').value,
-                            title: document.getElementById('journal-title').value,
-                            content: document.getElementById('journal-content').value
-                        };
+                        const entryData = { id: parseInt(document.getElementById('journal-id').value) || undefined, date: document.getElementById('journal-date').value, title: document.getElementById('journal-title').value, content: document.getElementById('journal-content').value };
                         if (entryData.id) await dbOps.put('journalEntries', entryData);
                         else { delete entryData.id; await dbOps.add('journalEntries', entryData); }
                         await loadAppData(); refreshCurrentView(); closeModal();
                     });
-                     if (id) {
-                        document.getElementById('delete-journal-btn').addEventListener('click', async () => {
-                            if (confirm('Delete this entry?')) {
-                                await dbOps.delete('journalEntries', id);
-                                await loadAppData(); refreshCurrentView(); closeModal();
-                            }
-                        });
-                    }
+                     if (id) { document.getElementById('delete-journal-btn').addEventListener('click', async () => { if (confirm('Delete this entry?')) { await dbOps.delete('journalEntries', id); await loadAppData(); refreshCurrentView(); closeModal(); } }); }
                 }
             }
         };
