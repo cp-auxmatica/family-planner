@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Home Hub</title>
+    <title>hub</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,63 +20,102 @@
             --border: #e5e7eb; --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 4px 15px -3px rgb(0 0 0 / 0.1);
             --radius: 12px; --radius-sm: 8px;
+            --urgent: #ef4444; --warning: #f97316; --success: #22c55e;
         }
         body.dark-mode {
             --primary: #eeeeee; --primary-hover: #ffffff;
+            --secondary: #10b981; --accent: #f472b6;
             --bg-primary: #020617; --bg-secondary: #0f172a; --bg-tertiary: #1e293b;
             --text-primary: #e2e8f0; --text-secondary: #94a3b8; --text-tertiary: #64748b;
-            --border: #334155;
+            --border: #334155; --shadow: 0 1px 3px 0 rgb(255 255 255 / 0.1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { font-size: 16px; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); }
-        .header { background: var(--bg-secondary); box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
-        .navbar { max-width: 1400px; margin: 0 auto; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-        .logo { font-size: 1.5rem; font-weight: 700; }
-        .search-bar { flex: 1; max-width: 400px; }
-        #search-input { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-tertiary); color: var(--text-primary); }
-        .top-nav { display: flex; justify-content: center; background: var(--bg-secondary); border-bottom: 1px solid var(--border); overflow-x: auto; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.75rem 1rem; background: transparent; color: var(--text-tertiary); border: none; border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.2s ease; }
+        html { font-size: 16px; scroll-behavior: smooth; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); transition: background-color 0.3s, color 0.3s; }
+        
+        /* --- HEADER AND NAVIGATION CUSTOMIZATIONS --- */
+        .header { 
+            background: #000000; /* Black header background */
+            border-bottom: 1px solid #333;
+            position: sticky; top: 0; z-index: 100; 
+            transition: background-color 0.3s, border-color 0.3s; 
+        }
+        .navbar { max-width: 1400px; margin: 0 auto; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+        .logo { font-size: 1.5rem; font-weight: 700; color: #ffffff; } /* White logo text */
+        .top-nav { display: flex; justify-content: center; background: #000000; border-bottom: 1px solid #333; overflow-x: auto; }
+        .nav-btn {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            background: transparent; color: #a0a0a0; /* Light gray for inactive icons */
+            border: none; border-bottom: 3px solid transparent;
+            cursor: pointer; transition: all 0.2s ease; font-weight: 500;
+        }
         .nav-btn i { font-size: 1.5rem; }
-        .nav-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .nav-btn:hover { 
+            background: #1a1a1a; /* Dark gray on hover */
+            color: #ffffff; 
+        }
+        .nav-btn.active { 
+            color: #ffffff; /* White active icon */
+            border-bottom-color: #2575fc; /* Bright blue indicator */
+        }
+    
+        /* --- DASHBOARD GRADIENT HEADERS --- */
+        #dashboard-view .card:nth-of-type(1) .card-header {
+            background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-bottom: none;
+        }
+        #dashboard-view .card:nth-of-type(2) .card-header {
+            background: linear-gradient(45deg, #f97794 0%, #623aa2 100%);
+            color: white;
+            border-bottom: none;
+        }
+        #dashboard-view .card:nth-of-type(3) .card-header {
+            background: linear-gradient(45deg, #ff8177 0%, #ff867a 0%, #ff8c7f 21%, #f99185 52%, #cf556c 78%, #b12a5b 100%);
+            color: white;
+            border-bottom: none;
+        }
+        /* --- End Customizations --- */
+    
         .main-container { padding: 1rem; max-width: 1400px; margin: 0 auto; }
-        .view-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+        .view-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
         .view-title { font-size: 1.75rem; font-weight: 700; }
         .card { background: var(--bg-secondary); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 1.5rem; border: 1px solid var(--border); }
         .card-header { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
         .card-body { padding: 0; }
-        .card-content { padding: 1rem; line-height: 1.6; color: var(--text-secondary); white-space: pre-wrap; }
-        .list-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; cursor: pointer; border-bottom: 1px solid var(--border); }
+        .card-content { padding: 1rem; line-height: 1.6; color: var(--text-secondary); }
+        .list-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); transition: background-color 0.2s; }
         .list-item:last-child { border-bottom: none; }
-        .list-item-icon { font-size: 1.2rem; width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: 50%; color: var(--primary); background: var(--bg-tertiary); flex-shrink: 0; }
-        .list-item-time { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
-        .list-item-content { flex: 1; line-height: 1.4; overflow: hidden; }
-        .list-item-content-main { display: flex; align-items: center; gap: 0.5rem; }
-        .list-item-title { font-size: 1rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .list-item-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.1rem; }
-        .list-item-aside { text-align: right; }
-        .list-item-assignee { font-size: 0.8rem; font-weight: 600; color: white; padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); }
+        .list-item:hover { background-color: var(--bg-tertiary); }
+        .list-item-icon { font-size: 1.2rem; width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: 50%; color: var(--primary); background: var(--bg-tertiary); }
+        .list-item-content { flex: 1; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .list-item-title { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
+        .list-item-subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+        .list-item-aside { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); text-align: right; }
+        .list-item-assignee { font-size: 0.8rem; color: var(--text-secondary); background-color: var(--bg-tertiary); padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); margin-top: 0.25rem; display: inline-block; }
         .fab { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background-color: var(--primary); color: white; font-size: 1.5rem; border: none; box-shadow: var(--shadow-lg); position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 900; cursor: pointer; transition: all 0.3s ease; }
         body.dark-mode .fab { color: #000; }
+        .fab:hover { transform: scale(1.05) rotate(90deg); background-color: var(--primary-hover); }
         .hidden { display: none !important; }
-        .btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.75rem 1.25rem;font-size:1rem;font-weight:500;border-radius:var(--radius-sm);border:none;cursor:pointer}.btn-primary{background:var(--primary);color:white}.btn-primary:hover{background-color: var(--primary-hover)}
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.75rem 1.25rem;font-size:1rem;font-weight:500;border-radius:var(--radius-sm);border:none;cursor:pointer;transition:all .2s}.btn-primary{background:var(--primary);color:white}.btn-primary:hover{background:var(--primary-hover)}.btn-outline{background:0 0;border:1px solid var(--border);color:var(--text-secondary)}.btn-outline:hover{background:var(--bg-tertiary)}.btn-ghost{background:0 0;color:var(--text-secondary);border:none;padding:.5rem}.btn-ghost:hover{background:var(--bg-tertiary);color:var(--text-primary)}.btn-danger{background:var(--error);color:white}
         body.dark-mode .btn-primary { color: #000; }
-        .modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.7);backdrop-filter:blur(4px);z-index:1000;padding:1rem;overflow-y:auto}.modal.active{display:flex;align-items:center;justify-content:center}
-        .form-input,.form-select,textarea.form-input{width:100%;padding:.75rem 1rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:1rem;background:var(--bg-tertiary);color:var(--text-primary)}
+        .modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.7);backdrop-filter:blur(4px);z-index:1000;padding:1rem;overflow-y:auto}.modal.active{display:flex;align-items:center;justify-content:center;animation:fadeIn .3s ease}.modal-content{background:var(--bg-secondary);border-radius:var(--radius);max-width:500px;width:100%;animation:slideIn .3s ease;box-shadow:var(--shadow-lg)}.modal-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}.modal-title{font-size:1.2rem;font-weight:600}.modal-body{padding:1.5rem}.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:1rem;justify-content:flex-end}
+        @keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .form-group{margin-bottom:1.5rem}.form-label{display:block;font-size:.9rem;font-weight:500;color:var(--text-primary);margin-bottom:.5rem}.form-input,.form-select,textarea.form-input{width:100%;padding:.75rem 1rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:1rem;background:var(--bg-primary);color:var(--text-primary)}.form-input:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent)}
+        .shopping-item.completed .list-item-title { text-decoration: line-through; opacity: 0.6; }
         .checkbox{width:1.25rem;height:1.25rem;accent-color:var(--primary)}
         #calendar-view .card-body { padding: 1rem; }
         .fc { border: none !important; --fc-border-color: var(--border); --fc-today-bg-color: var(--bg-tertiary); }
         .fc .fc-button { background-color: var(--primary) !important; color: white !important; }
         body.dark-mode .fc .fc-button { color: #000 !important; }
         .calendar-mobile-controls { display: flex; justify-content: center; gap: 0.5rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); margin-bottom: 0.75rem; }
+        .calendar-mobile-controls .btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
     </style>
 </head>
 <body>
     <header class="header">
-        <nav class="navbar">
-            <div class="logo">Home Hub</div>
-            <div class="search-bar"><input type="search" id="search-input" placeholder="Search..."></div>
-        </nav>
+        <nav class="navbar"><div class="logo">hub</div></nav>
         <div class="top-nav">
             <button class="nav-btn active" data-view="dashboard"><i class="fas fa-home"></i></button>
             <button class="nav-btn" data-view="shopping"><i class="fas fa-shopping-cart"></i></button>
@@ -98,144 +137,204 @@
     </main>
 
     <button id="fab" class="fab"><i class="fas fa-plus"></i></button>
+    
     <div id="generic-modal" class="modal"></div>
     
     <script>
-        const DB_NAME = 'HomeHubDB_v32';
+        // --- DATABASE AND CORE APP LOGIC ---
+        const DB_NAME = 'hubDB_v1';
         const DB_VERSION = 1;
         let db = null, currentView = 'dashboard', appData = {}, calendar, currentStoreId = null;
-        const USER_COLORS = ['#3498db', '#e74c3c', '#9b59b6', '#2ecc71', '#f1c40f', '#e67e22', '#1abc9c'];
 
-        const dbOps = {
-            add: (store, data) => new Promise((resolve, reject) => { const tx = db.transaction(store, 'readwrite'); tx.objectStore(store).add(data).onsuccess = event => resolve(event.target.result); tx.onerror = () => reject(tx.error); }),
-            getAll: (store) => new Promise((resolve, reject) => { const request = db.transaction(store, 'readonly').objectStore(store).getAll(); request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error); }),
-            put: (store, data) => new Promise((resolve, reject) => { const tx = db.transaction(store, 'readwrite'); tx.objectStore(store).put(data); tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error); }),
-            delete: (store, id) => new Promise((resolve, reject) => { const tx = db.transaction(store, 'readwrite'); tx.objectStore(store).delete(id); tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error); }),
-        };
-        
-        const initDB = () => new Promise((resolve) => {
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-            request.onupgradeneeded = e => { ['tasks', 'stores', 'shoppingLists', 'familyMembers', 'journalEntries', 'meals'].forEach(name => { if (!e.target.result.objectStoreNames.contains(name)) e.target.result.createObjectStore(name, { keyPath: 'id', autoIncrement: true }); }); };
-            request.onsuccess = e => { db = e.target.result; resolve(); };
+        const dbRequest = (storeName, mode, action, ...args) => new Promise((resolve, reject) => {
+            if (!db) return reject("Database not initialized.");
+            const tx = db.transaction(storeName, mode);
+            tx.onerror = event => reject(event.target.error);
+            const request = tx.objectStore(storeName)[action](...args);
+            if (mode === 'readonly') request.onsuccess = () => resolve(request.result);
+            else tx.oncomplete = () => resolve(request.result || request.source.key);
         });
+        const initDB = () => new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onerror = e => reject(e.target.error);
+            request.onsuccess = e => { db = e.target.result; resolve(db); };
+            request.onupgradeneeded = e => {
+                db = e.target.result;
+                ['tasks', 'stores', 'shoppingLists', 'familyMembers', 'journalEntries', 'meals'].forEach(name => {
+                    if (!db.objectStoreNames.contains(name)) db.createObjectStore(name, { keyPath: 'id', autoIncrement: true });
+                });
+            };
+        });
+        const dbOps = {
+            add: (store, data) => dbRequest(store, 'readwrite', 'add', data),
+            getAll: (store) => dbRequest(store, 'readonly', 'getAll'),
+            get: (store, id) => dbRequest(store, 'readonly', 'get', id),
+            put: (store, data) => dbRequest(store, 'readwrite', 'put', data),
+            delete: (store, id) => dbRequest(store, 'readwrite', 'delete', id),
+        };
         
         const seedInitialData = async () => {
             const family = await dbOps.getAll('familyMembers');
             if (family && family.length > 0) return;
-            const today = new Date(), tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
+            console.log("Seeding initial data...");
+            const today = new Date(), tomorrow = new Date(), yesterday = new Date(), nextWeek = new Date();
+            tomorrow.setDate(today.getDate() + 1);
+            yesterday.setDate(today.getDate() - 1);
+            nextWeek.setDate(today.getDate() + 7);
             const formatDate = (date) => date.toISOString().split('T')[0];
-            await dbOps.add('familyMembers', { name: 'Alex', color: USER_COLORS[0], birthday: '1990-10-25' });
-            await dbOps.add('familyMembers', { name: 'Sam', color: USER_COLORS[1], birthday: '1992-03-15' });
+            
+            await dbOps.add('familyMembers', { name: 'Alex' });
+            await dbOps.add('familyMembers', { name: 'Sam' });
+            
             await dbOps.add('tasks', { name: 'Morning Standup', date: formatDate(today), time: '09:00', type: 'Work', priority: 'high', assignee: 'Sam' });
             await dbOps.add('tasks', { name: 'Pick up kids', date: formatDate(today), time: '15:30', type: 'School', priority: 'high', assignee: 'Alex' });
+            await dbOps.add('tasks', { name: 'Project Deadline', date: formatDate(tomorrow), time: '17:00', type: 'Work', priority: 'urgent', assignee: 'Sam' });
+            await dbOps.add('tasks', { name: 'Dentist Appointment', date: formatDate(nextWeek), time: '11:00', type: 'Dentist', priority: 'high', assignee: 'Alex' });
+            
             const groceryId = await dbOps.add('stores', { name: 'Grocery Store' });
             await dbOps.add('shoppingLists', { storeId: groceryId, name: 'Milk', completed: false });
-            await dbOps.add('meals', { date: formatDate(today), type: 'Dinner', name: 'Tacos', items: [{name: 'Ground Beef', needed: true}, {name: 'Taco Shells', needed: false}], recipeLink: 'https://example.com/tacos' });
+            
+            await dbOps.add('meals', { date: formatDate(today), type: 'Dinner', name: 'Spaghetti and Meatballs' });
+            
+            await dbOps.add('journalEntries', { date: formatDate(yesterday), title: 'A Good Day', content: 'We went to the park and had a great time.' });
         };
         
-        const openModal = async (modalType, params = {}) => { document.getElementById('generic-modal').innerHTML = await MODAL_CONFIG[modalType]?.render(params); document.getElementById('generic-modal').classList.add('active'); MODAL_CONFIG[modalType]?.postRender?.(params); };
-        const closeModal = () => document.getElementById('generic-modal').classList.remove('active');
+        const openModal = async (modalType, params = {}) => {
+            const modal = document.getElementById('generic-modal');
+            const modalContent = await MODAL_CONFIG[modalType]?.render(params);
+            if(modalContent) {
+                modal.innerHTML = modalContent;
+                modal.classList.add('active');
+                MODAL_CONFIG[modalType]?.postRender?.(params);
+            }
+        };
+        const closeModal = () => document.getElementById('generic-modal')?.classList.remove('active');
 
         const switchView = (viewName) => {
             currentView = viewName;
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewName));
             document.querySelectorAll('.view').forEach(v => v.classList.toggle('hidden', v.id !== `${viewName}-view`));
             document.getElementById('fab').classList.toggle('hidden', viewName === 'list-detail');
-            const fabActions = { 'dashboard': () => openModal('task'), 'shopping': () => openModal('store'), 'calendar': () => openModal('task'), 'meals': () => openModal('meal'), 'journal': () => openModal('journal'), 'contacts': () => openModal('contact') };
+            const fabActions = { 
+                'dashboard': () => openModal('task'), 'shopping': () => openModal('store'),
+                'calendar': () => openModal('task'), 'meals': () => openModal('meal'), 
+                'journal': () => openModal('journal'), 'contacts': () => openModal('contact')
+            };
             document.getElementById('fab').onclick = fabActions[viewName] || (() => {});
-            document.getElementById('search-input').value = '';
             refreshCurrentView();
         };
 
-        const refreshCurrentView = (searchTerm = '') => {
-            const renderMap = { 'dashboard': renderDashboard, 'shopping': renderShopping, 'list-detail': renderListDetail, 'calendar': renderCalendar, 'meals': renderMealPlanner, 'journal': renderJournal, 'contacts': renderContacts };
-            renderMap[currentView]?.(searchTerm);
+        const refreshCurrentView = () => {
+            const renderMap = { 
+                'dashboard': renderDashboard, 'shopping': renderShopping, 'list-detail': renderListDetail, 
+                'calendar': renderCalendar, 'meals': renderMealPlanner, 'journal': renderJournal,
+                'contacts': renderContacts
+            };
+            renderMap[currentView]?.();
         };
 
         const loadAppData = async () => {
             const stores = ['tasks', 'stores', 'shoppingLists', 'familyMembers', 'journalEntries', 'meals'];
             const dataPromises = stores.map(s => dbOps.getAll(s));
             const [tasks, storesData, shoppingLists, familyMembers, journalEntries, meals] = await Promise.all(dataPromises);
-            appData = { tasks, stores, shoppingLists, familyMembers, journalEntries, meals };
+            appData = { tasks: tasks||[], stores: storesData||[], shoppingLists: shoppingLists||[], familyMembers: familyMembers||[], journalEntries: journalEntries||[], meals: meals||[] };
         };
 
         const initApp = async () => {
-            await initDB(); await seedInitialData(); await loadAppData();
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
-            document.getElementById('search-input').addEventListener('input', (e) => refreshCurrentView(e.target.value.toLowerCase()));
-            switchView('dashboard');
+            try {
+                if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+                await initDB();
+                await seedInitialData();
+                await loadAppData();
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
+                switchView('dashboard');
+            } catch (error) { console.error('Error initializing app:', error); }
         };
         document.addEventListener('DOMContentLoaded', initApp);
         
         const formatTime = (time) => !time ? '' : new Date(`1970-01-01T${time}`).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-        const formatDate = (dateStr) => dateStr ? new Date(dateStr + 'T00:00:00').toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' }) : '';
+        const formatDate = (dateStr) => new Date(dateStr + 'T00:00:00').toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+        const getTaskIcon = (type) => ({ 'School':'fa-school', 'Chore':'fa-broom', 'Appointment':'fa-calendar-check', 'Work': 'fa-briefcase', 'Dentist': 'fa-tooth', 'Doctor': 'fa-user-doctor' }[type] || 'fa-calendar-day');
         
         function renderDashboard() {
             const container = document.getElementById('dashboard-view');
-            const now = new Date();
             const today = new Date(), tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
             const todayStr = today.toISOString().split('T')[0], tomorrowStr = tomorrow.toISOString().split('T')[0];
-            const timedEventsToday = appData.tasks.filter(t => t.date === todayStr && t.time && new Date(`${t.date}T${t.time}`) > now).sort((a,b) => a.time.localeCompare(b.time));
+            const timedEventsToday = appData.tasks.filter(t => t.date === todayStr && t.time).sort((a,b) => a.time.localeCompare(b.time));
             const mealsToday = appData.meals.filter(m => m.date === todayStr);
-            const openShoppingLists = appData.stores.filter(store => appData.shoppingLists.some(item => item.storeId === store.id && !item.completed));
-            const upcoming = appData.tasks.filter(t => new Date(t.date) >= new Date(tomorrowStr) && (t.time || ['Appointment', 'Dentist', 'Doctor'].includes(t.type))).sort((a,b) => a.date.localeCompare(b.date));
+            const timedEventsTomorrow = appData.tasks.filter(t => t.date === tomorrowStr && t.time);
+            const importantAppointments = appData.tasks.filter(t => {
+                const isImportant = ['Appointment', 'Dentist', 'Doctor'].includes(t.type);
+                const isAfterTomorrow = new Date(t.date) > new Date(tomorrowStr);
+                return isImportant && isAfterTomorrow;
+            });
+            const upcoming = [...timedEventsTomorrow, ...importantAppointments].sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''));
             container.innerHTML = `
-                <div class="card"><div class="card-header" style="background-color: #E0F2FE;">Today's Schedule</div><div class="card-body">${timedEventsToday.length > 0 ? timedEventsToday.map(createTaskListItem).join('') : `<div class="list-item"><p>No upcoming events today.</p></div>`}</div></div>
-                <div class="card"><div class="card-header" style="background-color: #FEF9C3;">Today's Meals</div><div class="card-body">${mealsToday.length > 0 ? mealsToday.map(createMealListItem).join('') : `<div class="list-item"><p>No meals planned.</p></div>`}</div></div>
-                <div class="card"><div class="card-header" style="background-color: #F3E8FF;">Upcoming</div><div class="card-body">${upcoming.length > 0 ? upcoming.map(createTaskListItem).join('') : `<div class="list-item"><p>Nothing on the horizon.</p></div>`}</div></div>
-                <div class="card"><div class="card-header" style="background-color: #D1FAE5;">Open Shopping Lists</div><div class="card-body">${openShoppingLists.length > 0 ? openShoppingLists.map(createShoppingListDashboardItem).join('') : `<div class="list-item"><p>No open shopping lists.</p></div>`}</div></div>`;
+                <div class="card">
+                    <div class="card-header" style="background-color: #E0F2FE;">Today's Schedule</div>
+                    <div class="card-body">${timedEventsToday.length > 0 ? timedEventsToday.map(createTaskListItem).join('') : `<div class="list-item"><p class="list-item-subtitle">No timed events scheduled.</p></div>`}</div>
+                </div>
+                <div class="card">
+                    <div class="card-header" style="background-color: #FEF9C3;">Today's Meals</div>
+                    <div class="card-body">${mealsToday.length > 0 ? mealsToday.map(createMealListItem).join('') : `<div class="list-item"><p class="list-item-subtitle">No meals planned.</p></div>`}</div>
+                </div>
+                <div class="card">
+                    <div class="card-header" style="background-color: #F3E8FF;">Upcoming</div>
+                    <div class="card-body">${upcoming.length > 0 ? upcoming.map(createTaskListItem).join('') : `<div class="list-item"><p class="list-item-subtitle">Nothing on the horizon.</p></div>`}</div>
+                </div>`;
         }
 
         function createTaskListItem(item) {
-            const assignee = appData.familyMembers.find(m => m.name === item.assignee);
-            return `<div class="list-item" onclick="openModal('task', {id:${item.id}})">
-                <div class="list-item-icon"><i class="fas fa-calendar-day"></i></div>
-                <div class="list-item-content">
-                    <div class="list-item-content-main">
-                        ${item.time ? `<div class="list-item-time">${formatTime(item.time)}</div>` : ''}
-                        <div class="list-item-title">${item.name}</div>
-                    </div>
-                    <div class="list-item-subtitle">${formatDate(item.date)}</div>
-                </div>
-                <div class="list-item-aside">${assignee ? `<div class="list-item-assignee" style="background-color:${assignee.color};">${assignee.name}</div>` : ''}</div>
-            </div>`;
+            return `<div class="list-item" style="cursor: pointer;" onclick="openModal('task', {id:${item.id}})"><div class="list-item-icon"><i class="fas ${getTaskIcon(item.type)}"></i></div><div class="list-item-content"><div class="list-item-title">${item.name}</div><div class="list-item-subtitle">${formatDate(item.date)}</div></div><div class="list-item-aside">${item.time ? formatTime(item.time) : ''}${item.assignee ? `<div class="list-item-assignee">${item.assignee}</div>` : ''}</div></div>`;
         }
         
         function createMealListItem(item) {
-             const neededItems = (item.items || []).filter(i => i.needed).length;
-             return `<div class="list-item" onclick="openModal('meal', {id:${item.id}})">
-                <div class="list-item-icon"><i class="fas fa-utensils"></i></div>
-                <div class="list-item-content"><div class="list-item-title">${item.name}</div>
-                ${neededItems > 0 ? `<div class="list-item-subtitle">${neededItems} item(s) to buy</div>` : ''}</div>
-                <div class="list-item-aside">${item.recipeLink ? `<a href="${item.recipeLink.startsWith('http') ? item.recipeLink : 'https://' + item.recipeLink}" target="_blank" onclick="event.stopPropagation()"><i class="fas fa-link"></i></a>` : ''}<div class="list-item-assignee" style="margin-left:1rem;">${item.type}</div></div>
-             </div>`;
-        }
-
-        function createShoppingListDashboardItem(store) {
-            const needed = appData.shoppingLists.filter(i => i.storeId === store.id && !i.completed).length;
-            return `<div class="list-item" onclick="showListDetail(${store.id})"><div class="list-item-icon"><i class="fas fa-store"></i></div><div class="list-item-content"><div class="list-item-title">${store.name}</div></div><div class="list-item-aside"><b>${needed}</b> items</div></div>`;
+             return `<div class="list-item" style="cursor: pointer;" onclick="openModal('meal', {id:${item.id}})"><div class="list-item-icon"><i class="fas fa-utensils"></i></div><div class="list-item-content"><div class="list-item-title">${item.name}</div></div><div class="list-item-aside"><div class="list-item-assignee">${item.type}</div></div></div>`;
         }
 
         function renderContacts() {
             const container = document.getElementById('contacts-view');
-            container.innerHTML = `<div class="view-header"><h1 class="view-title">Contacts</h1></div>` + (appData.familyMembers || []).map(member => `<div class="card"><div class="list-item"><div class="list-item-icon" style="background-color:${member.color}; color:white;"><i class="fas fa-user"></i></div><div class="list-item-content"><div class="list-item-title">${member.name}</div><div class="list-item-subtitle">${member.birthday ? `Birthday: ${formatDate(member.birthday)}` : ''}</div></div><button class="btn btn-ghost" onclick="deleteContact(${member.id})"><i class="fas fa-trash-alt"></i></button></div></div>`).join('');
-        }
-        async function deleteContact(id) { if (confirm('Delete contact?')) { await dbOps.delete('familyMembers', id); await loadAppData(); refreshCurrentView(); } }
-        
-        function renderShopping(searchTerm = '') {
-            const container = document.getElementById('shopping-view');
-            let stores = appData.stores;
-            if (searchTerm) {
-                const matchingItemStoreIds = new Set(appData.shoppingLists.filter(i => i.name.toLowerCase().includes(searchTerm)).map(i => i.storeId));
-                stores = appData.stores.filter(s => s.name.toLowerCase().includes(searchTerm) || matchingItemStoreIds.has(s.id));
+            let html = `<div class="view-header"><h1 class="view-title">Contacts</h1></div>`;
+            const members = appData.familyMembers || [];
+            if (members.length > 0) {
+                html += `<div class="card"><div class="card-body">` + members.map(member => `
+                    <div class="list-item">
+                        <div class="list-item-icon"><i class="fas fa-user"></i></div>
+                        <div class="list-item-content"><div class="list-item-title">${member.name}</div></div>
+                        <button class="btn btn-ghost" onclick="deleteContact(${member.id})"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                `).join('') + `</div></div>`;
+            } else {
+                html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No contacts found. Add one with the '+' button.</p></div></div>`;
             }
-            container.innerHTML = `<div class="view-header"><h1 class="view-title">Shopping Lists</h1></div>` + stores.map(store => {
-                const items = appData.shoppingLists.filter(i => i.storeId === store.id); const needed = items.filter(i => !i.completed).length;
-                return `<div class="card" onclick="showListDetail(${store.id})"><div class="card-header" style="background-color:#E0F2FE;">${store.name}</div><div class="list-item"><div class="list-item-content"><div class="list-item-subtitle">${needed} of ${items.length} items needed</div></div><div class="list-item-aside"><i class="fas fa-chevron-right"></i></div></div></div>`;
-            }).join('');
+            container.innerHTML = html;
         }
 
-        function showListDetail(storeId) { currentStoreId = storeId; switchView('list-detail'); }
+        async function deleteContact(id) {
+            if (confirm('Are you sure you want to delete this contact?')) { await dbOps.delete('familyMembers', id); await loadAppData(); refreshCurrentView(); }
+        }
+
+        function renderShopping() {
+            const container = document.getElementById('shopping-view');
+            let html = `<div class="view-header"><h1 class="view-title">Shopping Lists</h1></div>`;
+            const stores = (appData.stores || []).filter(store => store && store.name);
+            if (stores.length === 0) {
+                html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No stores found. Add one with the '+' button.</p></div></div>`;
+            } else {
+                html += stores.map(store => {
+                    const items = appData.shoppingLists.filter(i => i.storeId === store.id);
+                    const needed = items.filter(i => !i.completed).length;
+                    return `<div class="card" style="cursor: pointer;" onclick="showListDetail(${store.id})"><div class="list-item"><div class="list-item-icon"><i class="fas fa-store"></i></div><div class="list-item-content"><div class="list-item-title">${store.name}</div><div class="list-item-subtitle">${needed} of ${items.length} items needed</div></div><div class="list-item-aside"><i class="fas fa-chevron-right"></i></div></div></div>`;
+                }).join('');
+            }
+            container.innerHTML = html;
+        }
+
+        function showListDetail(storeId) {
+            currentStoreId = storeId;
+            switchView('list-detail');
+        }
+
         function renderListDetail() {
             if (currentStoreId === null) return;
             const container = document.getElementById('list-detail-view');
@@ -243,19 +342,34 @@
             const items = appData.shoppingLists.filter(i => i.storeId === currentStoreId);
             const needed = items.filter(i => !i.completed);
             const completed = items.filter(i => i.completed);
-            const createItemHtml = item => `<div class="list-item"><input type="checkbox" class="checkbox" onchange="toggleShoppingItem(${item.id})" ${item.completed ? 'checked' : ''}><div class="list-item-content"><div class="list-item-title">${item.name}</div></div><button class="btn btn-ghost" onclick="deleteShoppingItem(${item.id})"><i class="fas fa-trash-alt"></i></button></div>`;
-            container.innerHTML = `<div class="view-header"><button class="btn btn-ghost" onclick="switchView('shopping')"><i class="fas fa-arrow-left"></i> Back</button><h1 class="view-title" style="font-size: 1.5rem;">${store.name}</h1></div><div class="card"><div class="card-header">Needed</div><div class="card-body">${needed.length > 0 ? needed.map(createItemHtml).join('') : `<div class="list-item"><p>All done!</p></div>`}</div></div>${completed.length > 0 ? `<div class="card"><div class="card-header">Completed</div><div class="card-body">${completed.map(createItemHtml).join('')}</div></div>` : ''}<div class="card" style="position: sticky; bottom: 1rem;"><form id="add-item-form" style="display: flex; gap: 0.5rem; padding: 0.5rem;"><input type="text" class="form-input" id="new-item-name" placeholder="Add item..." required><button type="submit" class="btn btn-primary">Add</button></form></div>`;
-            document.getElementById('add-item-form').addEventListener('submit', async e => { e.preventDefault(); const input = document.getElementById('new-item-name'); if (!input.value.trim()) return; await dbOps.add('shoppingLists', { storeId: currentStoreId, name: input.value.trim(), completed: false }); await loadAppData(); renderListDetail(); });
+            const createItemHtml = item => `<div class="list-item shopping-item ${item.completed ? 'completed' : ''}"><input type="checkbox" class="checkbox" onchange="toggleShoppingItem(${item.id})" ${item.completed ? 'checked' : ''}><div class="list-item-content" style="cursor: pointer;" onclick="openModal('shoppingItem', {id: ${item.id}})"><div class="list-item-title">${item.name}</div></div><button class="btn btn-ghost" onclick="deleteShoppingItem(${item.id})"><i class="fas fa-trash-alt"></i></button></div>`;
+            container.innerHTML = `<div class="view-header"><button class="btn btn-ghost" onclick="switchView('shopping')"><i class="fas fa-arrow-left"></i> Back</button><h1 class="view-title" style="font-size: 1.5rem;">${store.name}</h1></div><div class="card"><div class="card-header">Needed</div><div class="card-body">${needed.length > 0 ? needed.map(createItemHtml).join('') : `<div class="list-item"><p class="list-item-subtitle">All done!</p></div>`}</div></div>${completed.length > 0 ? `<div class="card"><div class="card-header">Completed</div><div class="card-body">${completed.map(createItemHtml).join('')}</div></div>` : ''}<div class="card" style="position: sticky; bottom: 1rem;"><form id="add-item-form" style="display: flex; gap: 0.5rem; padding: 0.5rem;"><input type="text" class="form-input" id="new-item-name" placeholder="Add a new item..." required><button type="submit" class="btn btn-primary">Add</button></form></div>`;
+            document.getElementById('add-item-form').addEventListener('submit', async e => {
+                e.preventDefault();
+                const input = document.getElementById('new-item-name');
+                if (!input.value.trim()) return;
+                await dbOps.add('shoppingLists', { storeId: currentStoreId, name: input.value.trim(), completed: false });
+                await loadAppData(); renderListDetail();
+            });
         }
-        async function toggleShoppingItem(itemId) { const item = appData.shoppingLists.find(i => i.id === itemId); if(item) { item.completed = !item.completed; await dbOps.put('shoppingLists', item); await loadAppData(); renderListDetail(); } }
-        async function deleteShoppingItem(itemId) { if (confirm('Delete item?')) { await dbOps.delete('shoppingLists', itemId); await loadAppData(); renderListDetail(); } }
 
-        function renderJournal(searchTerm = '') {
+        async function toggleShoppingItem(itemId) {
+            const item = appData.shoppingLists.find(i => i.id === itemId);
+            if(item) { item.completed = !item.completed; await dbOps.put('shoppingLists', item); await loadAppData(); renderListDetail(); }
+        }
+        async function deleteShoppingItem(itemId) {
+            if (confirm('Delete this item?')) { await dbOps.delete('shoppingLists', itemId); await loadAppData(); refreshCurrentView(); closeModal(); }
+        }
+
+        function renderJournal() {
             const container = document.getElementById('journal-view');
-            const entries = appData.journalEntries.filter(e => searchTerm ? e.title.toLowerCase().includes(searchTerm) || e.content.toLowerCase().includes(searchTerm) : true).sort((a,b) => b.date.localeCompare(a.date));
             let html = `<div class="view-header"><h1 class="view-title">Journal</h1></div>`;
-            if (entries.length > 0) { html += entries.map(entry => `<div class="card" onclick="openModal('journal', {id: ${entry.id}})"><div class="card-header"><span>${entry.title}</span><span class="list-item-subtitle">${formatDate(entry.date)}</span></div><div class="card-content">${entry.content.substring(0, 150)}${entry.content.length > 150 ? '...' : ''}</div></div>`).join(''); } 
-            else { html += `<div class="card"><div class="list-item"><p>No journal entries found.</p></div></div>`; }
+            const entries = (appData.journalEntries || []).sort((a,b) => b.date.localeCompare(a.date));
+            if (entries.length > 0) {
+                html += entries.map(entry => `<div class="card" style="cursor: pointer;" onclick="openModal('journal', {id: ${entry.id}})"><div class="card-header"><span>${entry.title}</span><span class="list-item-subtitle">${formatDate(entry.date)}</span></div><div class="card-content">${entry.content.substring(0, 150)}${entry.content.length > 150 ? '...' : ''}</div></div>`).join('');
+            } else {
+                html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No journal entries yet. Use the '+' button to add one.</p></div></div>`;
+            }
             container.innerHTML = html;
         }
         
@@ -267,7 +381,7 @@
             const isMobile = window.innerWidth < 768;
             calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: isMobile ? 'listDay' : 'dayGridMonth',
-                headerToolbar: isMobile ? { left: 'prev,next today', center: 'title', right: '' } : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,workWeek,timeGridDay' },
+                headerToolbar: isMobile ? { left: 'prev,next today', center: 'title', right: '' } : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
                 events: appData.tasks.map(task => ({ id: task.id, title: task.name, start: task.time ? `${task.date}T${task.time}` : task.date, extendedProps: { assignee: task.assignee } })),
                 eventClick: (info) => openModal('task', { id: parseInt(info.event.id) }),
                 dateClick: (info) => openModal('task', { date: info.dateStr.split('T')[0] }),
@@ -283,48 +397,98 @@
                 mobileControls.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => calendar.changeView(btn.dataset.view)));
             }
         }
-        function updateActiveCalendarButton(activeView) { document.querySelectorAll('.calendar-mobile-controls button').forEach(btn => { btn.classList.toggle('hidden', btn.dataset.view === activeView); }); }
+
+        function updateActiveCalendarButton(activeView) {
+            document.querySelectorAll('.calendar-mobile-controls button').forEach(btn => {
+                btn.classList.toggle('hidden', btn.dataset.view === activeView);
+            });
+        }
         
-        function renderMealPlanner(searchTerm = '') {
+        function renderMealPlanner() {
             const container = document.getElementById('meals-view');
             let html = `<div class="view-header"><h1 class="view-title">Meal Plan</h1></div>`;
-            const meals = appData.meals.filter(m => searchTerm ? m.name.toLowerCase().includes(searchTerm) || m.items.some(i => i.name.toLowerCase().includes(searchTerm)) : true);
-            const mealsByDate = meals.reduce((acc, meal) => { (acc[meal.date] = acc[meal.date] || []).push(meal); return acc; }, {});
-            const sortedDates = Object.keys(mealsByDate).sort();
-            if (sortedDates.length > 0) { sortedDates.forEach(date => { html += `<div class="card"><div class="card-header">${formatDate(date)}</div><div class="card-body">${mealsByDate[date].map(createMealListItem).join('')}</div></div>`; }); } 
-            else { html += `<div class="card"><div class="list-item"><p>No meals found.</p></div></div>`; }
+            const mealsByDate = (appData.meals || []).reduce((acc, meal) => { (acc[meal.date] = acc[meal.date] || []).push(meal); return acc; }, {});
+            const sortedDates = Object.keys(mealsByDate).sort((a, b) => a.localeCompare(b));
+            if (sortedDates.length > 0) {
+                 sortedDates.forEach(date => { html += `<div class="card"><div class="card-header">${formatDate(date)}</div><div class="card-body">${mealsByDate[date].map(createMealListItem).join('')}</div></div>`; });
+            } else {
+                 html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No meals planned. Use the '+' button to add one.</p></div></div>`;
+            }
             container.innerHTML = html;
         }
 
         const MODAL_CONFIG = {
             'task': {
                 render: async ({id, date}) => {
-                    const task = id ? await dbOps.get('tasks', id) : {}; const memberOptions = (appData.familyMembers || []).map(m => `<option value="${m.name}" ${task.assignee === m.name ? 'selected' : ''}>${m.name}</option>`).join(''); const types = ['Appointment', 'Chore', 'Errand', 'School', 'Work', 'Meeting', 'Doctor', 'Dentist']; const typeOptions = types.map(t => `<option value="${t}" ${task.type === t ? 'selected' : ''}>${t}</option>`).join('');
-                    return `<div class="modal-content" style="max-height: 90vh; display: flex; flex-direction: column;"><form id="task-form" style="display: contents;"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Task' : 'New Task'}</h3></div><div class="modal-body" style="overflow-y: auto;"><input type="hidden" id="task-id" value="${id || ''}"><div class="form-group"><label>Title</label><input type="text" id="task-name" class="form-input" value="${task.name || ''}" required></div><div class="form-group"><label>Date</label><input type="date" id="task-date" class="form-input" value="${task.date || date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label>Time</label><input type="time" id="task-time" class="form-input" value="${task.time || ''}"></div><div class="form-group"><label>Type</label><select id="task-type" class="form-input">${typeOptions}</select></div><div class="form-group"><label>Assign To</label><select id="task-assignee" class="form-input"><option value="">Unassigned</option>${memberOptions}</select></div><div class="form-group"><label>Priority</label><select id="task-priority" class="form-input"><option value="low" ${task.priority === 'low' ? 'selected' : ''}>Low</option><option value="medium" ${!task.priority || task.priority === 'medium' ? 'selected' : ''}>Medium</option><option value="high" ${task.priority === 'high' ? 'selected' : ''}>High</option><option value="urgent" ${task.priority === 'urgent' ? 'selected' : ''}>Urgent</option></select></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-task-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
+                    const task = id ? await dbOps.get('tasks', id) : {};
+                    const memberOptions = (appData.familyMembers || []).map(m => `<option value="${m.name}" ${task.assignee === m.name ? 'selected' : ''}>${m.name}</option>`).join('');
+                    const types = ['Appointment', 'Chore', 'Errand', 'School', 'Work', 'Meeting', 'Doctor', 'Dentist'];
+                    const typeOptions = types.map(t => `<option value="${t}" ${task.type === t ? 'selected' : ''}>${t}</option>`).join('');
+                    return `<div class="modal-content"><form id="task-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Task' : 'New Task'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="task-id" value="${id || ''}"><div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="task-name" value="${task.name || ''}" required></div><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="task-date" value="${task.date || date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Time (optional)</label><input type="time" class="form-input" id="task-time" value="${task.time || ''}"></div><div class="form-group"><label class="form-label">Type</label><select class="form-input" id="task-type">${typeOptions}</select></div><div class="form-group"><label class="form-label">Assign To</label><select class="form-input" id="task-assignee"><option value="">Unassigned</option>${memberOptions}</select></div><div class="form-group"><label class="form-label">Priority</label><select class="form-input" id="task-priority"><option value="low" ${task.priority === 'low' ? 'selected' : ''}>Low</option><option value="medium" ${!task.priority || task.priority === 'medium' ? 'selected' : ''}>Medium</option><option value="high" ${task.priority === 'high' ? 'selected' : ''}>High</option><option value="urgent" ${task.priority === 'urgent' ? 'selected' : ''}>Urgent</option></select></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-task-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
                 },
-                postRender: ({id}) => { document.getElementById('task-form').addEventListener('submit', async e => { e.preventDefault(); const taskData = { id: parseInt(document.getElementById('task-id').value) || undefined, name: document.getElementById('task-name').value, type: document.getElementById('task-type').value, date: document.getElementById('task-date').value, time: document.getElementById('task-time').value, assignee: document.getElementById('task-assignee').value, priority: document.getElementById('task-priority').value }; if (taskData.id) await dbOps.put('tasks', taskData); else { delete taskData.id; await dbOps.add('tasks', taskData); } await loadAppData(); refreshCurrentView(); closeModal(); }); if (id) { document.getElementById('delete-task-btn').addEventListener('click', async () => { if (confirm('Delete task?')) { await dbOps.delete('tasks', id); await loadAppData(); refreshCurrentView(); closeModal(); } }); } }
+                postRender: ({id}) => {
+                    document.getElementById('task-form').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const taskData = { id: parseInt(document.getElementById('task-id').value) || undefined, name: document.getElementById('task-name').value, type: document.getElementById('task-type').value, date: document.getElementById('task-date').value, time: document.getElementById('task-time').value, assignee: document.getElementById('task-assignee').value, priority: document.getElementById('task-priority').value };
+                        if (taskData.id) await dbOps.put('tasks', taskData); else { delete taskData.id; await dbOps.add('tasks', taskData); }
+                        await loadAppData(); refreshCurrentView(); closeModal();
+                    });
+                    if (id) { document.getElementById('delete-task-btn').addEventListener('click', async () => { if (confirm('Delete task?')) { await dbOps.delete('tasks', id); await loadAppData(); refreshCurrentView(); closeModal(); } }); }
+                }
             },
             'contact': {
-                render: () => `<div class="modal-content"><form id="contact-form"><div class="modal-header"><h3>New Contact</h3></div><div class="modal-body"><div class="form-group"><label>Name</label><input type="text" id="contact-name" class="form-input" required></div><div class="form-group"><label>Birthday</label><input type="date" id="contact-birthday" class="form-input"></div></div><div class="modal-footer"><button type="submit" class="btn btn-primary">Save</button></div></form></div>`,
-                postRender: () => { document.getElementById('contact-form').addEventListener('submit', async e => { e.preventDefault(); const name = document.getElementById('contact-name').value; const birthday = document.getElementById('contact-birthday').value; const color = USER_COLORS[appData.familyMembers.length % USER_COLORS.length]; await dbOps.add('familyMembers', {name, birthday, color}); await loadAppData(); refreshCurrentView(); closeModal(); }); }
+                render: () => `<div class="modal-content"><form id="contact-form"><div class="modal-header"><h3 class="modal-title">New Contact</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="form-group"><label class="form-label">Name</label><input type="text" class="form-input" id="contact-name" required></div></div><div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`,
+                postRender: () => { document.getElementById('contact-form').addEventListener('submit', async e => { e.preventDefault(); const name = document.getElementById('contact-name').value.trim(); if (name) await dbOps.add('familyMembers', {name}); await loadAppData(); refreshCurrentView(); closeModal(); }); }
             },
             'store': {
-                 render: () => `<div class="modal-content"><form id="store-form"><div class="modal-header"><h3>New Store</h3></div><div class="modal-body"><input type="text" class="form-input" id="store-name" placeholder="Store Name" required></div><div class="modal-footer"><button type="submit" class="btn btn-primary">Add</button></div></form></div>`,
+                 render: () => `<div class="modal-content"><form id="store-form"><div class="modal-header"><h3 class="modal-title">New Store</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="text" class="form-input" id="store-name" placeholder="Store Name" required></div><div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Add</button></div></form></div>`,
                  postRender: () => { document.getElementById('store-form').addEventListener('submit', async e => { e.preventDefault(); const name = document.getElementById('store-name').value.trim(); if(name) await dbOps.add('stores', {name}); await loadAppData(); refreshCurrentView(); closeModal(); }); }
+            },
+            'shoppingItem': {
+                render: async ({id}) => {
+                    const item = await dbOps.get('shoppingLists', id);
+                    return `<div class="modal-content"><form id="shopping-item-form"><div class="modal-header"><h3 class="modal-title">Edit Item</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="shopping-item-id" value="${id || ''}"><div class="form-group"><label class="form-label">Item Name</label><input type="text" class="form-input" id="shopping-item-name" value="${item.name || ''}" required></div></div><div class="modal-footer"><button type="button" class="btn btn-danger" id="delete-shopping-item-btn">Delete</button><div style="flex:1;"></div><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
+                },
+                postRender: ({id}) => {
+                    document.getElementById('shopping-item-form').addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const newName = document.getElementById('shopping-item-name').value.trim();
+                        if (!newName) return;
+                        const originalItem = await dbOps.get('shoppingLists', id);
+                        originalItem.name = newName;
+                        await dbOps.put('shoppingLists', originalItem);
+                        await loadAppData(); refreshCurrentView(); closeModal();
+                    });
+                    document.getElementById('delete-shopping-item-btn').addEventListener('click', () => deleteShoppingItem(id));
+                }
             },
             'meal': {
                 render: async ({id}) => {
-                    const meal = id ? await dbOps.get('meals', id) : {items:[]}; const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack']; const typeOptions = mealTypes.map(t => `<option value="${t}" ${meal.type === t ? 'selected' : ''}>${t}</option>`).join(''); const itemsText = (meal.items || []).map(i => i.name).join('\n');
-                    return `<div class="modal-content"><form id="meal-form"><div class="modal-header"><h3>${id ? 'Edit':'New'} Meal</h3></div><div class="modal-body"><input type="hidden" id="meal-id" value="${id||''}"><div class="form-group"><label>Date</label><input type="date" id="meal-date" class="form-input" value="${meal.date || new Date().toISOString().split('T')[0]}"></div><div class="form-group"><label>Type</label><select id="meal-type" class="form-input">${typeOptions}</select></div><div class="form-group"><label>Meal Name</label><input id="meal-name" class="form-input" value="${meal.name||''}" placeholder="e.g., Tacos"></div><div class="form-group"><label>Ingredients (one per line)</label><textarea id="meal-items" class="form-input" rows="4" placeholder="Ground Beef\nTaco Shells">${itemsText}</textarea></div><div class="form-group"><label>Recipe Link</label><input id="meal-recipe" class="form-input" value="${meal.recipeLink || ''}" placeholder="https://example.com/recipe"></div></div><div class="modal-footer"><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
+                    const meal = id ? await dbOps.get('meals', id) : {}; const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack']; const typeOptions = mealTypes.map(t => `<option value="${t}" ${meal.type === t ? 'selected' : ''}>${t}</option>`).join('');
+                    return `<div class="modal-content"><form id="meal-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Meal' : 'New Meal'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="meal-id" value="${id || ''}"><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="meal-date" value="${meal.date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Meal Type</label><select class="form-input" id="meal-type">${typeOptions}</select></div><div class="form-group"><label class="form-label">Meal Name</label><input type="text" class="form-input" id="meal-name" value="${meal.name || ''}" required placeholder="e.g., Tacos, Cereal..."></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-meal-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
                 },
-                postRender: ({id}) => { document.getElementById('meal-form').addEventListener('submit', async e => { e.preventDefault(); const items = document.getElementById('meal-items').value.split('\n').filter(Boolean).map(name => ({name, needed: true})); const mealData = { id: parseInt(document.getElementById('meal-id').value) || undefined, name: document.getElementById('meal-name').value, date: document.getElementById('meal-date').value, type: document.getElementById('meal-type').value, recipeLink: document.getElementById('meal-recipe').value, items }; if(mealData.id){await dbOps.put('meals',mealData)}else{delete mealData.id; await dbOps.add('meals',mealData)} await loadAppData(); refreshCurrentView(); closeModal(); }); }
+                postRender: ({id}) => {
+                    document.getElementById('meal-form').addEventListener('submit', async (e) => {
+                        e.preventDefault(); const mealData = { id: parseInt(document.getElementById('meal-id').value) || undefined, date: document.getElementById('meal-date').value, type: document.getElementById('meal-type').value, name: document.getElementById('meal-name').value };
+                        if (mealData.id) await dbOps.put('meals', mealData); else { delete mealData.id; await dbOps.add('meals', mealData); }
+                        await loadAppData(); refreshCurrentView(); closeModal();
+                    });
+                    if (id) { document.getElementById('delete-meal-btn').addEventListener('click', async () => { if (confirm('Delete this meal?')) { await dbOps.delete('meals', id); await loadAppData(); refreshCurrentView(); closeModal(); } }); }
+                }
             },
             'journal': {
                 render: async ({id}) => {
                     const entry = id ? await dbOps.get('journalEntries', id) : {};
-                    return `<div class="modal-content"><form id="journal-form"><div class="modal-header"><h3>${id ? 'Edit' : 'New'} Entry</h3></div><div class="modal-body"><input type="hidden" id="journal-id" value="${id || ''}"><div class="form-group"><label>Date</label><input type="date" id="journal-date" class="form-input" value="${entry.date || new Date().toISOString().split('T')[0]}"></div><div class="form-group"><label>Title</label><input type="text" id="journal-title" class="form-input" value="${entry.title || ''}"></div><div class="form-group"><label>Content</label><textarea id="journal-content" class="form-input" rows="5">${entry.content || ''}</textarea></div></div><div class="modal-footer"><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
+                    return `<div class="modal-content"><form id="journal-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Entry' : 'New Journal Entry'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="journal-id" value="${id || ''}"><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="journal-date" value="${entry.date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="journal-title" value="${entry.title || ''}" required></div><div class="form-group"><label class="form-label">Content</label><textarea class="form-input" id="journal-content" rows="6">${entry.content || ''}</textarea></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-journal-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
                 },
-                postRender: ({id}) => { document.getElementById('journal-form').addEventListener('submit', async e => { e.preventDefault(); const entryData = { id: parseInt(document.getElementById('journal-id').value) || undefined, date: document.getElementById('journal-date').value, title: document.getElementById('journal-title').value, content: document.getElementById('journal-content').value }; if(entryData.id){await dbOps.put('journalEntries',entryData)}else{delete entryData.id; await dbOps.add('journalEntries',entryData)} await loadAppData(); refreshCurrentView(); closeModal(); }); }
+                postRender: ({id}) => {
+                    document.getElementById('journal-form').addEventListener('submit', async (e) => {
+                        e.preventDefault(); const entryData = { id: parseInt(document.getElementById('journal-id').value) || undefined, date: document.getElementById('journal-date').value, title: document.getElementById('journal-title').value, content: document.getElementById('journal-content').value };
+                        if (entryData.id) await dbOps.put('journalEntries', entryData); else { delete entryData.id; await dbOps.add('journalEntries', entryData); }
+                        await loadAppData(); refreshCurrentView(); closeModal();
+                    });
+                     if (id) { document.getElementById('delete-journal-btn').addEventListener('click', async () => { if (confirm('Delete this entry?')) { await dbOps.delete('journalEntries', id); await loadAppData(); refreshCurrentView(); closeModal(); } }); }
+                }
             }
         };
     </script>
