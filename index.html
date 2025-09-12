@@ -2,15 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>hub - Family Planner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f0f2f5;
+        }
         .hub-title { font-family: 'Pacifico', cursive; }
         .page { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -20,10 +25,17 @@
         .list-item:hover { background-color: #f8fafc; }
         .shopping-item-done { text-decoration: line-through; color: #9ca3af; }
         
-        /* FORCE REMOVE LIST STYLING ARTIFACTS */
-        #schedule-list, #upcoming-list {
-            list-style-type: none !important;
-            padding-left: 0 !important;
+        /* Ensure icons are properly aligned */
+        .list-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .list-item .icon-container {
+            flex-shrink: 0;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
         }
     </style>
 </head>
@@ -53,48 +65,52 @@
                         <p id="current-date" class="text-sm text-gray-500 mb-4"></p>
                         <div id="schedule-list" class="space-y-2"></div>
                     </div>
-                    <div class="bg-white p-5 rounded-xl shadow-md"><h2 class="text-xl font-bold mb-4">Meals for Today</h2><div id="meals-list" class="space-y-1"></div></div>
-                    <div class="bg-white p-5 rounded-xl shadow-md"><h2 class="text-xl font-bold mb-4">Shopping Lists</h2><div id="shopping-list-hub" class="space-y-1"></div></div>
-                    <div class="bg-white p-5 rounded-xl shadow-md col-span-1 md:col-span-2"><h2 class="text-xl font-bold mb-4">Upcoming</h2><div id="upcoming-list" class="space-y-1"></div></div>
-                </div>
-            </div>
-            <!-- Functional Shopping Page -->
-            <div id="shopping-page" class="page hidden">
-                <div class="bg-white p-5 rounded-xl shadow-md">
-                    <div class="flex justify-between items-center mb-4">
-                         <h2 id="shopping-list-title" class="text-2xl font-bold">Shopping List</h2>
-                         <button id="back-to-hub-btn" class="text-sm text-blue-600 font-semibold flex items-center"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to Hub</button>
+                    <div class="bg-white p-5 rounded-xl shadow-md">
+                        <h2 class="text-xl font-bold mb-4">Meals for Today</h2>
+                        <div id="meals-list" class="space-y-1"></div>
                     </div>
-                    <div id="specific-shopping-list" class="space-y-2"></div>
+                    <div class="bg-white p-5 rounded-xl shadow-md">
+                        <h2 class="text-xl font-bold mb-4">Shopping Lists</h2>
+                        <div id="shopping-list-hub" class="space-y-1"></div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-md col-span-1 md:col-span-2">
+                        <h2 class="text-xl font-bold mb-4">Upcoming</h2>
+                        <div id="upcoming-list" class="space-y-1"></div>
+                    </div>
                 </div>
             </div>
-            <!-- Other Placeholder Pages -->
-            <div id="calendar-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md"><h2 class="text-2xl font-bold">Full Calendar View</h2></div></div>
-            <div id="health-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md"><h2 class="text-2xl font-bold">Health Dashboard</h2></div></div>
-            <div id="meals-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md"><h2 class="text-2xl font-bold">Weekly Meal Planner</h2></div></div>
-            <div id="contacts-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md"><h2 class="text-2xl font-bold">Contacts</h2></div></div>
+            
+            <div id="shopping-page" class="page hidden">
+                 </div>
+            
+            <div id="calendar-page" class="page hidden">
+                 </div>
+            <div id="health-page" class="page hidden">
+                </div>
+            <div id="meals-page" class="page hidden">
+                </div>
+            <div id="contacts-page" class="page hidden">
+                </div>
         </main>
     </div>
 
-    <!-- Floating Action Button -->
     <button id="add-item-btn" class="fixed bottom-8 right-8 bg-orange-500 hover:bg-orange-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform transform hover:scale-110 z-20">
         <i data-lucide="plus" class="w-8 h-8"></i>
     </button>
     
-    <!-- Modal -->
     <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white rounded-lg p-6 shadow-xl w-full max-w-md">
-            <h3 id="modal-title" class="text-2xl font-bold mb-6">Edit Item</h3>
-            <form id="edit-form" class="space-y-4">
+        <div class="bg-white rounded-lg p-6 shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
+            <h3 id="modal-title" class="text-2xl font-bold mb-6 flex-shrink-0">Edit Item</h3>
+            <form id="edit-form" class="space-y-4 flex-grow overflow-y-auto">
                 <div id="modal-form-content"></div>
-                <div class="flex justify-between items-center pt-4">
-                    <button type="button" id="delete-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Delete</button>
-                    <div class="space-x-4">
-                        <button type="button" id="cancel-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancel</button>
-                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Save Changes</button>
-                    </div>
-                </div>
             </form>
+            <div class="flex justify-between items-center pt-4 mt-4 border-t border-gray-200 flex-shrink-0">
+                <button type="button" id="delete-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Delete</button>
+                <div class="space-x-4">
+                    <button type="button" id="cancel-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancel</button>
+                    <button type="submit" form="edit-form" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Save Changes</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -104,273 +120,461 @@
         const toISODate = (date) => new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split("T")[0];
         const todayISO = toISODate(new Date());
 
-        const categoryIcons = {
-            'General': 'calendar-plus',
-            'School': 'school-2',
-            'Health': 'stethoscope',
-            'Dentist': 'tooth',
-            'Work': 'briefcase',
-            'Sport': 'dribbble',
-            'Social': 'glass-water'
-        };
+        const categoryIcons = { 'General': 'calendar-plus', 'School': 'graduation-cap', 'Health': 'stethoscope', 'Dentist': 'tooth', 'Work': 'briefcase', 'Sport': 'trophy', 'Social': 'users', 'Chore': 'trash-2' };
+        const mealIcons = { 'Breakfast': 'croissant', 'Lunch': 'salad', 'Dinner': 'beef', 'Snack': 'cookie' };
 
-        // --- DATA MANAGEMENT ---
+        // --- DATABASE MANAGEMENT ---
+        const DB_NAME = 'hub_app_final_db';
+        const DB_VERSION = 1;
+        let db;
+
+        async function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onerror = () => reject("Error opening DB");
+                request.onsuccess = (e) => { db = e.target.result; resolve(db); };
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('schedule')) db.createObjectStore('schedule', { keyPath: 'id', autoIncrement: true });
+                    if (!db.objectStoreNames.contains('meals')) db.createObjectStore('meals', { keyPath: 'id', autoIncrement: true });
+                    if (!db.objectStoreNames.contains('shopping')) db.createObjectStore('shopping', { keyPath: 'id', autoIncrement: true });
+                    if (!db.objectStoreNames.contains('health')) db.createObjectStore('health', { keyPath: 'id', autoIncrement: true });
+                    if (!db.objectStoreNames.contains('contacts')) db.createObjectStore('contacts', { keyPath: 'id', autoIncrement: true });
+                };
+            });
+        }
+
+        const dbOp = (storeName, mode, operation, data) => new Promise((resolve, reject) => {
+            const tx = db.transaction(storeName, mode);
+            const store = tx.objectStore(storeName);
+            const request = store[operation](data);
+            tx.oncomplete = () => resolve(request.result);
+            tx.onerror = () => reject(tx.error);
+        });
+        
+        // --- DATA & STATE ---
         let data = {};
+        let currentPageId = 'hub';
         let activeShoppingListId = null;
 
-        const defaultData = {
-            schedule: [
-                { id: 1, title: 'Drop off Leo at School', person: 'Dad', startDate: todayISO, startTime: '08:00', endDate: todayISO, endTime: '08:30', category: 'School' },
-                { id: 2, title: 'Doctor Appointment', person: 'Mom', startDate: todayISO, startTime: '10:30', endDate: todayISO, endTime: '11:30', category: 'Health' },
-                { id: 11, title: 'Soccer Practice', person: 'Leo', startDate: todayISO, startTime: '16:00', endDate: todayISO, endTime: '17:30', category: 'Sport' },
-                { id: 3, title: 'Team Meeting', person: 'Dad', startDate: toISODate(new Date(Date.now() + 86400000 * 2)), startTime: '10:00', endTime: '11:00', category: 'Work'},
-            ],
-            meals: [
-                { id: 4, title: 'Pancakes & Berries', label: 'Breakfast', date: todayISO, icon: 'croissant' },
-                { id: 5, title: 'Chicken Salad', label: 'Lunch', date: todayISO, icon: 'salad' },
-            ],
-            shopping: [
-                { id: 7, name: 'Grocery Run', icon: 'shopping-cart', items: [
-                    {id: 50, text: 'Milk', done: false}, {id: 51, text: 'Bread', done: true}, {id: 52, text: 'Eggs', done: false}
-                ]},
-                { id: 8, name: 'Hardware Store', icon: 'wrench', items: [] }
-            ]
-        };
-
-        function loadData() {
-            const savedData = localStorage.getItem('hub_data');
-            data = savedData ? JSON.parse(savedData) : JSON.parse(JSON.stringify(defaultData));
+        async function loadData() {
+            const stores = ['schedule', 'meals', 'shopping', 'health', 'contacts'];
+            const promises = stores.map(s => dbOp(s, 'readonly', 'getAll'));
+            const [schedule, meals, shopping, health, contacts] = await Promise.all(promises);
+            data = { schedule, meals, shopping, health, contacts };
         }
-
-        function saveData() {
-            localStorage.setItem('hub_data', JSON.stringify(data));
+        
+        async function seedData() {
+            const contacts = await dbOp('contacts', 'readonly', 'getAll');
+            if (contacts && contacts.length > 0) return;
+            
+            const defaultData = {
+                schedule: [ { title: 'Drop off Leo at School', person: 'Dad', startDate: todayISO, startTime: '08:00', endDate: todayISO, endTime: '08:30', category: 'School' }, { title: 'Doctor Appointment', person: 'Mom', startDate: todayISO, startTime: '10:30', endDate: todayISO, endTime: '11:30', category: 'Health' }, { title: 'Soccer Practice', person: 'Leo', startDate: todayISO, startTime: '16:00', endDate: todayISO, endTime: '17:30', category: 'Sport' }, { title: 'Team Meeting', person: 'Dad', startDate: toISODate(new Date(Date.now() + 86400000 * 2)), startTime: '10:00', endTime: '11:00', category: 'Work'}, ],
+                meals: [ { title: 'Pancakes & Berries', label: 'Breakfast', date: todayISO }, { title: 'Chicken Salad', label: 'Lunch', date: todayISO }, ],
+                shopping: [ { name: 'Grocery Run', icon: 'shopping-cart', items: [ {id: 50, text: 'Milk', done: false}, {id: 51, text: 'Bread', done: true}, {id: 52, text: 'Eggs', done: false} ]}, { name: 'Hardware Store', icon: 'wrench', items: [ {id: 53, text: 'Screws', done: false}, {id: 54, text: 'Paint', done: false} ] } ],
+                health: [ { person: 'Leo', name: 'Daily Vitamin', dosage: '1 gummy', time: '08:00', notes: 'Take with breakfast'} ],
+                contacts: [ { name: 'Mom' }, { name: 'Dad' }, { name: 'Leo' }]
+            };
+            for (const storeName in defaultData) {
+                for (const item of defaultData[storeName]) {
+                    await dbOp(storeName, 'readwrite', 'add', item);
+                }
+            }
         }
-
-        // --- GLOBAL ELEMENTS ---
-        let currentPageId = 'hub';
+        
+        // --- GLOBAL ELEMENTS & MODAL ---
         const modal = document.getElementById('edit-modal');
         const modalTitle = document.getElementById('modal-title');
         const formContent = document.getElementById('modal-form-content');
         const editForm = document.getElementById('edit-form');
         const deleteBtn = document.getElementById('delete-btn');
-        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const cancelBtn = document.getElementById('cancel-btn');
 
-        // --- RENDER FUNCTIONS ---
-        const formatTime = (t) => t ? new Date(`1970-01-01T${t}`).toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit'}) : '';
-        const formatDate = (d) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-        const getPersonBadgeClass = (p) => ({'Dad':'bg-blue-100 text-blue-800','Mom':'bg-pink-100 text-pink-800','Leo':'bg-green-100 text-green-800'}[p] || 'bg-gray-100 text-gray-800');
-
-        function renderAll() {
-            renderSchedule();
-            renderHubMeals();
-            renderHubShopping();
-            renderUpcoming();
-            if (activeShoppingListId) renderSpecificShoppingList();
-            lucide.createIcons();
-        }
-
-        function renderSchedule() {
-            const todayEvents = data.schedule.filter(item => item.startDate === todayISO);
-            const listEl = document.getElementById('schedule-list');
-            if(todayEvents.length > 0) {
-                 listEl.innerHTML = todayEvents.map(item => `
-                    <div class="list-item flex justify-between items-start p-3 rounded-lg" data-id="${item.id}" data-type="schedule">
-                        <div class="flex items-start">
-                            <i data-lucide="${categoryIcons[item.category] || 'help-circle'}" class="w-7 h-7 text-gray-500 mt-1 flex-shrink-0 mr-4"></i>
-                            <div>
-                                <p class="font-semibold"><span class="font-bold">${formatTime(item.startTime)} - ${formatTime(item.endTime)}</span> ${item.title}</p>
-                                <p class="text-sm text-gray-500">${formatDate(item.startDate)}</p>
-                            </div>
-                        </div>
-                        <span class="text-sm font-semibold px-3 py-1 rounded-full ${getPersonBadgeClass(item.person)} flex-shrink-0 ml-4">${item.person}</span>
-                    </div>`).join('');
-            } else {
-                listEl.innerHTML = `<p class="text-gray-500 p-3">No events scheduled for today.</p>`;
-            }
-        }
-        
-        function renderUpcoming() {
-            const upcomingEvents = data.schedule.filter(item => item.startDate > todayISO).sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
-            const listEl = document.getElementById('upcoming-list');
-            if(upcomingEvents.length > 0) {
-                listEl.innerHTML = upcomingEvents.slice(0, 3).map(item => `
-                <div class="list-item flex justify-between items-start p-3 rounded-lg" data-id="${item.id}" data-type="schedule">
-                    <div class="flex items-start">
-                        <i data-lucide="${categoryIcons[item.category] || 'help-circle'}" class="w-7 h-7 text-gray-500 mt-1 flex-shrink-0 mr-4"></i>
-                        <div>
-                            <p class="font-semibold">${item.title}</p>
-                            <p class="text-sm font-bold text-gray-600">${formatDate(item.startDate)}</p>
-                        </div>
-                    </div>
-                    <span class="text-sm font-semibold px-3 py-1 rounded-full ${getPersonBadgeClass(item.person)} flex-shrink-0 ml-4">${item.person}</span>
-                </div>`).join('');
-            } else {
-                 listEl.innerHTML = `<p class="text-gray-500 p-3">No upcoming events.</p>`;
-            }
-        }
-
-        function renderHubMeals() {
-            const todaysMeals = data.meals.filter(meal => meal.date === todayISO);
-            document.getElementById('meals-list').innerHTML = todaysMeals.map(item => `<div class="list-item flex items-center space-x-3 p-3 rounded-lg" data-id="${item.id}" data-type="meals"><i data-lucide="${item.icon}" class="w-7 h-7 text-orange-500"></i><div><p class="font-bold">${item.title}</p><p class="text-sm text-gray-500">${item.label}</p></div></div>`).join('');
-        }
-        
-        function renderHubShopping() {
-            document.getElementById('shopping-list-hub').innerHTML = data.shopping.map(list => `<div class="list-item flex items-center space-x-3 p-3 rounded-lg" data-list-id="${list.id}"><i data-lucide="${list.icon}" class="w-6 h-6 text-gray-500"></i><span class="font-medium">${list.name}</span><i data-lucide="chevron-right" class="w-5 h-5 text-gray-400 ml-auto"></i></div>`).join('');
-        }
-
-        function renderSpecificShoppingList() {
-            const list = data.shopping.find(l => l.id === activeShoppingListId);
-            if (!list) return;
-            document.getElementById('shopping-list-title').textContent = list.name;
-            const listEl = document.getElementById('specific-shopping-list');
-            listEl.innerHTML = list.items.map(item => `
-                <div class="flex items-center p-3 rounded-lg hover:bg-gray-50 space-x-3" data-item-id="${item.id}" data-type="shoppingItem">
-                    <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" ${item.done ? 'checked' : ''}>
-                    <span class="flex-grow ${item.done ? 'shopping-item-done' : ''}">${item.text}</span>
-                    <button class="edit-shopping-item-btn text-gray-400 hover:text-blue-600"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        }
-
-        // --- NAVIGATION ---
-        function navigate(pageId) {
-            currentPageId = pageId;
-            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-            document.getElementById(`${pageId}-page`).classList.remove('hidden');
-            document.querySelectorAll('.nav-icon').forEach(b => b.classList.remove('active'));
-            const activeBtn = document.querySelector(`.nav-icon[data-page="${pageId}"]`);
-            if (activeBtn) activeBtn.classList.add('active');
-        }
-
-        // --- MODAL & FORM LOGIC ---
-        function createFormField(label, id, type, value, required = true) { return `<div><label for="${id}" class="block text-sm font-medium text-gray-700 mb-1">${label}</label><input type="${type}" id="${id}" value="${value}" ${required ? 'required' : ''} class="block w-full border-gray-300 rounded-md shadow-sm p-2 border"></div>`; }
-        
-        function createCategoryDropdown(selectedCategory) {
-            let options = '';
-            for (const category in categoryIcons) {
-                options += `<option value="${category}" ${selectedCategory === category ? 'selected' : ''}>${category}</option>`;
-            }
-            return `<div><label for="edit-category" class="block text-sm font-medium text-gray-700 mb-1">Category</label><select id="edit-category" class="block w-full border-gray-300 rounded-md shadow-sm p-2 border">${options}</select></div>`;
-        }
-
-        function openModal(type, itemId = null) {
-            const isNew = itemId === null;
-            let item = {};
+        function openModal(type, id = null, extraParams = {}) {
+            const isNew = id === null;
             modal.dataset.type = type;
-            modal.dataset.id = itemId;
+            modal.dataset.id = id;
             deleteBtn.classList.toggle('hidden', isNew);
-            
-            modalTitle.textContent = `${isNew ? 'Add' : 'Edit'} Item`;
-            let formHtml = '';
-
-            switch(type) {
-                case 'schedule':
-                    if(!isNew) item = data.schedule.find(d => d.id == itemId);
-                    formHtml = createFormField('Event Title', 'edit-title', 'text', item.title || '') +
-                               createCategoryDropdown(item.category || 'General') +
-                               createFormField('Assigned To', 'edit-person', 'text', item.person || '') +
-                               '<div class="grid grid-cols-2 gap-4">' +
-                               createFormField('Start Date', 'edit-start-date', 'date', item.startDate || todayISO) +
-                               createFormField('Start Time', 'edit-start-time', 'time', item.startTime || '') + '</div>' +
-                               '<div class="grid grid-cols-2 gap-4">' +
-                               createFormField('End Date', 'edit-end-date', 'date', item.endDate || todayISO) +
-                               createFormField('End Time', 'edit-end-time', 'time', item.endTime || '') + '</div>';
-                    break;
-                case 'shoppingItem':
-                     const list = data.shopping.find(l => l.id === activeShoppingListId);
-                     if (!isNew) item = list.items.find(i => i.id == itemId);
-                     modalTitle.textContent = `${isNew ? 'Add' : 'Edit'} Shopping Item`;
-                     formHtml = createFormField('Item Name', 'edit-text', 'text', item.text || '');
-                     break;
-            }
-            formContent.innerHTML = formHtml;
+            modalTitle.textContent = `${isNew ? 'Add New' : 'Edit'} ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+            formContent.innerHTML = getFormFields(type, id, extraParams);
             modal.classList.remove('hidden');
         }
 
         function closeModal() { modal.classList.add('hidden'); }
 
-        editForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const type = modal.dataset.type;
-            const id = modal.dataset.id;
-            const isNew = id === 'null';
+        // --- RENDER FUNCTIONS ---
+        const formatTime = (t) => t ? new Date(`1970-01-01T${t}`).toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit'}) : '';
+        const getPersonBadgeClass = (p) => ({'Dad':'bg-blue-100 text-blue-800','Mom':'bg-pink-100 text-pink-800','Leo':'bg-green-100 text-green-800'}[p] || 'bg-gray-100 text-gray-800');
 
-            if (type === 'schedule') {
-                const updated = { title: document.getElementById('edit-title').value, person: document.getElementById('edit-person').value, category: document.getElementById('edit-category').value, startDate: document.getElementById('edit-start-date').value, startTime: document.getElementById('edit-start-time').value, endDate: document.getElementById('edit-end-date').value, endTime: document.getElementById('edit-end-time').value };
-                if (isNew) data.schedule.push({ ...updated, id: Date.now() });
-                else { const i = data.schedule.findIndex(d=>d.id==id); data.schedule[i] = {...data.schedule[i], ...updated}; }
-            } else if (type === 'shoppingItem') {
-                const list = data.shopping.find(l => l.id === activeShoppingListId);
-                const updated = { text: document.getElementById('edit-text').value };
-                if (isNew) list.items.push({ ...updated, id: Date.now(), done: false });
-                else { const i = list.items.findIndex(d=>d.id==id); list.items[i] = {...list.items[i], ...updated}; }
+        async function refreshUI() {
+            await loadData();
+            const renderMap = {
+                'hub': renderHubPage,
+                'calendar': renderCalendarPage,
+                'shopping': renderShoppingPage,
+                'health': renderHealthPage,
+                'meals': renderMealsPage,
+                'contacts': renderContactsPage
+            };
+            if (activeShoppingListId) {
+                renderSpecificShoppingList();
+            } else if (renderMap[currentPageId]) {
+                renderMap[currentPageId]();
+            }
+            lucide.createIcons();
+        }
+
+        function renderHubPage() {
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            
+            // Today's Schedule
+            const todayEvents = data.schedule.filter(item => item.startDate === todayISO).sort((a,b) => (a.startTime || '').localeCompare(b.startTime || ''));
+            const scheduleListEl = document.getElementById('schedule-list');
+            if(todayEvents.length > 0) {
+                 scheduleListEl.innerHTML = todayEvents.map(item => `
+                    <div class="list-item justify-between p-3 rounded-lg" data-id="${item.id}" data-type="schedule">
+                        <div class="flex items-start w-full">
+                            <div class="icon-container"><i data-lucide="${categoryIcons[item.category] || 'help-circle'}" class="w-7 h-7 text-gray-500"></i></div>
+                            <div class="flex-grow">
+                                <p class="font-semibold"><span class="font-bold">${formatTime(item.startTime)} - ${formatTime(item.endTime)}</span> ${item.title}</p>
+                            </div>
+                            <span class="text-sm font-semibold px-3 py-1 rounded-full ${getPersonBadgeClass(item.person)} flex-shrink-0 ml-4">${item.person}</span>
+                        </div>
+                    </div>`).join('');
+            } else { scheduleListEl.innerHTML = `<p class="text-gray-500 p-3">No events scheduled for today.</p>`; }
+
+            // Upcoming
+            const upcomingEvents = data.schedule.filter(item => item.startDate > todayISO).sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
+            const upcomingListEl = document.getElementById('upcoming-list');
+            if(upcomingEvents.length > 0) {
+                upcomingListEl.innerHTML = upcomingEvents.slice(0, 3).map(item => `
+                <div class="list-item justify-between p-3 rounded-lg" data-id="${item.id}" data-type="schedule">
+                    <div class="flex items-start w-full">
+                        <div class="icon-container"><i data-lucide="${categoryIcons[item.category] || 'help-circle'}" class="w-7 h-7 text-gray-500"></i></div>
+                        <div class="flex-grow">
+                            <p class="font-semibold">${item.title}</p>
+                            <p class="text-sm font-bold text-gray-600">${new Date(item.startDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+                        </div>
+                        <span class="text-sm font-semibold px-3 py-1 rounded-full ${getPersonBadgeClass(item.person)} flex-shrink-0 ml-4">${item.person}</span>
+                    </div>
+                </div>`).join('');
+            } else { upcomingListEl.innerHTML = `<p class="text-gray-500 p-3">No upcoming events.</p>`; }
+
+            // Meals
+            const todaysMeals = data.meals.filter(meal => meal.date === todayISO);
+            const mealsListEl = document.getElementById('meals-list');
+            if (todaysMeals.length > 0) { mealsListEl.innerHTML = todaysMeals.map(item => ` <div class="list-item p-3 rounded-lg" data-id="${item.id}" data-type="meals"><div class="flex items-center w-full"><div class="icon-container"><i data-lucide="${mealIcons[item.label] || 'utensils'}" class="w-7 h-7 text-orange-500"></i></div><div class="flex-grow"><p class="font-bold">${item.title}</p><p class="text-sm text-gray-500">${item.label}</p></div></div></div>`).join(''); } 
+            else { mealsListEl.innerHTML = `<p class="text-gray-500 p-3">No meals planned for today.</p>`; }
+            
+            // Shopping
+            const shoppingHubEl = document.getElementById('shopping-list-hub');
+            if (data.shopping.length > 0) {
+                shoppingHubEl.innerHTML = data.shopping.map(list => {
+                    const neededCount = list.items.filter(i => !i.done).length;
+                    return `<div class="list-item p-3 rounded-lg" data-list-id="${list.id}"><div class="flex items-center w-full"><div class="icon-container"><i data-lucide="${list.icon}" class="w-6 h-6 text-gray-500"></i></div><span class="font-medium flex-grow">${list.name}</span><span class="text-sm text-gray-500 mr-2">${neededCount} items</span><i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i></div></div>`;
+                }).join('');
+            } else { shoppingHubEl.innerHTML = `<p class="text-gray-500 p-3">No shopping lists.</p>`; }
+        }
+
+        function renderShoppingPage() {
+            const pageEl = document.getElementById('shopping-page');
+            pageEl.innerHTML = `
+                <div class="bg-white p-5 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold mb-4">Shopping Lists</h2>
+                    <div id="shopping-lists-container" class="space-y-4"></div>
+                </div>`;
+            const container = document.getElementById('shopping-lists-container');
+            if (data.shopping.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 p-3">No shopping lists. Use the '+' button to add one.</p>`;
+            } else {
+                container.innerHTML = data.shopping.map(list => {
+                    const needed = list.items.filter(i => !i.done).length;
+                    return `<div class="list-item p-4 rounded-lg border border-gray-200" data-list-id="${list.id}"><div class="flex items-center w-full"><div class="icon-container"><i data-lucide="${list.icon}" class="w-7 h-7 text-gray-500"></i></div><div class="flex-grow"><p class="font-bold text-lg">${list.name}</p><p class="text-sm text-gray-500">${needed} of ${list.items.length} items to get</p></div><i data-lucide="chevron-right" class="w-6 h-6 text-gray-400"></i></div></div>`;
+                }).join('');
+            }
+        }
+        
+        function renderSpecificShoppingList() {
+            const pageEl = document.getElementById('shopping-page');
+            const list = data.shopping.find(l => l.id === activeShoppingListId);
+            if (!list) { navigate('hub'); return; }
+            
+            pageEl.innerHTML = `
+                <div class="bg-white p-5 rounded-xl shadow-md">
+                    <div class="flex justify-between items-center mb-4">
+                         <h2 class="text-2xl font-bold">${list.name}</h2>
+                         <button id="back-to-shopping-btn" class="text-sm text-blue-600 font-semibold flex items-center">
+                            <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to Lists
+                         </button>
+                    </div>
+                    <div id="specific-shopping-list" class="space-y-2 mb-4"></div>
+                    <form id="add-shopping-item-form" class="flex gap-2">
+                        <input type="text" id="new-shopping-item-text" class="flex-grow border-gray-300 rounded-md shadow-sm p-2 border" placeholder="Add new item..." required>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Add</button>
+                    </form>
+                </div>`;
+                
+            document.getElementById('back-to-shopping-btn').onclick = () => { activeShoppingListId = null; navigate('shopping'); };
+
+            const listEl = document.getElementById('specific-shopping-list');
+            const items = list.items.sort((a, b) => a.done - b.done);
+            listEl.innerHTML = items.map(item => `
+                <div class="flex items-center p-3 rounded-lg hover:bg-gray-50 space-x-3 list-item" data-item-id="${item.id}" data-type="shoppingItem">
+                    <input type="checkbox" class="h-6 w-6 rounded border-gray-300 text-blue-600 focus:ring-blue-500" ${item.done ? 'checked' : ''}>
+                    <span class="flex-grow text-lg ${item.done ? 'shopping-item-done' : ''}">${item.text}</span>
+                    <button class="edit-shopping-item-btn text-gray-400 hover:text-blue-600">
+                        <i data-lucide="pencil" class="w-5 h-5"></i>
+                    </button>
+                </div>`).join('');
+
+            document.getElementById('add-shopping-item-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const input = document.getElementById('new-shopping-item-text');
+                const text = input.value.trim();
+                if (text) {
+                    const listToUpdate = data.shopping.find(l => l.id === activeShoppingListId);
+                    listToUpdate.items.push({ id: Date.now(), text, done: false });
+                    await dbOp('shopping', 'readwrite', 'put', listToUpdate);
+                    await refreshUI();
+                }
+            });
+        }
+        
+        function renderCalendarPage() {
+            const pageEl = document.getElementById('calendar-page');
+            pageEl.innerHTML = `<div class="bg-white p-2 sm:p-4 rounded-xl shadow-md"><div id="calendar-container"></div></div>`;
+            const calendarEl = document.getElementById('calendar-container');
+            if(calendar) calendar.destroy();
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth',
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' },
+                events: data.schedule.map(task => ({
+                    id: task.id,
+                    title: task.title,
+                    start: task.startTime ? `${task.startDate}T${task.startTime}` : task.startDate,
+                    end: task.endTime ? `${task.endDate}T${task.endTime}` : null,
+                    allDay: !task.startTime,
+                    extendedProps: { person: task.person },
+                    className: `border-l-4 border-${{'Dad':'blue','Mom':'pink','Leo':'green'}[task.person] || 'gray'}-500 bg-${{'Dad':'blue','Mom':'pink','Leo':'green'}[task.person] || 'gray'}-50`
+                })),
+                eventClick: (info) => openModal('schedule', parseInt(info.event.id)),
+                dateClick: (info) => openModal('schedule', null, { startDate: info.dateStr.split('T')[0], endDate: info.dateStr.split('T')[0] })
+            });
+            calendar.render();
+        }
+
+        function renderHealthPage() {
+            const pageEl = document.getElementById('health-page');
+            const healthAppointments = data.schedule.filter(t => ['Health', 'Dentist'].includes(t.category)).sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
+            
+            pageEl.innerHTML = `
+                <h2 class="text-2xl font-bold mb-4">Health Hub</h2>
+                <div class="card">
+                    <div class="card-header">Upcoming Appointments</div>
+                    <div class="card-body">
+                        ${healthAppointments.length > 0 ? healthAppointments.map(item => `
+                            <div class="list-item p-4" data-id="${item.id}" data-type="schedule">
+                                <div class="icon-container"><i data-lucide="${categoryIcons[item.category]}" class="w-7 h-7 text-gray-500"></i></div>
+                                <div class="flex-grow"><p class="font-bold text-lg">${item.title}</p><p class="text-gray-600">${new Date(item.startDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} at ${formatTime(item.startTime)}</p></div>
+                                <span class="text-sm font-semibold px-3 py-1 rounded-full ${getPersonBadgeClass(item.person)}">${item.person}</span>
+                            </div>
+                        `).join('') : '<p class="text-gray-500 p-4">No health appointments scheduled.</p>'}
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">Medication Schedule</div>
+                    <div class="card-body">
+                        ${data.health.length > 0 ? data.health.map(med => `
+                            <div class="list-item p-4" data-id="${med.id}" data-type="health">
+                                <div class="icon-container"><i data-lucide="pilcrow" class="w-7 h-7 text-green-500"></i></div>
+                                <div class="flex-grow"><p class="font-bold text-lg">${med.name} <span class="text-sm font-normal text-gray-500">(${med.dosage})</span></p><p class="text-gray-600">${med.time}</p></div>
+                                <span class="text-sm font-semibold px-3 py-1 rounded-full ${getPersonBadgeClass(med.person)}">${med.person}</span>
+                            </div>
+                        `).join('') : '<p class="text-gray-500 p-4">No medications logged.</p>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMealsPage() {
+            const pageEl = document.getElementById('meals-page');
+            const mealsByDate = data.meals.reduce((acc, meal) => {
+                const date = meal.date;
+                if (!acc[date]) acc[date] = [];
+                acc[date].push(meal);
+                return acc;
+            }, {});
+            const sortedDates = Object.keys(mealsByDate).sort((a, b) => new Date(b) - new Date(a));
+            
+            pageEl.innerHTML = `<h2 class="text-2xl font-bold mb-4">Meal Planner</h2>` + (sortedDates.length > 0 ? sortedDates.map(date => `
+                <div class="card">
+                    <div class="card-header">${new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
+                    <div class="card-body">
+                        ${mealsByDate[date].map(item => `
+                            <div class="list-item p-4" data-id="${item.id}" data-type="meals">
+                                <div class="icon-container"><i data-lucide="${mealIcons[item.label] || 'utensils'}" class="w-7 h-7 text-orange-500"></i></div>
+                                <div class="flex-grow"><p class="font-bold text-lg">${item.title}</p></div>
+                                <span class="text-sm font-semibold px-3 py-1 rounded-full bg-orange-100 text-orange-800">${item.label}</span>
+                            </div>`).join('')}
+                    </div>
+                </div>
+            `).join('') : '<p class="text-gray-500 p-4">No meals planned.</p>');
+        }
+        
+        function renderContactsPage() {
+            const pageEl = document.getElementById('contacts-page');
+            pageEl.innerHTML = `
+                <h2 class="text-2xl font-bold mb-4">Family & Contacts</h2>
+                <div class="card"><div class="card-body">
+                    ${data.contacts.map(contact => `
+                        <div class="list-item p-4" data-id="${contact.id}" data-type="contacts">
+                            <div class="icon-container"><i data-lucide="user-circle" class="w-8 h-8 text-gray-500"></i></div>
+                            <div class="flex-grow"><p class="font-bold text-lg">${contact.name}</p></div>
+                        </div>
+                    `).join('')}
+                </div></div>`;
+        }
+        
+        // --- FORM & MODAL LOGIC ---
+        function getFormFields(type, id, extraParams = {}) {
+            let item = {};
+            if(id) {
+                if (type === 'shoppingItem') {
+                    for (const list of data.shopping) {
+                        const foundItem = list.items.find(i => i.id === id);
+                        if(foundItem) { item = foundItem; break; }
+                    }
+                } else { item = data[type].find(d => d.id === id) || {}; }
             }
             
-            saveData();
-            renderAll();
+            const createField = (label, id, type, value = '', props = '') => `<div><label for="${id}" class="block text-sm font-medium text-gray-700 mb-1">${label}</label><input type="${type}" id="${id}" value="${value}" ${props} class="block w-full border-gray-300 rounded-md shadow-sm p-2 border"></div>`;
+            const createSelect = (label, id, options, selected = '') => `<div><label for="${id}" class="block text-sm font-medium text-gray-700 mb-1">${label}</label><select id="${id}" class="block w-full border-gray-300 rounded-md shadow-sm p-2 border">${options.map(o => `<option value="${o}" ${o === selected ? 'selected' : ''}>${o}</option>`).join('')}</select></div>`;
+            const personOptions = data.contacts.map(c => c.name);
+
+            switch(type) {
+                case 'schedule':
+                    return createField('Event Title', 'edit-title', 'text', item.title || '', 'required') +
+                           createSelect('Category', 'edit-category', Object.keys(categoryIcons), item.category) +
+                           createSelect('Assigned To', 'edit-person', personOptions, item.person) +
+                           '<div class="grid grid-cols-2 gap-4">' +
+                           createField('Start Date', 'edit-start-date', 'date', item.startDate || extraParams.startDate || todayISO, 'required') +
+                           createField('Start Time', 'edit-start-time', 'time', item.startTime || '') + '</div>';
+                case 'shopping':
+                    return createField('List Name', 'edit-list-name', 'text', item.name || '', 'required') +
+                           createSelect('Icon', 'edit-list-icon', ['shopping-cart', 'wrench', 'gift', 'package'], item.icon || 'shopping-cart');
+                case 'shoppingItem':
+                    return createField('Item Name', 'edit-item-text', 'text', item.text || '', 'required');
+                case 'health':
+                    return createSelect('Person', 'edit-health-person', personOptions, item.person) +
+                           createField('Medication/Item', 'edit-health-name', 'text', item.name || '', 'required') +
+                           createField('Dosage', 'edit-health-dosage', 'text', item.dosage || '') +
+                           createField('Time', 'edit-health-time', 'time', item.time || '');
+                case 'meals':
+                    return createField('Date', 'edit-meal-date', 'date', item.date || todayISO, 'required') +
+                           createSelect('Label', 'edit-meal-label', ['Breakfast', 'Lunch', 'Dinner', 'Snack'], item.label) +
+                           createField('Meal Title', 'edit-meal-title', 'text', item.title || '', 'required');
+                case 'contacts':
+                    return createField('Name', 'edit-contact-name', 'text', item.name || '', 'required');
+            }
+            return '';
+        }
+
+        editForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const type = modal.dataset.type;
+            const id = modal.dataset.id ? parseInt(modal.dataset.id) : null;
+            let updatedData;
+            
+            switch(type) {
+                case 'schedule': updatedData = { title: document.getElementById('edit-title').value, person: document.getElementById('edit-person').value, category: document.getElementById('edit-category').value, startDate: document.getElementById('edit-start-date').value, startTime: document.getElementById('edit-start-time').value }; break;
+                case 'shopping': updatedData = { name: document.getElementById('edit-list-name').value, icon: document.getElementById('edit-list-icon').value, items: [] }; break;
+                case 'shoppingItem': const list = data.shopping.find(l => l.id === activeShoppingListId); const itemToUpdate = list.items.find(i => i.id === id); if (itemToUpdate) { itemToUpdate.text = document.getElementById('edit-item-text').value; await dbOp('shopping', 'readwrite', 'put', list); } break;
+                case 'health': updatedData = { person: document.getElementById('edit-health-person').value, name: document.getElementById('edit-health-name').value, dosage: document.getElementById('edit-health-dosage').value, time: document.getElementById('edit-health-time').value }; break;
+                case 'meals': updatedData = { date: document.getElementById('edit-meal-date').value, label: document.getElementById('edit-meal-label').value, title: document.getElementById('edit-meal-title').value }; break;
+                case 'contacts': updatedData = { name: document.getElementById('edit-contact-name').value }; break;
+            }
+            
+            if (updatedData) {
+                if (id) { const original = await dbOp(type, 'readonly', 'get', id); await dbOp(type, 'readwrite', 'put', { ...original, ...updatedData }); } 
+                else { await dbOp(type, 'readwrite', 'add', updatedData); }
+            }
+            
             closeModal();
+            await refreshUI();
         });
 
-        deleteBtn.addEventListener('click', () => {
+        deleteBtn.addEventListener('click', async () => {
              if (!confirm('Are you sure you want to delete this item?')) return;
              const type = modal.dataset.type;
-             const id = modal.dataset.id;
-             if (type === 'schedule') data.schedule = data.schedule.filter(i => i.id != id);
-             else if (type === 'shoppingItem') {
+             const id = parseInt(modal.dataset.id);
+             
+             if (type === 'shoppingItem') {
                 const list = data.shopping.find(l => l.id === activeShoppingListId);
-                list.items = list.items.filter(i => i.id != id);
+                list.items = list.items.filter(i => i.id !== id);
+                await dbOp('shopping', 'readwrite', 'put', list);
+             } else if (id) {
+                await dbOp(type, 'readwrite', 'delete', id);
              }
-             saveData();
-             renderAll();
+             
              closeModal();
+             await refreshUI();
         });
 
-        // --- EVENT LISTENERS ---
-        document.getElementById('cancel-btn').addEventListener('click', closeModal);
+        // --- GLOBAL EVENT LISTENERS ---
+        cancelBtn.addEventListener('click', closeModal);
         modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-        document.getElementById('back-to-hub-btn').addEventListener('click', () => navigate('hub'));
 
         document.getElementById('main-content').addEventListener('click', function(e) {
-            const scheduleItem = e.target.closest('.list-item[data-type="schedule"]');
-            if (scheduleItem) return openModal('schedule', scheduleItem.dataset.id);
+            const listItem = e.target.closest('.list-item[data-id]');
+            if (listItem) { openModal(listItem.dataset.type, parseInt(listItem.dataset.id)); return; }
 
-            const hubShoppingList = e.target.closest('#shopping-list-hub .list-item');
-            if(hubShoppingList) {
-                activeShoppingListId = parseInt(hubShoppingList.dataset.listId);
-                navigate('shopping');
-                renderSpecificShoppingList();
-            }
-
-            const shoppingItemCheckbox = e.target.closest('input[type="checkbox"]');
-            if(shoppingItemCheckbox) {
-                const itemId = parseInt(shoppingItemCheckbox.closest('[data-item-id]').dataset.itemId);
+            const shoppingListCard = e.target.closest('#shopping-list-hub .list-item[data-list-id], #shopping-page .list-item[data-list-id]');
+            if(shoppingListCard) { activeShoppingListId = parseInt(shoppingListCard.dataset.listId); navigate('shopping'); return; }
+            
+            const checkbox = e.target.closest('.shopping-item input[type="checkbox"]');
+            if (checkbox) {
+                const itemId = parseInt(checkbox.closest('[data-item-id]').dataset.itemId);
                 const list = data.shopping.find(l => l.id === activeShoppingListId);
                 const item = list.items.find(i => i.id === itemId);
-                item.done = shoppingItemCheckbox.checked;
-                saveData();
-                renderSpecificShoppingList();
+                if (item) { item.done = checkbox.checked; dbOp('shopping', 'readwrite', 'put', list).then(() => refreshUI()); }
+                return;
             }
-             const editShoppingItemBtn = e.target.closest('.edit-shopping-item-btn');
-            if (editShoppingItemBtn) {
-                const itemId = parseInt(editShoppingItemBtn.closest('[data-item-id]').dataset.itemId);
-                openModal('shoppingItem', itemId);
-            }
+            
+            const editBtn = e.target.closest('.edit-shopping-item-btn');
+            if (editBtn) { const itemId = parseInt(editBtn.closest('[data-item-id]').dataset.itemId); openModal('shoppingItem', itemId); }
         });
 
         document.getElementById('add-item-btn').addEventListener('click', () => {
-             if(currentPageId === 'shopping') openModal('shoppingItem');
-             else openModal('schedule');
+            const pageToAction = { 'hub': 'schedule', 'shopping': 'shopping', 'calendar': 'schedule', 'meals': 'meals', 'health': 'health', 'contacts': 'contacts' };
+            const action = pageToAction[currentPageId];
+            if(action) openModal(action);
         });
         
-        document.querySelectorAll('.nav-icon').forEach(button => button.addEventListener('click', () => navigate(button.dataset.page)));
+        document.querySelectorAll('.nav-icon').forEach(button => {
+            button.addEventListener('click', () => { activeShoppingListId = null; navigate(button.dataset.page) });
+        });
         
+        function navigate(pageId) {
+            currentPageId = pageId;
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`${pageId}-page`).classList.remove('hidden');
+            document.querySelectorAll('.nav-icon').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.nav-icon[data-page="${pageId}"]`).classList.add('active');
+            refreshUI();
+        }
+
         // --- INITIALIZATION ---
-        loadData();
-        navigate('hub');
-        renderAll();
+        async function start() {
+            await initDB();
+            await loadData();
+            if (data.contacts.length === 0) {
+                await seedData();
+                await loadData();
+            }
+            navigate('hub');
+        }
+        start();
     });
     </script>
 </body>
 </html>
-
