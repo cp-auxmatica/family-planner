@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>hub - Family Planner</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,79 +14,79 @@
         .hub-title { font-family: 'Pacifico', cursive; }
         .page { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .nav-icon.active svg { color: #3b82f6; }
+        .nav-icon.active i { color: #3b82f6; }
         .nav-icon.active::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 24px; height: 4px; background-color: #3b82f6; border-radius: 2px; }
         .list-item { transition: background-color 0.2s; cursor: pointer; }
         .list-item:hover { background-color: #f8fafc; }
+        .shopping-item-done { text-decoration: line-through; color: #9ca3af; }
     </style>
 </head>
 <body class="antialiased text-gray-800">
 
     <div class="max-w-4xl mx-auto p-4 md:p-6 pb-24">
-        <header class="py-3 mb-2">
+        <header class="py-3 mb-2 flex justify-between items-center">
             <h1 class="hub-title text-4xl text-orange-500">hub</h1>
         </header>
 
         <nav class="bg-white rounded-2xl shadow-md p-2 my-4 sticky top-4 z-10">
             <div class="flex justify-around items-center">
-                <!-- Navigation Icons -->
-                <button class="nav-icon relative p-2" data-page="hub"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></button>
-                <button class="nav-icon relative p-2" data-page="calendar"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg></button>
-                <button class="nav-icon relative p-2" data-page="shopping"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg></button>
-                <button class="nav-icon relative p-2" data-page="health"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path><path d="M3.22 12H9.5l.7-1.5L11.5 13l1.2-2.5L14.5 12H21"></path></svg></button>
-                <button class="nav-icon relative p-2" data-page="meals"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Z"></path><path d="M11 22v-4c0-1.1.9-2 2-2h4a2 2 0 0 1 2 2v4"></path></svg></button>
-                <button class="nav-icon relative p-2" data-page="contacts"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></button>
+                 <button class="nav-icon relative p-2" data-page="hub"><i data-lucide="home" class="text-gray-500 w-7 h-7"></i></button>
+                 <button class="nav-icon relative p-2" data-page="calendar"><i data-lucide="calendar-days" class="text-gray-500 w-7 h-7"></i></button>
+                 <button class="nav-icon relative p-2" data-page="shopping"><i data-lucide="shopping-cart" class="text-gray-500 w-7 h-7"></i></button>
+                 <button class="nav-icon relative p-2" data-page="health"><i data-lucide="heart-pulse" class="text-gray-500 w-7 h-7"></i></button>
+                 <button class="nav-icon relative p-2" data-page="meals"><i data-lucide="utensils-crossed" class="text-gray-500 w-7 h-7"></i></button>
+                 <button class="nav-icon relative p-2" data-page="contacts"><i data-lucide="users" class="text-gray-500 w-7 h-7"></i></button>
             </div>
         </nav>
 
         <main id="main-content">
-            <!-- Hub/Dashboard Page -->
             <div id="hub-page" class="page">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white p-5 rounded-xl shadow-md col-span-1 md:col-span-2">
                         <h2 class="text-xl font-bold mb-1">Today's Schedule</h2>
                         <p id="current-date" class="text-sm text-gray-500 mb-4"></p>
-                        <div id="schedule-list" class="space-y-1"></div>
+                        <div id="schedule-list" class="space-y-2"></div>
                     </div>
-                    <div class="bg-white p-5 rounded-xl shadow-md">
-                        <h2 class="text-xl font-bold mb-4">Meals</h2>
-                        <div id="meals-list" class="space-y-1"></div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl shadow-md">
-                        <h2 class="text-xl font-bold mb-4">Shopping Lists</h2>
-                        <div id="shopping-list" class="space-y-1"></div>
-                    </div>
-                    <div class="bg-white p-5 rounded-xl shadow-md col-span-1 md:col-span-2">
-                        <h2 class="text-xl font-bold mb-4">Upcoming</h2>
-                         <div id="upcoming-list" class="space-y-1"></div>
-                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-md"><h2 class="text-xl font-bold mb-4">Meals for Today</h2><div id="meals-list" class="space-y-1"></div></div>
+                    <div class="bg-white p-5 rounded-xl shadow-md"><h2 class="text-xl font-bold mb-4">Shopping Lists</h2><div id="shopping-list-hub" class="space-y-1"></div></div>
+                    <div class="bg-white p-5 rounded-xl shadow-md col-span-1 md:col-span-2"><h2 class="text-xl font-bold mb-4">Upcoming</h2><div id="upcoming-list" class="space-y-1"></div></div>
                 </div>
             </div>
-            <!-- Placeholder pages -->
-            <div id="calendar-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md text-center"><h2 class="text-2xl font-bold mb-2">Calendar</h2><p class="text-gray-600">Full calendar view.</p></div></div>
-            <div id="shopping-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md text-center"><h2 class="text-2xl font-bold mb-2">Shopping Lists</h2><p class="text-gray-600">Manage all lists here.</p></div></div>
-            <div id="health-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md text-center"><h2 class="text-2xl font-bold mb-2">Health</h2><p class="text-gray-600">Manage appointments and medications.</p></div></div>
-            <div id="meals-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md text-center"><h2 class="text-2xl font-bold mb-2">Meal Planner</h2><p class="text-gray-600">Weekly meal planner view.</p></div></div>
-            <div id="contacts-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md text-center"><h2 class="text-2xl font-bold mb-2">Contacts</h2><p class="text-gray-600">Important contacts list.</p></div></div>
+            <!-- Functional Shopping Page -->
+            <div id="shopping-page" class="page hidden">
+                <div class="bg-white p-5 rounded-xl shadow-md">
+                    <div class="flex justify-between items-center mb-4">
+                         <h2 id="shopping-list-title" class="text-2xl font-bold">Shopping List</h2>
+                         <button id="back-to-hub-btn" class="text-sm text-blue-600 font-semibold flex items-center"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to Hub</button>
+                    </div>
+                    <div id="specific-shopping-list" class="space-y-2"></div>
+                </div>
+            </div>
+            <!-- Other Placeholder Pages -->
+            <div id="calendar-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md"><h2 class="text-2xl font-bold">Full Calendar View</h2></div></div>
+            <div id="health-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md"><h2 class="text-2xl font-bold">Health Dashboard</h2></div></div>
+            <div id="meals-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md"><h2 class="text-2xl font-bold">Weekly Meal Planner</h2></div></div>
+            <div id="contacts-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md"><h2 class="text-2xl font-bold">Contacts</h2></div></div>
         </main>
     </div>
 
     <!-- Floating Action Button -->
     <button id="add-item-btn" class="fixed bottom-8 right-8 bg-orange-500 hover:bg-orange-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform transform hover:scale-110 z-20">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <i data-lucide="plus" class="w-8 h-8"></i>
     </button>
     
-    <!-- Universal Edit/Add Modal -->
+    <!-- Modal -->
     <div id="edit-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
         <div class="bg-white rounded-lg p-6 shadow-xl w-full max-w-md">
             <h3 id="modal-title" class="text-2xl font-bold mb-6">Edit Item</h3>
-            <form id="edit-form">
-                <div id="modal-form-content" class="space-y-4">
-                    <!-- Dynamic form fields will be injected here -->
-                </div>
-                <div class="flex justify-end space-x-4 mt-8">
-                    <button type="button" id="cancel-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancel</button>
-                    <button type="submit" id="save-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Save Changes</button>
+            <form id="edit-form" class="space-y-4">
+                <div id="modal-form-content"></div>
+                <div class="flex justify-between items-center pt-4">
+                    <button type="button" id="delete-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Delete</button>
+                    <div class="space-x-4">
+                        <button type="button" id="cancel-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">Cancel</button>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Save Changes</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -93,145 +94,195 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- DATA STORE ---
-        // Using objects with unique IDs for proper tracking
-        let data = {
+        // --- CONFIG & UTILS ---
+        const toISODate = (date) => new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split("T")[0];
+        const todayISO = toISODate(new Date());
+
+        const categoryIcons = {
+            'General': 'calendar-plus',
+            'School': 'school-2',
+            'Health': 'stethoscope',
+            'Dentist': 'tooth',
+            'Work': 'briefcase',
+            'Sport': 'dribbble',
+            'Social': 'glass-water'
+        };
+
+        // --- DATA MANAGEMENT ---
+        let data = {};
+        let activeShoppingListId = null;
+
+        const defaultData = {
             schedule: [
-                { id: 1, time: '8:00 AM', title: 'Drop off Leo at School', person: 'Dad' },
-                { id: 2, time: '10:30 AM', title: 'Dentist Appointment', person: 'Mom' },
-                { id: 3, time: '4:00 PM', title: 'Soccer Practice', person: 'Leo' },
+                { id: 1, title: 'Drop off Leo at School', person: 'Dad', startDate: todayISO, startTime: '08:00', endDate: todayISO, endTime: '08:30', category: 'School' },
+                { id: 2, title: 'Doctor Appointment', person: 'Mom', startDate: todayISO, startTime: '10:30', endDate: todayISO, endTime: '11:30', category: 'Health' },
+                { id: 11, title: 'Soccer Practice', person: 'Leo', startDate: todayISO, startTime: '16:00', endDate: todayISO, endTime: '17:30', category: 'Sport' },
+                { id: 3, title: 'Team Meeting', person: 'Dad', startDate: toISODate(new Date(Date.now() + 86400000 * 2)), startTime: '10:00', endTime: '11:00', category: 'Work'},
             ],
             meals: [
-                { id: 4, title: 'Pancakes & Berries', label: 'Breakfast' },
-                { id: 5, title: 'Chicken Salad Sandwiches', label: 'Lunch' },
-                { id: 6, title: 'Spaghetti Bolognese', label: 'Dinner' },
+                { id: 4, title: 'Pancakes & Berries', label: 'Breakfast', date: todayISO, icon: 'croissant' },
+                { id: 5, title: 'Chicken Salad', label: 'Lunch', date: todayISO, icon: 'salad' },
             ],
             shopping: [
-                { id: 7, name: 'Grocery Run' },
-                { id: 8, name: 'Hardware Store' },
-            ],
-            upcoming: [
-                { id: 9, title: 'Grandma\'s Birthday', details: 'Sunday, Sep 14th' },
-                { id: 10, title: 'Parent-Teacher Conference', details: 'Wednesday, Sep 17th' },
+                { id: 7, name: 'Grocery Run', icon: 'shopping-cart', items: [
+                    {id: 50, text: 'Milk', done: false}, {id: 51, text: 'Bread', done: true}, {id: 52, text: 'Eggs', done: false}
+                ]},
+                { id: 8, name: 'Hardware Store', icon: 'wrench', items: [] }
             ]
         };
 
-        // --- GLOBAL STATE ---
-        let currentPageId = 'hub';
-        const today = new Date();
-        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('current-date').textContent = today.toLocaleDateString('en-US', dateOptions);
+        function loadData() {
+            const savedData = localStorage.getItem('hub_data');
+            data = savedData ? JSON.parse(savedData) : JSON.parse(JSON.stringify(defaultData));
+        }
 
-        // --- DOM ELEMENTS ---
+        function saveData() {
+            localStorage.setItem('hub_data', JSON.stringify(data));
+        }
+
+        // --- GLOBAL ELEMENTS ---
+        let currentPageId = 'hub';
         const modal = document.getElementById('edit-modal');
         const modalTitle = document.getElementById('modal-title');
         const formContent = document.getElementById('modal-form-content');
         const editForm = document.getElementById('edit-form');
+        const deleteBtn = document.getElementById('delete-btn');
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
         // --- RENDER FUNCTIONS ---
+        const formatTime = (t) => t ? new Date(`1970-01-01T${t}`).toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit'}) : '';
+        const formatDate = (d) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        const getPersonBadgeClass = (p) => ({'Dad':'bg-blue-100 text-blue-800','Mom':'bg-pink-100 text-pink-800','Leo':'bg-green-100 text-green-800'}[p] || 'bg-gray-100 text-gray-800');
+
         function renderAll() {
             renderSchedule();
-            renderMeals();
-            renderShopping();
+            renderHubMeals();
+            renderHubShopping();
             renderUpcoming();
+            if (activeShoppingListId) renderSpecificShoppingList();
+            lucide.createIcons();
         }
 
         function renderSchedule() {
+            const todayEvents = data.schedule.filter(item => item.startDate === todayISO);
             const listEl = document.getElementById('schedule-list');
-            listEl.innerHTML = data.schedule.map(item => `
-                <div class="list-item flex items-center space-x-4 p-3 rounded-lg" data-id="${item.id}" data-type="schedule">
-                    <div class="flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6 text-gray-400"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
-                    <div class="flex-grow">
-                        <p class="font-semibold">${item.time} - ${item.title}</p>
-                        <p class="text-sm text-gray-500">Assigned to: ${item.person}</p>
-                    </div>
-                    <span class="text-sm font-medium bg-gray-100 text-gray-700 py-1 px-3 rounded-full">${item.person}</span>
-                </div>`).join('');
-        }
-
-        function renderMeals() {
-            const listEl = document.getElementById('meals-list');
-            listEl.innerHTML = data.meals.map(item => `
-                <div class="list-item flex items-center space-x-4 p-3 rounded-lg" data-id="${item.id}" data-type="meals">
-                    <div class="flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6 text-green-500"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path></svg></div>
-                    <div>
-                        <p class="font-medium">${item.title}</p>
-                        <p class="text-sm text-gray-500">${item.label}</p>
-                    </div>
-                </div>`).join('');
-        }
-
-        function renderShopping() {
-            const listEl = document.getElementById('shopping-list');
-            listEl.innerHTML = data.shopping.map(item => `
-                <div class="list-item flex items-center space-x-3 p-3 rounded-lg" data-id="${item.id}" data-type="shopping">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-gray-500"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path></svg>
-                    <span class="font-medium">${item.name}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5 text-gray-400 ml-auto"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                </div>`).join('');
+            if(todayEvents.length > 0) {
+                 listEl.innerHTML = todayEvents.map(item => `
+                    <div class="list-item flex justify-between items-start p-3 rounded-lg" data-id="${item.id}" data-type="schedule">
+                        <div class="flex items-start">
+                            <i data-lucide="${categoryIcons[item.category] || 'help-circle'}" class="w-7 h-7 text-gray-500 mt-1 flex-shrink-0 mr-4"></i>
+                            <div>
+                                <p class="font-semibold"><span class="font-bold">${formatTime(item.startTime)} - ${formatTime(item.endTime)}</span> ${item.title}</p>
+                                <p class="text-sm text-gray-500">${formatDate(item.startDate)}</p>
+                            </div>
+                        </div>
+                        <span class="text-sm font-semibold px-3 py-1 rounded-full ${getPersonBadgeClass(item.person)} flex-shrink-0 ml-4">${item.person}</span>
+                    </div>`).join('');
+            } else {
+                listEl.innerHTML = `<p class="text-gray-500 p-3">No events scheduled for today.</p>`;
+            }
         }
         
         function renderUpcoming() {
+            const upcomingEvents = data.schedule.filter(item => item.startDate > todayISO).sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
             const listEl = document.getElementById('upcoming-list');
-            listEl.innerHTML = data.upcoming.map(item => `
-                <div class="list-item flex items-center space-x-4 p-3 rounded-lg" data-id="${item.id}" data-type="upcoming">
-                    <div class="flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-6 h-6 text-blue-500"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="16" y2="12"></line><line x1="12" x2="12.01" y1="8" y2="8"></line></svg></div>
-                    <div class="flex-grow">
-                         <p class="font-semibold">${item.title}</p>
-                         <p class="text-sm text-gray-500">${item.details}</p>
+            if(upcomingEvents.length > 0) {
+                listEl.innerHTML = upcomingEvents.slice(0, 3).map(item => `
+                <div class="list-item flex justify-between items-start p-3 rounded-lg" data-id="${item.id}" data-type="schedule">
+                    <div class="flex items-start">
+                        <i data-lucide="${categoryIcons[item.category] || 'help-circle'}" class="w-7 h-7 text-gray-500 mt-1 flex-shrink-0 mr-4"></i>
+                        <div>
+                            <p class="font-semibold">${item.title}</p>
+                            <p class="text-sm font-bold text-gray-600">${formatDate(item.startDate)}</p>
+                        </div>
                     </div>
+                    <span class="text-sm font-semibold px-3 py-1 rounded-full ${getPersonBadgeClass(item.person)} flex-shrink-0 ml-4">${item.person}</span>
                 </div>`).join('');
+            } else {
+                 listEl.innerHTML = `<p class="text-gray-500 p-3">No upcoming events.</p>`;
+            }
+        }
+
+        function renderHubMeals() {
+            const todaysMeals = data.meals.filter(meal => meal.date === todayISO);
+            document.getElementById('meals-list').innerHTML = todaysMeals.map(item => `<div class="list-item flex items-center space-x-3 p-3 rounded-lg" data-id="${item.id}" data-type="meals"><i data-lucide="${item.icon}" class="w-7 h-7 text-orange-500"></i><div><p class="font-bold">${item.title}</p><p class="text-sm text-gray-500">${item.label}</p></div></div>`).join('');
+        }
+        
+        function renderHubShopping() {
+            document.getElementById('shopping-list-hub').innerHTML = data.shopping.map(list => `<div class="list-item flex items-center space-x-3 p-3 rounded-lg" data-list-id="${list.id}"><i data-lucide="${list.icon}" class="w-6 h-6 text-gray-500"></i><span class="font-medium">${list.name}</span><i data-lucide="chevron-right" class="w-5 h-5 text-gray-400 ml-auto"></i></div>`).join('');
+        }
+
+        function renderSpecificShoppingList() {
+            const list = data.shopping.find(l => l.id === activeShoppingListId);
+            if (!list) return;
+            document.getElementById('shopping-list-title').textContent = list.name;
+            const listEl = document.getElementById('specific-shopping-list');
+            listEl.innerHTML = list.items.map(item => `
+                <div class="flex items-center p-3 rounded-lg hover:bg-gray-50 space-x-3" data-item-id="${item.id}" data-type="shoppingItem">
+                    <input type="checkbox" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" ${item.done ? 'checked' : ''}>
+                    <span class="flex-grow ${item.done ? 'shopping-item-done' : ''}">${item.text}</span>
+                    <button class="edit-shopping-item-btn text-gray-400 hover:text-blue-600"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // --- NAVIGATION ---
+        function navigate(pageId) {
+            currentPageId = pageId;
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`${pageId}-page`).classList.remove('hidden');
+            document.querySelectorAll('.nav-icon').forEach(b => b.classList.remove('active'));
+            const activeBtn = document.querySelector(`.nav-icon[data-page="${pageId}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
         }
 
         // --- MODAL & FORM LOGIC ---
-        function createFormField(label, id, value) {
-            return `
-                <div>
-                    <label for="${id}" class="block text-sm font-medium text-gray-700 mb-1">${label}</label>
-                    <input type="text" id="${id}" value="${value}" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
-                </div>`;
-        }
+        function createFormField(label, id, type, value, required = true) { return `<div><label for="${id}" class="block text-sm font-medium text-gray-700 mb-1">${label}</label><input type="${type}" id="${id}" value="${value}" ${required ? 'required' : ''} class="block w-full border-gray-300 rounded-md shadow-sm p-2 border"></div>`; }
         
+        function createCategoryDropdown(selectedCategory) {
+            let options = '';
+            for (const category in categoryIcons) {
+                options += `<option value="${category}" ${selectedCategory === category ? 'selected' : ''}>${category}</option>`;
+            }
+            return `<div><label for="edit-category" class="block text-sm font-medium text-gray-700 mb-1">Category</label><select id="edit-category" class="block w-full border-gray-300 rounded-md shadow-sm p-2 border">${options}</select></div>`;
+        }
+
         function openModal(type, itemId = null) {
             const isNew = itemId === null;
             let item = {};
-            
             modal.dataset.type = type;
             modal.dataset.id = itemId;
-
-            if (isNew) {
-                modalTitle.textContent = `Add New ${type.charAt(0).toUpperCase() + type.slice(1)} Item`;
-            } else {
-                modalTitle.textContent = `Edit ${type.charAt(0).toUpperCase() + type.slice(1)} Item`;
-                item = data[type].find(d => d.id == itemId);
-            }
+            deleteBtn.classList.toggle('hidden', isNew);
             
+            modalTitle.textContent = `${isNew ? 'Add' : 'Edit'} Item`;
             let formHtml = '';
+
             switch(type) {
                 case 'schedule':
-                    formHtml = createFormField('Time', 'edit-time', item.time || '') +
-                               createFormField('Event Title', 'edit-title', item.title || '') +
-                               createFormField('Assigned To', 'edit-person', item.person || '');
+                    if(!isNew) item = data.schedule.find(d => d.id == itemId);
+                    formHtml = createFormField('Event Title', 'edit-title', 'text', item.title || '') +
+                               createCategoryDropdown(item.category || 'General') +
+                               createFormField('Assigned To', 'edit-person', 'text', item.person || '') +
+                               '<div class="grid grid-cols-2 gap-4">' +
+                               createFormField('Start Date', 'edit-start-date', 'date', item.startDate || todayISO) +
+                               createFormField('Start Time', 'edit-start-time', 'time', item.startTime || '') + '</div>' +
+                               '<div class="grid grid-cols-2 gap-4">' +
+                               createFormField('End Date', 'edit-end-date', 'date', item.endDate || todayISO) +
+                               createFormField('End Time', 'edit-end-time', 'time', item.endTime || '') + '</div>';
                     break;
-                case 'meals':
-                    formHtml = createFormField('Meal Name', 'edit-title', item.title || '') +
-                               createFormField('Label (e.g., Breakfast)', 'edit-label', item.label || '');
-                    break;
-                case 'shopping':
-                    formHtml = createFormField('List Name', 'edit-name', item.name || '');
-                    break;
-                case 'upcoming':
-                     formHtml = createFormField('Title', 'edit-title', item.title || '') +
-                                createFormField('Date / Details', 'edit-details', item.details || '');
-                    break;
+                case 'shoppingItem':
+                     const list = data.shopping.find(l => l.id === activeShoppingListId);
+                     if (!isNew) item = list.items.find(i => i.id == itemId);
+                     modalTitle.textContent = `${isNew ? 'Add' : 'Edit'} Shopping Item`;
+                     formHtml = createFormField('Item Name', 'edit-text', 'text', item.text || '');
+                     break;
             }
             formContent.innerHTML = formHtml;
             modal.classList.remove('hidden');
         }
 
-        function closeModal() {
-            modal.classList.add('hidden');
-        }
+        function closeModal() { modal.classList.add('hidden'); }
 
         editForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -239,65 +290,78 @@
             const id = modal.dataset.id;
             const isNew = id === 'null';
 
-            let updatedItem = {};
-            switch(type) {
-                case 'schedule':
-                    updatedItem = { time: document.getElementById('edit-time').value, title: document.getElementById('edit-title').value, person: document.getElementById('edit-person').value };
-                    break;
-                case 'meals':
-                    updatedItem = { title: document.getElementById('edit-title').value, label: document.getElementById('edit-label').value };
-                    break;
-                case 'shopping':
-                    updatedItem = { name: document.getElementById('edit-name').value };
-                    break;
-                case 'upcoming':
-                    updatedItem = { title: document.getElementById('edit-title').value, details: document.getElementById('edit-details').value };
-                    break;
+            if (type === 'schedule') {
+                const updated = { title: document.getElementById('edit-title').value, person: document.getElementById('edit-person').value, category: document.getElementById('edit-category').value, startDate: document.getElementById('edit-start-date').value, startTime: document.getElementById('edit-start-time').value, endDate: document.getElementById('edit-end-date').value, endTime: document.getElementById('edit-end-time').value };
+                if (isNew) data.schedule.push({ ...updated, id: Date.now() });
+                else { const i = data.schedule.findIndex(d=>d.id==id); data.schedule[i] = {...data.schedule[i], ...updated}; }
+            } else if (type === 'shoppingItem') {
+                const list = data.shopping.find(l => l.id === activeShoppingListId);
+                const updated = { text: document.getElementById('edit-text').value };
+                if (isNew) list.items.push({ ...updated, id: Date.now(), done: false });
+                else { const i = list.items.findIndex(d=>d.id==id); list.items[i] = {...list.items[i], ...updated}; }
             }
             
-            if (isNew) {
-                updatedItem.id = Date.now(); // Simple unique ID
-                data[type].push(updatedItem);
-            } else {
-                const itemIndex = data[type].findIndex(d => d.id == id);
-                data[type][itemIndex] = { ...data[type][itemIndex], ...updatedItem };
-            }
-            
+            saveData();
             renderAll();
             closeModal();
         });
 
-        document.getElementById('cancel-btn').addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+        deleteBtn.addEventListener('click', () => {
+             if (!confirm('Are you sure you want to delete this item?')) return;
+             const type = modal.dataset.type;
+             const id = modal.dataset.id;
+             if (type === 'schedule') data.schedule = data.schedule.filter(i => i.id != id);
+             else if (type === 'shoppingItem') {
+                const list = data.shopping.find(l => l.id === activeShoppingListId);
+                list.items = list.items.filter(i => i.id != id);
+             }
+             saveData();
+             renderAll();
+             closeModal();
+        });
 
         // --- EVENT LISTENERS ---
+        document.getElementById('cancel-btn').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        document.getElementById('back-to-hub-btn').addEventListener('click', () => navigate('hub'));
+
         document.getElementById('main-content').addEventListener('click', function(e) {
-            const listItem = e.target.closest('.list-item');
-            if (listItem) {
-                const { id, type } = listItem.dataset;
-                openModal(type, id);
+            const scheduleItem = e.target.closest('.list-item[data-type="schedule"]');
+            if (scheduleItem) return openModal('schedule', scheduleItem.dataset.id);
+
+            const hubShoppingList = e.target.closest('#shopping-list-hub .list-item');
+            if(hubShoppingList) {
+                activeShoppingListId = parseInt(hubShoppingList.dataset.listId);
+                navigate('shopping');
+                renderSpecificShoppingList();
+            }
+
+            const shoppingItemCheckbox = e.target.closest('input[type="checkbox"]');
+            if(shoppingItemCheckbox) {
+                const itemId = parseInt(shoppingItemCheckbox.closest('[data-item-id]').dataset.itemId);
+                const list = data.shopping.find(l => l.id === activeShoppingListId);
+                const item = list.items.find(i => i.id === itemId);
+                item.done = shoppingItemCheckbox.checked;
+                saveData();
+                renderSpecificShoppingList();
+            }
+             const editShoppingItemBtn = e.target.closest('.edit-shopping-item-btn');
+            if (editShoppingItemBtn) {
+                const itemId = parseInt(editShoppingItemBtn.closest('[data-item-id]').dataset.itemId);
+                openModal('shoppingItem', itemId);
             }
         });
 
         document.getElementById('add-item-btn').addEventListener('click', () => {
-             // On the hub page, default to adding a schedule item. On other pages, it would match that page.
-            const typeToAdd = currentPageId === 'hub' ? 'schedule' : currentPageId;
-            openModal(typeToAdd);
+             if(currentPageId === 'shopping') openModal('shoppingItem');
+             else openModal('schedule');
         });
-
-        document.querySelectorAll('.nav-icon').forEach(button => {
-            button.addEventListener('click', () => {
-                currentPageId = button.dataset.page;
-                // In a real app, this would show/hide full pages. Here we just update state.
-                document.querySelectorAll('.page').forEach(p => p.classList.toggle('hidden', p.id !== `${currentPageId}-page`));
-                document.querySelectorAll('.nav-icon').forEach(b => b.classList.remove('active'));
-                button.classList.add('active');
-            });
-        });
-        document.querySelector('.nav-icon[data-page="hub"]').classList.add('active');
-
-
-        // --- INITIAL RENDER ---
+        
+        document.querySelectorAll('.nav-icon').forEach(button => button.addEventListener('click', () => navigate(button.dataset.page)));
+        
+        // --- INITIALIZATION ---
+        loadData();
+        navigate('hub');
         renderAll();
     });
     </script>
