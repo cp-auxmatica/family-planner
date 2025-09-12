@@ -37,6 +37,55 @@
             display: flex;
             align-items: center;
         }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f0f2f5;
+        }
+        .hub-title { font-family: 'Pacifico', cursive; }
+        .page { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-icon.active i { color: #3b82f6; }
+        .nav-icon.active::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 24px; height: 4px; background-color: #3b82f6; border-radius: 2px; }
+        .list-item { 
+            transition: background-color 0.2s; 
+            cursor: pointer;
+            list-style: none;
+            list-style-type: none;
+        }
+        .list-item:hover { background-color: #f8fafc; }
+        .shopping-item-done { text-decoration: line-through; color: #9ca3af; }
+        
+        /* Remove all list styling */
+        ul, ol, li {
+            list-style: none;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Ensure icons are properly aligned */
+        .list-item {
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .list-item .icon-container {
+            flex-shrink: 0;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Remove any potential pseudo-elements that might create dots */
+        .list-item::before,
+        .list-item::after,
+        div::before,
+        div::after {
+            content: none !important;
+        }
+
+
     </style>
 </head>
 <body class="antialiased text-gray-800">
@@ -227,7 +276,6 @@
         function renderHubPage() {
             document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
             
-            // Today's Schedule
             const todayEvents = data.schedule.filter(item => item.startDate === todayISO).sort((a,b) => (a.startTime || '').localeCompare(b.startTime || ''));
             const scheduleListEl = document.getElementById('schedule-list');
             if(todayEvents.length > 0) {
@@ -243,7 +291,6 @@
                     </div>`).join('');
             } else { scheduleListEl.innerHTML = `<p class="text-gray-500 p-3">No events scheduled for today.</p>`; }
 
-            // Upcoming
             const upcomingEvents = data.schedule.filter(item => item.startDate > todayISO).sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
             const upcomingListEl = document.getElementById('upcoming-list');
             if(upcomingEvents.length > 0) {
@@ -260,13 +307,11 @@
                 </div>`).join('');
             } else { upcomingListEl.innerHTML = `<p class="text-gray-500 p-3">No upcoming events.</p>`; }
 
-            // Meals
             const todaysMeals = data.meals.filter(meal => meal.date === todayISO);
             const mealsListEl = document.getElementById('meals-list');
             if (todaysMeals.length > 0) { mealsListEl.innerHTML = todaysMeals.map(item => ` <div class="list-item p-3 rounded-lg" data-id="${item.id}" data-type="meals"><div class="flex items-center w-full"><div class="icon-container"><i data-lucide="${mealIcons[item.label] || 'utensils'}" class="w-7 h-7 text-orange-500"></i></div><div class="flex-grow"><p class="font-bold">${item.title}</p><p class="text-sm text-gray-500">${item.label}</p></div></div></div>`).join(''); } 
             else { mealsListEl.innerHTML = `<p class="text-gray-500 p-3">No meals planned for today.</p>`; }
             
-            // Shopping
             const shoppingHubEl = document.getElementById('shopping-list-hub');
             if (data.shopping.length > 0) {
                 shoppingHubEl.innerHTML = data.shopping.map(list => {
@@ -344,8 +389,7 @@
             const pageEl = document.getElementById('calendar-page');
             pageEl.innerHTML = `<div class="bg-white p-2 sm:p-4 rounded-xl shadow-md"><div id="calendar-container"></div></div>`;
             const calendarEl = document.getElementById('calendar-container');
-            if(calendar) calendar.destroy();
-            calendar = new FullCalendar.Calendar(calendarEl, {
+            let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth',
                 headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' },
                 events: data.schedule.map(task => ({
@@ -358,7 +402,7 @@
                     className: `border-l-4 border-${{'Dad':'blue','Mom':'pink','Leo':'green'}[task.person] || 'gray'}-500 bg-${{'Dad':'blue','Mom':'pink','Leo':'green'}[task.person] || 'gray'}-50`
                 })),
                 eventClick: (info) => openModal('schedule', parseInt(info.event.id)),
-                dateClick: (info) => openModal('schedule', null, { startDate: info.dateStr.split('T')[0], endDate: info.dateStr.split('T')[0] })
+                dateClick: (info) => openModal('schedule', null, { startDate: info.dateStr.split('T')[0] })
             });
             calendar.render();
         }
@@ -369,31 +413,30 @@
             
             pageEl.innerHTML = `
                 <h2 class="text-2xl font-bold mb-4">Health Hub</h2>
-                <div class="card">
-                    <div class="card-header">Upcoming Appointments</div>
-                    <div class="card-body">
+                <div class="bg-white p-5 rounded-xl shadow-md mb-6">
+                    <h3 class="text-xl font-bold mb-4">Upcoming Appointments</h3>
+                    <div class="space-y-2">
                         ${healthAppointments.length > 0 ? healthAppointments.map(item => `
-                            <div class="list-item p-4" data-id="${item.id}" data-type="schedule">
+                            <div class="list-item p-3" data-id="${item.id}" data-type="schedule">
                                 <div class="icon-container"><i data-lucide="${categoryIcons[item.category]}" class="w-7 h-7 text-gray-500"></i></div>
                                 <div class="flex-grow"><p class="font-bold text-lg">${item.title}</p><p class="text-gray-600">${new Date(item.startDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} at ${formatTime(item.startTime)}</p></div>
                                 <span class="text-sm font-semibold px-3 py-1 rounded-full ${getPersonBadgeClass(item.person)}">${item.person}</span>
                             </div>
-                        `).join('') : '<p class="text-gray-500 p-4">No health appointments scheduled.</p>'}
+                        `).join('') : '<p class="text-gray-500">No health appointments scheduled.</p>'}
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-header">Medication Schedule</div>
-                    <div class="card-body">
+                <div class="bg-white p-5 rounded-xl shadow-md">
+                    <h3 class="text-xl font-bold mb-4">Medication Schedule</h3>
+                    <div class="space-y-2">
                         ${data.health.length > 0 ? data.health.map(med => `
-                            <div class="list-item p-4" data-id="${med.id}" data-type="health">
-                                <div class="icon-container"><i data-lucide="pilcrow" class="w-7 h-7 text-green-500"></i></div>
+                            <div class="list-item p-3" data-id="${med.id}" data-type="health">
+                                <div class="icon-container"><i data-lucide="pill" class="w-7 h-7 text-green-500"></i></div>
                                 <div class="flex-grow"><p class="font-bold text-lg">${med.name} <span class="text-sm font-normal text-gray-500">(${med.dosage})</span></p><p class="text-gray-600">${med.time}</p></div>
                                 <span class="text-sm font-semibold px-3 py-1 rounded-full ${getPersonBadgeClass(med.person)}">${med.person}</span>
                             </div>
-                        `).join('') : '<p class="text-gray-500 p-4">No medications logged.</p>'}
+                        `).join('') : '<p class="text-gray-500">No medications logged.</p>'}
                     </div>
-                </div>
-            `;
+                </div>`;
         }
 
         function renderMealsPage() {
@@ -407,11 +450,11 @@
             const sortedDates = Object.keys(mealsByDate).sort((a, b) => new Date(b) - new Date(a));
             
             pageEl.innerHTML = `<h2 class="text-2xl font-bold mb-4">Meal Planner</h2>` + (sortedDates.length > 0 ? sortedDates.map(date => `
-                <div class="card">
-                    <div class="card-header">${new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
-                    <div class="card-body">
+                <div class="bg-white p-5 rounded-xl shadow-md mb-4">
+                    <h3 class="text-lg font-bold mb-3">${new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h3>
+                    <div class="space-y-2">
                         ${mealsByDate[date].map(item => `
-                            <div class="list-item p-4" data-id="${item.id}" data-type="meals">
+                            <div class="list-item p-3" data-id="${item.id}" data-type="meals">
                                 <div class="icon-container"><i data-lucide="${mealIcons[item.label] || 'utensils'}" class="w-7 h-7 text-orange-500"></i></div>
                                 <div class="flex-grow"><p class="font-bold text-lg">${item.title}</p></div>
                                 <span class="text-sm font-semibold px-3 py-1 rounded-full bg-orange-100 text-orange-800">${item.label}</span>
@@ -425,14 +468,16 @@
             const pageEl = document.getElementById('contacts-page');
             pageEl.innerHTML = `
                 <h2 class="text-2xl font-bold mb-4">Family & Contacts</h2>
-                <div class="card"><div class="card-body">
+                <div class="bg-white p-5 rounded-xl shadow-md">
+                    <div class="space-y-2">
                     ${data.contacts.map(contact => `
-                        <div class="list-item p-4" data-id="${contact.id}" data-type="contacts">
+                        <div class="list-item p-3" data-id="${contact.id}" data-type="contacts">
                             <div class="icon-container"><i data-lucide="user-circle" class="w-8 h-8 text-gray-500"></i></div>
                             <div class="flex-grow"><p class="font-bold text-lg">${contact.name}</p></div>
                         </div>
                     `).join('')}
-                </div></div>`;
+                    </div>
+                </div>`;
         }
         
         // --- FORM & MODAL LOGIC ---
@@ -444,7 +489,9 @@
                         const foundItem = list.items.find(i => i.id === id);
                         if(foundItem) { item = foundItem; break; }
                     }
-                } else { item = data[type].find(d => d.id === id) || {}; }
+                } else {
+                    item = data[type].find(d => d.id === id) || {};
+                }
             }
             
             const createField = (label, id, type, value = '', props = '') => `<div><label for="${id}" class="block text-sm font-medium text-gray-700 mb-1">${label}</label><input type="${type}" id="${id}" value="${value}" ${props} class="block w-full border-gray-300 rounded-md shadow-sm p-2 border"></div>`;
@@ -485,19 +532,21 @@
             const id = modal.dataset.id ? parseInt(modal.dataset.id) : null;
             let updatedData;
             
-            switch(type) {
-                case 'schedule': updatedData = { title: document.getElementById('edit-title').value, person: document.getElementById('edit-person').value, category: document.getElementById('edit-category').value, startDate: document.getElementById('edit-start-date').value, startTime: document.getElementById('edit-start-time').value }; break;
-                case 'shopping': updatedData = { name: document.getElementById('edit-list-name').value, icon: document.getElementById('edit-list-icon').value, items: [] }; break;
-                case 'shoppingItem': const list = data.shopping.find(l => l.id === activeShoppingListId); const itemToUpdate = list.items.find(i => i.id === id); if (itemToUpdate) { itemToUpdate.text = document.getElementById('edit-item-text').value; await dbOp('shopping', 'readwrite', 'put', list); } break;
-                case 'health': updatedData = { person: document.getElementById('edit-health-person').value, name: document.getElementById('edit-health-name').value, dosage: document.getElementById('edit-health-dosage').value, time: document.getElementById('edit-health-time').value }; break;
-                case 'meals': updatedData = { date: document.getElementById('edit-meal-date').value, label: document.getElementById('edit-meal-label').value, title: document.getElementById('edit-meal-title').value }; break;
-                case 'contacts': updatedData = { name: document.getElementById('edit-contact-name').value }; break;
-            }
-            
-            if (updatedData) {
-                if (id) { const original = await dbOp(type, 'readonly', 'get', id); await dbOp(type, 'readwrite', 'put', { ...original, ...updatedData }); } 
-                else { await dbOp(type, 'readwrite', 'add', updatedData); }
-            }
+            try {
+                switch(type) {
+                    case 'schedule': updatedData = { title: document.getElementById('edit-title').value, person: document.getElementById('edit-person').value, category: document.getElementById('edit-category').value, startDate: document.getElementById('edit-start-date').value, startTime: document.getElementById('edit-start-time').value, endDate: document.getElementById('edit-start-date').value, endTime: '' }; break;
+                    case 'shopping': updatedData = { name: document.getElementById('edit-list-name').value, icon: document.getElementById('edit-list-icon').value, items: [] }; break;
+                    case 'shoppingItem': const list = data.shopping.find(l => l.id === activeShoppingListId); const itemToUpdate = list.items.find(i => i.id === id); if (itemToUpdate) { itemToUpdate.text = document.getElementById('edit-item-text').value; await dbOp('shopping', 'readwrite', 'put', list); } break;
+                    case 'health': updatedData = { person: document.getElementById('edit-health-person').value, name: document.getElementById('edit-health-name').value, dosage: document.getElementById('edit-health-dosage').value, time: document.getElementById('edit-health-time').value }; break;
+                    case 'meals': updatedData = { date: document.getElementById('edit-meal-date').value, label: document.getElementById('edit-meal-label').value, title: document.getElementById('edit-meal-title').value }; break;
+                    case 'contacts': updatedData = { name: document.getElementById('edit-contact-name').value }; break;
+                }
+                
+                if (updatedData) {
+                    if (id) { const original = await dbOp(type, 'readonly', 'get', id); await dbOp(type, 'readwrite', 'put', { ...original, ...updatedData }); } 
+                    else { await dbOp(type, 'readwrite', 'add', updatedData); }
+                }
+            } catch (error) { console.error("Error saving data:", error); }
             
             closeModal();
             await refreshUI();
@@ -508,13 +557,15 @@
              const type = modal.dataset.type;
              const id = parseInt(modal.dataset.id);
              
-             if (type === 'shoppingItem') {
-                const list = data.shopping.find(l => l.id === activeShoppingListId);
-                list.items = list.items.filter(i => i.id !== id);
-                await dbOp('shopping', 'readwrite', 'put', list);
-             } else if (id) {
-                await dbOp(type, 'readwrite', 'delete', id);
-             }
+             try {
+                if (type === 'shoppingItem') {
+                    const list = data.shopping.find(l => l.id === activeShoppingListId);
+                    list.items = list.items.filter(i => i.id !== id);
+                    await dbOp('shopping', 'readwrite', 'put', list);
+                } else if (id) {
+                    await dbOp(type, 'readwrite', 'delete', id);
+                }
+             } catch(error) { console.error("Error deleting item:", error); }
              
              closeModal();
              await refreshUI();
@@ -567,7 +618,7 @@
         async function start() {
             await initDB();
             await loadData();
-            if (data.contacts.length === 0) {
+            if (!data.contacts || data.contacts.length === 0) {
                 await seedData();
                 await loadData();
             }
