@@ -19,6 +19,12 @@
         .list-item { transition: background-color 0.2s; cursor: pointer; }
         .list-item:hover { background-color: #f8fafc; }
         .shopping-item-done { text-decoration: line-through; color: #9ca3af; }
+        
+        /* FORCE REMOVE LIST STYLING ARTIFACTS */
+        #schedule-list, #upcoming-list {
+            list-style-type: none !important;
+            padding-left: 0 !important;
+        }
     </style>
 </head>
 <body class="antialiased text-gray-800">
