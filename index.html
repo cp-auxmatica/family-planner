@@ -2,495 +2,267 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>hub</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hub - Family Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #000000; --primary-hover: #333333;
-            --secondary: #10b981; --accent: #ec4899; --error: #ef4444;
-            --bg-primary: #ffffff; --bg-secondary: #ffffff; --bg-tertiary: #f3f4f6;
-            --text-primary: #111827; --text-secondary: #374151; --text-tertiary: #6b7280;
-            --border: #e5e7eb; --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 4px 15px -3px rgb(0 0 0 / 0.1);
-            --radius: 12px; --radius-sm: 8px;
-            --urgent: #ef4444; --warning: #f97316; --success: #22c55e;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
         }
-        body.dark-mode {
-            --primary: #eeeeee; --primary-hover: #ffffff;
-            --secondary: #10b981; --accent: #f472b6;
-            --bg-primary: #020617; --bg-secondary: #0f172a; --bg-tertiary: #1e293b;
-            --text-primary: #e2e8f0; --text-secondary: #94a3b8; --text-tertiary: #64748b;
-            --border: #334155; --shadow: 0 1px 3px 0 rgb(255 255 255 / 0.1);
+        .hub-title {
+            font-family: 'Pacifico', cursive;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { font-size: 16px; scroll-behavior: smooth; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); transition: background-color 0.3s, color 0.3s; }
-        
-        /* --- HEADER AND NAVIGATION CUSTOMIZATIONS --- */
-        .header { 
-            background: #000000; /* Black header background */
-            border-bottom: 1px solid #333;
-            position: sticky; top: 0; z-index: 100; 
-            transition: background-color 0.3s, border-color 0.3s; 
+        .page {
+            animation: fadeIn 0.3s ease-in-out;
         }
-        .navbar { max-width: 1400px; margin: 0 auto; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
-        .logo { font-size: 1.5rem; font-weight: 700; color: #ffffff; } /* White logo text */
-        .top-nav { display: flex; justify-content: center; background: #000000; border-bottom: 1px solid #333; overflow-x: auto; }
-        .nav-btn {
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem;
-            padding: 0.75rem 1rem;
-            background: transparent; color: #a0a0a0; /* Light gray for inactive icons */
-            border: none; border-bottom: 3px solid transparent;
-            cursor: pointer; transition: all 0.2s ease; font-weight: 500;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .nav-btn i { font-size: 1.5rem; }
-        .nav-btn:hover { 
-            background: #1a1a1a; /* Dark gray on hover */
-            color: #ffffff; 
+        .nav-icon.active svg {
+            color: #3b82f6; /* blue-500 */
         }
-        .nav-btn.active { 
-            color: #ffffff; /* White active icon */
-            border-bottom-color: #2575fc; /* Bright blue indicator */
+        .nav-icon.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 4px;
+            background-color: #3b82f6;
+            border-radius: 2px;
         }
-    
-        /* --- DASHBOARD GRADIENT HEADERS --- */
-        #dashboard-view .card:nth-of-type(1) .card-header {
-            background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
-            color: white;
-            border-bottom: none;
+        /* Styles for editable content */
+        .editable {
+            transition: background-color 0.2s ease-in-out;
+            border-radius: 4px;
+            padding: 0 2px;
         }
-        #dashboard-view .card:nth-of-type(2) .card-header {
-            background: linear-gradient(45deg, #f97794 0%, #623aa2 100%);
-            color: white;
-            border-bottom: none;
+        .editable:hover, .editable:focus {
+            background-color: #f1f5f9; /* slate-100 */
+            outline: 1px dashed #cbd5e1; /* slate-300 */
+            cursor: text;
         }
-        #dashboard-view .card:nth-of-type(3) .card-header {
-            background: linear-gradient(45deg, #ff8177 0%, #ff867a 0%, #ff8c7f 21%, #f99185 52%, #cf556c 78%, #b12a5b 100%);
-            color: white;
-            border-bottom: none;
+        [contenteditable]:focus {
+            outline: 1px dashed #94a3b8; /* slate-400 */
         }
-        /* --- End Customizations --- */
-    
-        .main-container { padding: 1rem; max-width: 1400px; margin: 0 auto; }
-        .view-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
-        .view-title { font-size: 1.75rem; font-weight: 700; }
-        .card { background: var(--bg-secondary); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 1.5rem; border: 1px solid var(--border); }
-        .card-header { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 1.1rem; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
-        .card-body { padding: 0; }
-        .card-content { padding: 1rem; line-height: 1.6; color: var(--text-secondary); }
-        .list-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); transition: background-color 0.2s; }
-        .list-item:last-child { border-bottom: none; }
-        .list-item:hover { background-color: var(--bg-tertiary); }
-        .list-item-icon { font-size: 1.2rem; width: 2rem; height: 2rem; display: grid; place-items: center; border-radius: 50%; color: var(--primary); background: var(--bg-tertiary); }
-        .list-item-content { flex: 1; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .list-item-title { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
-        .list-item-subtitle { font-size: 0.85rem; color: var(--text-secondary); }
-        .list-item-aside { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); text-align: right; }
-        .list-item-assignee { font-size: 0.8rem; color: var(--text-secondary); background-color: var(--bg-tertiary); padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); margin-top: 0.25rem; display: inline-block; }
-        .fab { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background-color: var(--primary); color: white; font-size: 1.5rem; border: none; box-shadow: var(--shadow-lg); position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 900; cursor: pointer; transition: all 0.3s ease; }
-        body.dark-mode .fab { color: #000; }
-        .fab:hover { transform: scale(1.05) rotate(90deg); background-color: var(--primary-hover); }
-        .hidden { display: none !important; }
-        .btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.75rem 1.25rem;font-size:1rem;font-weight:500;border-radius:var(--radius-sm);border:none;cursor:pointer;transition:all .2s}.btn-primary{background:var(--primary);color:white}.btn-primary:hover{background:var(--primary-hover)}.btn-outline{background:0 0;border:1px solid var(--border);color:var(--text-secondary)}.btn-outline:hover{background:var(--bg-tertiary)}.btn-ghost{background:0 0;color:var(--text-secondary);border:none;padding:.5rem}.btn-ghost:hover{background:var(--bg-tertiary);color:var(--text-primary)}.btn-danger{background:var(--error);color:white}
-        body.dark-mode .btn-primary { color: #000; }
-        .modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.7);backdrop-filter:blur(4px);z-index:1000;padding:1rem;overflow-y:auto}.modal.active{display:flex;align-items:center;justify-content:center;animation:fadeIn .3s ease}.modal-content{background:var(--bg-secondary);border-radius:var(--radius);max-width:500px;width:100%;animation:slideIn .3s ease;box-shadow:var(--shadow-lg)}.modal-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}.modal-title{font-size:1.2rem;font-weight:600}.modal-body{padding:1.5rem}.modal-footer{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:1rem;justify-content:flex-end}
-        @keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes slideIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-        .form-group{margin-bottom:1.5rem}.form-label{display:block;font-size:.9rem;font-weight:500;color:var(--text-primary);margin-bottom:.5rem}.form-input,.form-select,textarea.form-input{width:100%;padding:.75rem 1rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:1rem;background:var(--bg-primary);color:var(--text-primary)}.form-input:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 2px color-mix(in srgb, var(--primary) 20%, transparent)}
-        .shopping-item.completed .list-item-title { text-decoration: line-through; opacity: 0.6; }
-        .checkbox{width:1.25rem;height:1.25rem;accent-color:var(--primary)}
-        #calendar-view .card-body { padding: 1rem; }
-        .fc { border: none !important; --fc-border-color: var(--border); --fc-today-bg-color: var(--bg-tertiary); }
-        .fc .fc-button { background-color: var(--primary) !important; color: white !important; }
-        body.dark-mode .fc .fc-button { color: #000 !important; }
-        .calendar-mobile-controls { display: flex; justify-content: center; gap: 0.5rem; padding: 0.75rem 0; border-bottom: 1px solid var(--border); margin-bottom: 0.75rem; }
-        .calendar-mobile-controls .btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
     </style>
 </head>
-<body>
-    <header class="header">
-        <nav class="navbar"><div class="logo">hub</div></nav>
-        <div class="top-nav">
-            <button class="nav-btn active" data-view="dashboard"><i class="fas fa-home"></i></button>
-            <button class="nav-btn" data-view="shopping"><i class="fas fa-shopping-cart"></i></button>
-            <button class="nav-btn" data-view="calendar"><i class="fas fa-calendar-alt"></i></button>
-            <button class="nav-btn" data-view="meals"><i class="fas fa-utensils"></i></button>
-            <button class="nav-btn" data-view="journal"><i class="fas fa-book"></i></button>
-            <button class="nav-btn" data-view="contacts"><i class="fas fa-address-book"></i></button>
-        </div>
-    </header>
+<body class="antialiased text-gray-800">
 
-    <main class="main-container">
-        <div id="dashboard-view" class="view"></div>
-        <div id="shopping-view" class="view hidden"></div>
-        <div id="list-detail-view" class="view hidden"></div>
-        <div id="calendar-view" class="view hidden"></div>
-        <div id="meals-view" class="view hidden"></div>
-        <div id="journal-view" class="view hidden"></div>
-        <div id="contacts-view" class="view hidden"></div>
-    </main>
+    <div class="max-w-4xl mx-auto p-4 md:p-6 pb-24"> <!-- Added padding-bottom for FAB -->
 
-    <button id="fab" class="fab"><i class="fas fa-plus"></i></button>
-    
-    <div id="generic-modal" class="modal"></div>
-    
-    <script>
-        // --- DATABASE AND CORE APP LOGIC ---
-        const DB_NAME = 'hubDB_v1';
-        const DB_VERSION = 1;
-        let db = null, currentView = 'dashboard', appData = {}, calendar, currentStoreId = null;
+        <!-- Header -->
+        <header class="py-3 mb-2">
+            <h1 class="hub-title text-4xl text-orange-500">hub</h1>
+        </header>
 
-        const dbRequest = (storeName, mode, action, ...args) => new Promise((resolve, reject) => {
-            if (!db) return reject("Database not initialized.");
-            const tx = db.transaction(storeName, mode);
-            tx.onerror = event => reject(event.target.error);
-            const request = tx.objectStore(storeName)[action](...args);
-            if (mode === 'readonly') request.onsuccess = () => resolve(request.result);
-            else tx.oncomplete = () => resolve(request.result || request.source.key);
-        });
-        const initDB = () => new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-            request.onerror = e => reject(e.target.error);
-            request.onsuccess = e => { db = e.target.result; resolve(db); };
-            request.onupgradeneeded = e => {
-                db = e.target.result;
-                ['tasks', 'stores', 'shoppingLists', 'familyMembers', 'journalEntries', 'meals'].forEach(name => {
-                    if (!db.objectStoreNames.contains(name)) db.createObjectStore(name, { keyPath: 'id', autoIncrement: true });
-                });
-            };
-        });
-        const dbOps = {
-            add: (store, data) => dbRequest(store, 'readwrite', 'add', data),
-            getAll: (store) => dbRequest(store, 'readonly', 'getAll'),
-            get: (store, id) => dbRequest(store, 'readonly', 'get', id),
-            put: (store, data) => dbRequest(store, 'readwrite', 'put', data),
-            delete: (store, id) => dbRequest(store, 'readwrite', 'delete', id),
-        };
-        
-        const seedInitialData = async () => {
-            const family = await dbOps.getAll('familyMembers');
-            if (family && family.length > 0) return;
-            console.log("Seeding initial data...");
-            const today = new Date(), tomorrow = new Date(), yesterday = new Date(), nextWeek = new Date();
-            tomorrow.setDate(today.getDate() + 1);
-            yesterday.setDate(today.getDate() - 1);
-            nextWeek.setDate(today.getDate() + 7);
-            const formatDate = (date) => date.toISOString().split('T')[0];
-            
-            await dbOps.add('familyMembers', { name: 'Alex' });
-            await dbOps.add('familyMembers', { name: 'Sam' });
-            
-            await dbOps.add('tasks', { name: 'Morning Standup', date: formatDate(today), time: '09:00', type: 'Work', priority: 'high', assignee: 'Sam' });
-            await dbOps.add('tasks', { name: 'Pick up kids', date: formatDate(today), time: '15:30', type: 'School', priority: 'high', assignee: 'Alex' });
-            await dbOps.add('tasks', { name: 'Project Deadline', date: formatDate(tomorrow), time: '17:00', type: 'Work', priority: 'urgent', assignee: 'Sam' });
-            await dbOps.add('tasks', { name: 'Dentist Appointment', date: formatDate(nextWeek), time: '11:00', type: 'Dentist', priority: 'high', assignee: 'Alex' });
-            
-            const groceryId = await dbOps.add('stores', { name: 'Grocery Store' });
-            await dbOps.add('shoppingLists', { storeId: groceryId, name: 'Milk', completed: false });
-            
-            await dbOps.add('meals', { date: formatDate(today), type: 'Dinner', name: 'Spaghetti and Meatballs' });
-            
-            await dbOps.add('journalEntries', { date: formatDate(yesterday), title: 'A Good Day', content: 'We went to the park and had a great time.' });
-        };
-        
-        const openModal = async (modalType, params = {}) => {
-            const modal = document.getElementById('generic-modal');
-            const modalContent = await MODAL_CONFIG[modalType]?.render(params);
-            if(modalContent) {
-                modal.innerHTML = modalContent;
-                modal.classList.add('active');
-                MODAL_CONFIG[modalType]?.postRender?.(params);
-            }
-        };
-        const closeModal = () => document.getElementById('generic-modal')?.classList.remove('active');
+        <!-- Navigation Bar -->
+        <nav class="bg-white rounded-2xl shadow-md p-2 my-4 sticky top-4 z-10">
+            <div class="flex justify-around items-center">
+                <button class="nav-icon relative p-2" data-page="hub">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 transition-colors duration-300"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </button>
+                <button class="nav-icon relative p-2" data-page="calendar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 transition-colors duration-300"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+                </button>
+                <button class="nav-icon relative p-2" data-page="shopping">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 transition-colors duration-300"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                </button>
+                <button class="nav-icon relative p-2" data-page="health">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 transition-colors duration-300"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path><path d="M3.22 12H9.5l.7-1.5L11.5 13l1.2-2.5L14.5 12H21"></path></svg>
+                </button>
+                <button class="nav-icon relative p-2" data-page="meals">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 transition-colors duration-300"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Z"></path><path d="M11 22v-4c0-1.1.9-2 2-2h4a2 2 0 0 1 2 2v4"></path></svg>
+                </button>
+                <button class="nav-icon relative p-2" data-page="contacts">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500 transition-colors duration-300"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </button>
+            </div>
+        </nav>
 
-        const switchView = (viewName) => {
-            currentView = viewName;
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewName));
-            document.querySelectorAll('.view').forEach(v => v.classList.toggle('hidden', v.id !== `${viewName}-view`));
-            document.getElementById('fab').classList.toggle('hidden', viewName === 'list-detail');
-            const fabActions = { 
-                'dashboard': () => openModal('task'), 'shopping': () => openModal('store'),
-                'calendar': () => openModal('task'), 'meals': () => openModal('meal'), 
-                'journal': () => openModal('journal'), 'contacts': () => openModal('contact')
-            };
-            document.getElementById('fab').onclick = fabActions[viewName] || (() => {});
-            refreshCurrentView();
-        };
-
-        const refreshCurrentView = () => {
-            const renderMap = { 
-                'dashboard': renderDashboard, 'shopping': renderShopping, 'list-detail': renderListDetail, 
-                'calendar': renderCalendar, 'meals': renderMealPlanner, 'journal': renderJournal,
-                'contacts': renderContacts
-            };
-            renderMap[currentView]?.();
-        };
-
-        const loadAppData = async () => {
-            const stores = ['tasks', 'stores', 'shoppingLists', 'familyMembers', 'journalEntries', 'meals'];
-            const dataPromises = stores.map(s => dbOps.getAll(s));
-            const [tasks, storesData, shoppingLists, familyMembers, journalEntries, meals] = await Promise.all(dataPromises);
-            appData = { tasks: tasks||[], stores: storesData||[], shoppingLists: shoppingLists||[], familyMembers: familyMembers||[], journalEntries: journalEntries||[], meals: meals||[] };
-        };
-
-        const initApp = async () => {
-            try {
-                if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
-                await initDB();
-                await seedInitialData();
-                await loadAppData();
-                document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
-                switchView('dashboard');
-            } catch (error) { console.error('Error initializing app:', error); }
-        };
-        document.addEventListener('DOMContentLoaded', initApp);
-        
-        const formatTime = (time) => !time ? '' : new Date(`1970-01-01T${time}`).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-        const formatDate = (dateStr) => new Date(dateStr + 'T00:00:00').toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-        const getTaskIcon = (type) => ({ 'School':'fa-school', 'Chore':'fa-broom', 'Appointment':'fa-calendar-check', 'Work': 'fa-briefcase', 'Dentist': 'fa-tooth', 'Doctor': 'fa-user-doctor' }[type] || 'fa-calendar-day');
-        
-        function renderDashboard() {
-            const container = document.getElementById('dashboard-view');
-            const today = new Date(), tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
-            const todayStr = today.toISOString().split('T')[0], tomorrowStr = tomorrow.toISOString().split('T')[0];
-            const timedEventsToday = appData.tasks.filter(t => t.date === todayStr && t.time).sort((a,b) => a.time.localeCompare(b.time));
-            const mealsToday = appData.meals.filter(m => m.date === todayStr);
-            const timedEventsTomorrow = appData.tasks.filter(t => t.date === tomorrowStr && t.time);
-            const importantAppointments = appData.tasks.filter(t => {
-                const isImportant = ['Appointment', 'Dentist', 'Doctor'].includes(t.type);
-                const isAfterTomorrow = new Date(t.date) > new Date(tomorrowStr);
-                return isImportant && isAfterTomorrow;
-            });
-            const upcoming = [...timedEventsTomorrow, ...importantAppointments].sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''));
-            container.innerHTML = `
-                <div class="card">
-                    <div class="card-header" style="background-color: #E0F2FE;">Today's Schedule</div>
-                    <div class="card-body">${timedEventsToday.length > 0 ? timedEventsToday.map(createTaskListItem).join('') : `<div class="list-item"><p class="list-item-subtitle">No timed events scheduled.</p></div>`}</div>
-                </div>
-                <div class="card">
-                    <div class="card-header" style="background-color: #FEF9C3;">Today's Meals</div>
-                    <div class="card-body">${mealsToday.length > 0 ? mealsToday.map(createMealListItem).join('') : `<div class="list-item"><p class="list-item-subtitle">No meals planned.</p></div>`}</div>
-                </div>
-                <div class="card">
-                    <div class="card-header" style="background-color: #F3E8FF;">Upcoming</div>
-                    <div class="card-body">${upcoming.length > 0 ? upcoming.map(createTaskListItem).join('') : `<div class="list-item"><p class="list-item-subtitle">Nothing on the horizon.</p></div>`}</div>
-                </div>`;
-        }
-
-        function createTaskListItem(item) {
-            return `<div class="list-item" style="cursor: pointer;" onclick="openModal('task', {id:${item.id}})"><div class="list-item-icon"><i class="fas ${getTaskIcon(item.type)}"></i></div><div class="list-item-content"><div class="list-item-title">${item.name}</div><div class="list-item-subtitle">${formatDate(item.date)}</div></div><div class="list-item-aside">${item.time ? formatTime(item.time) : ''}${item.assignee ? `<div class="list-item-assignee">${item.assignee}</div>` : ''}</div></div>`;
-        }
-        
-        function createMealListItem(item) {
-             return `<div class="list-item" style="cursor: pointer;" onclick="openModal('meal', {id:${item.id}})"><div class="list-item-icon"><i class="fas fa-utensils"></i></div><div class="list-item-content"><div class="list-item-title">${item.name}</div></div><div class="list-item-aside"><div class="list-item-assignee">${item.type}</div></div></div>`;
-        }
-
-        function renderContacts() {
-            const container = document.getElementById('contacts-view');
-            let html = `<div class="view-header"><h1 class="view-title">Contacts</h1></div>`;
-            const members = appData.familyMembers || [];
-            if (members.length > 0) {
-                html += `<div class="card"><div class="card-body">` + members.map(member => `
-                    <div class="list-item">
-                        <div class="list-item-icon"><i class="fas fa-user"></i></div>
-                        <div class="list-item-content"><div class="list-item-title">${member.name}</div></div>
-                        <button class="btn btn-ghost" onclick="deleteContact(${member.id})"><i class="fas fa-trash-alt"></i></button>
+        <!-- Main Content -->
+        <main id="main-content">
+            <!-- Hub/Dashboard Page -->
+            <div id="hub-page" class="page">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-5 rounded-xl shadow-md col-span-1 md:col-span-2">
+                        <h2 class="text-xl font-bold mb-1">Today's Schedule</h2>
+                        <p id="current-date" class="text-sm text-gray-500 mb-4"></p>
+                        <div id="schedule-list" class="space-y-4"></div>
                     </div>
-                `).join('') + `</div></div>`;
-            } else {
-                html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No contacts found. Add one with the '+' button.</p></div></div>`;
-            }
-            container.innerHTML = html;
-        }
+                    <div class="bg-white p-5 rounded-xl shadow-md">
+                        <h2 class="text-xl font-bold mb-4">Meals</h2>
+                        <div id="meals-list" class="space-y-3"></div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-md">
+                        <h2 class="text-xl font-bold mb-4">Shopping Lists</h2>
+                        <div id="shopping-list" class="space-y-3"></div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-md col-span-1 md:col-span-2">
+                        <h2 class="text-xl font-bold mb-4">Upcoming</h2>
+                         <div id="upcoming-list" class="space-y-3"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Placeholder pages -->
+            <div id="calendar-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md text-center"><h2 class="text-2xl font-bold mb-2">Calendar</h2><p class="text-gray-600">This is where the family calendar will be displayed.</p></div></div>
+            <div id="shopping-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md text-center"><h2 class="text-2xl font-bold mb-2">Shopping Lists</h2><p class="text-gray-600">Manage all shopping lists here.</p></div></div>
+            <div id="health-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md text-center"><h2 class="text-2xl font-bold mb-2">Health</h2><p class="text-gray-600">Manage health appointments and medications here.</p></div></div>
+            <div id="meals-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md text-center"><h2 class="text-2xl font-bold mb-2">Meal Planner</h2><p class="text-gray-600">This is where the weekly meal planner will be displayed.</p></div></div>
+            <div id="contacts-page" class="page hidden"><div class="bg-white p-6 rounded-xl shadow-md text-center"><h2 class="text-2xl font-bold mb-2">Contacts</h2><p class="text-gray-600">Important family contacts will be stored here.</p></div></div>
+        </main>
+    </div>
 
-        async function deleteContact(id) {
-            if (confirm('Are you sure you want to delete this contact?')) { await dbOps.delete('familyMembers', id); await loadAppData(); refreshCurrentView(); }
-        }
+    <!-- Floating Action Button -->
+    <button id="add-item-btn" class="fixed bottom-8 right-8 bg-orange-500 hover:bg-orange-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform transform hover:scale-110 z-20">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </button>
+    
+    <!-- Add Item Modal -->
+    <div id="add-item-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50 page">
+        <div class="bg-white rounded-lg p-6 shadow-xl w-full max-w-sm text-center">
+            <h3 id="modal-title" class="text-xl font-bold mb-4">Add New Item</h3>
+            <p id="modal-message" class="text-gray-600 mb-6">A form to add a new item would appear here.</p>
+            <button id="close-modal-btn" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">
+                Close
+            </button>
+        </div>
+    </div>
 
-        function renderShopping() {
-            const container = document.getElementById('shopping-view');
-            let html = `<div class="view-header"><h1 class="view-title">Shopping Lists</h1></div>`;
-            const stores = (appData.stores || []).filter(store => store && store.name);
-            if (stores.length === 0) {
-                html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No stores found. Add one with the '+' button.</p></div></div>`;
-            } else {
-                html += stores.map(store => {
-                    const items = appData.shoppingLists.filter(i => i.storeId === store.id);
-                    const needed = items.filter(i => !i.completed).length;
-                    return `<div class="card" style="cursor: pointer;" onclick="showListDetail(${store.id})"><div class="list-item"><div class="list-item-icon"><i class="fas fa-store"></i></div><div class="list-item-content"><div class="list-item-title">${store.name}</div><div class="list-item-subtitle">${needed} of ${items.length} items needed</div></div><div class="list-item-aside"><i class="fas fa-chevron-right"></i></div></div></div>`;
-                }).join('');
-            }
-            container.innerHTML = html;
-        }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            let currentPageId = 'hub';
 
-        function showListDetail(storeId) {
-            currentStoreId = storeId;
-            switchView('list-detail');
-        }
+            // --- MOCK DATA ---
+            const scheduleData = [
+                { time: '8:00 AM', title: 'Drop off Leo at School', person: 'Dad', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-yellow-500"><path d="M14 18v-2a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v2"/><path d="M14 4h2a2 2 0 0 1 2 2v4h-3.3"/><path d="m12 14-4-4 4-4"/><path d="M4 18v-2a2 2 0 0 1 2-2h2"/><circle cx="12" cy="7" r="2"/></svg>` },
+                { time: '10:30 AM', title: 'Dentist Appointment', person: 'Mom', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-cyan-500"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>` },
+                { time: '4:00 PM', title: 'Soccer Practice', person: 'Leo', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-green-500"><circle cx="12" cy="12" r="10"></circle><path d="m15.54 8.46-1.08 7.08-7.08-1.08 1.08-7.08 7.08 1.08Z"></path></svg>` }
+            ];
+            const mealData = [
+                { title: 'Pancakes & Berries', label: 'Breakfast', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-orange-500"><path d="M12 2a10 10 0 1 0 10 10c0-4-3-7-7-7-2 0-3.3 1-4 2.5"></path><path d="m10.5 8.5-1 1"></path><path d="m14.5 8.5-1 1"></path><path d="M16 12h-8"></path></svg>` },
+                { title: 'Chicken Salad Sandwiches', label: 'Lunch', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-lime-500"><path d="M4 12c0-4.42 3.58-8 8-8s8 3.58 8 8-3.58 8-8 8-8-3.58-8-8z"></path><path d="M12 12 8 8"></path><path d="m13 17 5-5"></path><path d="m11 2-2 2"></path><path d="m20 13-2 2"></path></svg>` },
+                { title: 'Spaghetti Bolognese', label: 'Dinner', icon: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-red-500"><path d="M2 12h20"></path><path d="M5 12V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v6"></path><path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"></path></svg>` }
+            ];
+            const shoppingData = [{ name: 'Grocery Run' }, { name: 'Hardware Store' }];
+            const upcomingData = [
+                { title: 'Grandma\'s Birthday', details: 'Sunday, Sep 14th' },
+                { title: 'Parent-Teacher Conference', details: 'Wednesday, Sep 17th' }
+            ];
 
-        function renderListDetail() {
-            if (currentStoreId === null) return;
-            const container = document.getElementById('list-detail-view');
-            const store = appData.stores.find(s => s.id === currentStoreId);
-            const items = appData.shoppingLists.filter(i => i.storeId === currentStoreId);
-            const needed = items.filter(i => !i.completed);
-            const completed = items.filter(i => i.completed);
-            const createItemHtml = item => `<div class="list-item shopping-item ${item.completed ? 'completed' : ''}"><input type="checkbox" class="checkbox" onchange="toggleShoppingItem(${item.id})" ${item.completed ? 'checked' : ''}><div class="list-item-content" style="cursor: pointer;" onclick="openModal('shoppingItem', {id: ${item.id}})"><div class="list-item-title">${item.name}</div></div><button class="btn btn-ghost" onclick="deleteShoppingItem(${item.id})"><i class="fas fa-trash-alt"></i></button></div>`;
-            container.innerHTML = `<div class="view-header"><button class="btn btn-ghost" onclick="switchView('shopping')"><i class="fas fa-arrow-left"></i> Back</button><h1 class="view-title" style="font-size: 1.5rem;">${store.name}</h1></div><div class="card"><div class="card-header">Needed</div><div class="card-body">${needed.length > 0 ? needed.map(createItemHtml).join('') : `<div class="list-item"><p class="list-item-subtitle">All done!</p></div>`}</div></div>${completed.length > 0 ? `<div class="card"><div class="card-header">Completed</div><div class="card-body">${completed.map(createItemHtml).join('')}</div></div>` : ''}<div class="card" style="position: sticky; bottom: 1rem;"><form id="add-item-form" style="display: flex; gap: 0.5rem; padding: 0.5rem;"><input type="text" class="form-input" id="new-item-name" placeholder="Add a new item..." required><button type="submit" class="btn btn-primary">Add</button></form></div>`;
-            document.getElementById('add-item-form').addEventListener('submit', async e => {
-                e.preventDefault();
-                const input = document.getElementById('new-item-name');
-                if (!input.value.trim()) return;
-                await dbOps.add('shoppingLists', { storeId: currentStoreId, name: input.value.trim(), completed: false });
-                await loadAppData(); renderListDetail();
+            // --- RENDER FUNCTIONS ---
+            const today = new Date();
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = today.toLocaleDateString('en-US', dateOptions);
+
+            const scheduleListEl = document.getElementById('schedule-list');
+            scheduleData.forEach(item => {
+                scheduleListEl.innerHTML += `
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">${item.icon}</div>
+                        <div class="flex-grow">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="font-semibold"><span class="editable" contenteditable="true">${item.time}</span> - <span class="editable" contenteditable="true">${item.title}</span></p>
+                                    <p class="text-sm text-gray-500">${today.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</p>
+                                </div>
+                                <span class="editable text-sm font-medium bg-gray-100 text-gray-700 py-1 px-3 rounded-full" contenteditable="true">${item.person}</span>
+                            </div>
+                        </div>
+                    </div>`;
             });
-        }
-
-        async function toggleShoppingItem(itemId) {
-            const item = appData.shoppingLists.find(i => i.id === itemId);
-            if(item) { item.completed = !item.completed; await dbOps.put('shoppingLists', item); await loadAppData(); renderListDetail(); }
-        }
-        async function deleteShoppingItem(itemId) {
-            if (confirm('Delete this item?')) { await dbOps.delete('shoppingLists', itemId); await loadAppData(); refreshCurrentView(); closeModal(); }
-        }
-
-        function renderJournal() {
-            const container = document.getElementById('journal-view');
-            let html = `<div class="view-header"><h1 class="view-title">Journal</h1></div>`;
-            const entries = (appData.journalEntries || []).sort((a,b) => b.date.localeCompare(a.date));
-            if (entries.length > 0) {
-                html += entries.map(entry => `<div class="card" style="cursor: pointer;" onclick="openModal('journal', {id: ${entry.id}})"><div class="card-header"><span>${entry.title}</span><span class="list-item-subtitle">${formatDate(entry.date)}</span></div><div class="card-content">${entry.content.substring(0, 150)}${entry.content.length > 150 ? '...' : ''}</div></div>`).join('');
-            } else {
-                html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No journal entries yet. Use the '+' button to add one.</p></div></div>`;
-            }
-            container.innerHTML = html;
-        }
-        
-        function renderCalendar() {
-            const container = document.getElementById('calendar-view');
-            container.innerHTML = `<div class="card"><div class="card-body"><div id="calendar-container"></div></div></div>`;
-            const calendarEl = document.getElementById('calendar-container');
-            if (calendar) calendar.destroy();
-            const isMobile = window.innerWidth < 768;
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: isMobile ? 'listDay' : 'dayGridMonth',
-                headerToolbar: isMobile ? { left: 'prev,next today', center: 'title', right: '' } : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
-                events: appData.tasks.map(task => ({ id: task.id, title: task.name, start: task.time ? `${task.date}T${task.time}` : task.date, extendedProps: { assignee: task.assignee } })),
-                eventClick: (info) => openModal('task', { id: parseInt(info.event.id) }),
-                dateClick: (info) => openModal('task', { date: info.dateStr.split('T')[0] }),
-                viewDidMount: (info) => { if (isMobile) updateActiveCalendarButton(info.view.type); },
-                eventContent: (arg) => { let titleEl = document.createElement('div'); titleEl.innerHTML = arg.event.title; if (arg.event.extendedProps.assignee) { let assigneeEl = document.createElement('div'); assigneeEl.innerHTML = `<i>${arg.event.extendedProps.assignee}</i>`; assigneeEl.style.opacity = '0.8'; assigneeEl.style.fontSize = '0.8em'; return { domNodes: [titleEl, assigneeEl] }; } return { domNodes: [titleEl] }; }
+            const mealsListEl = document.getElementById('meals-list');
+            mealData.forEach(item => {
+                mealsListEl.innerHTML += `
+                    <div class="flex items-center space-x-4">
+                         ${item.icon}
+                        <div>
+                            <p class="font-medium editable" contenteditable="true">${item.title}</p>
+                            <p class="text-sm text-gray-500 editable" contenteditable="true">${item.label}</p>
+                        </div>
+                    </div>`;
             });
-            calendar.render();
-            if (isMobile) {
-                const mobileControls = document.createElement('div');
-                mobileControls.className = 'calendar-mobile-controls';
-                mobileControls.innerHTML = `<button class="btn btn-outline" data-view="listDay">Day</button><button class="btn btn-outline" data-view="listWeek">Week</button><button class="btn btn-outline" data-view="dayGridMonth">Month</button>`;
-                calendarEl.querySelector('.fc-toolbar').insertAdjacentElement('afterend', mobileControls);
-                mobileControls.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => calendar.changeView(btn.dataset.view)));
-            }
-        }
-
-        function updateActiveCalendarButton(activeView) {
-            document.querySelectorAll('.calendar-mobile-controls button').forEach(btn => {
-                btn.classList.toggle('hidden', btn.dataset.view === activeView);
+            const shoppingListEl = document.getElementById('shopping-list');
+            shoppingData.forEach(item => {
+                shoppingListEl.innerHTML += `
+                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-gray-500"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path></svg>
+                        <span class="font-medium editable" contenteditable="true">${item.name}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-gray-400 ml-auto"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>`;
             });
-        }
-        
-        function renderMealPlanner() {
-            const container = document.getElementById('meals-view');
-            let html = `<div class="view-header"><h1 class="view-title">Meal Plan</h1></div>`;
-            const mealsByDate = (appData.meals || []).reduce((acc, meal) => { (acc[meal.date] = acc[meal.date] || []).push(meal); return acc; }, {});
-            const sortedDates = Object.keys(mealsByDate).sort((a, b) => a.localeCompare(b));
-            if (sortedDates.length > 0) {
-                 sortedDates.forEach(date => { html += `<div class="card"><div class="card-header">${formatDate(date)}</div><div class="card-body">${mealsByDate[date].map(createMealListItem).join('')}</div></div>`; });
-            } else {
-                 html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No meals planned. Use the '+' button to add one.</p></div></div>`;
-            }
-            container.innerHTML = html;
-        }
+            const upcomingListEl = document.getElementById('upcoming-list');
+            upcomingData.forEach(item => {
+                upcomingListEl.innerHTML += `
+                    <div class="flex items-center space-x-4 p-3 bg-blue-50 rounded-lg">
+                        <div class="flex-shrink-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-blue-500"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="16" y2="12"></line><line x1="12" x2="12.01" y1="8" y2="8"></line></svg></div>
+                        <div class="flex-grow">
+                             <p class="font-semibold editable" contenteditable="true">${item.title}</p>
+                             <p class="text-sm text-gray-500 editable" contenteditable="true">${item.details}</p>
+                        </div>
+                    </div>`;
+            });
 
-        const MODAL_CONFIG = {
-            'task': {
-                render: async ({id, date}) => {
-                    const task = id ? await dbOps.get('tasks', id) : {};
-                    const memberOptions = (appData.familyMembers || []).map(m => `<option value="${m.name}" ${task.assignee === m.name ? 'selected' : ''}>${m.name}</option>`).join('');
-                    const types = ['Appointment', 'Chore', 'Errand', 'School', 'Work', 'Meeting', 'Doctor', 'Dentist'];
-                    const typeOptions = types.map(t => `<option value="${t}" ${task.type === t ? 'selected' : ''}>${t}</option>`).join('');
-                    return `<div class="modal-content"><form id="task-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Task' : 'New Task'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="task-id" value="${id || ''}"><div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="task-name" value="${task.name || ''}" required></div><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="task-date" value="${task.date || date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Time (optional)</label><input type="time" class="form-input" id="task-time" value="${task.time || ''}"></div><div class="form-group"><label class="form-label">Type</label><select class="form-input" id="task-type">${typeOptions}</select></div><div class="form-group"><label class="form-label">Assign To</label><select class="form-input" id="task-assignee"><option value="">Unassigned</option>${memberOptions}</select></div><div class="form-group"><label class="form-label">Priority</label><select class="form-input" id="task-priority"><option value="low" ${task.priority === 'low' ? 'selected' : ''}>Low</option><option value="medium" ${!task.priority || task.priority === 'medium' ? 'selected' : ''}>Medium</option><option value="high" ${task.priority === 'high' ? 'selected' : ''}>High</option><option value="urgent" ${task.priority === 'urgent' ? 'selected' : ''}>Urgent</option></select></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-task-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
-                },
-                postRender: ({id}) => {
-                    document.getElementById('task-form').addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        const taskData = { id: parseInt(document.getElementById('task-id').value) || undefined, name: document.getElementById('task-name').value, type: document.getElementById('task-type').value, date: document.getElementById('task-date').value, time: document.getElementById('task-time').value, assignee: document.getElementById('task-assignee').value, priority: document.getElementById('task-priority').value };
-                        if (taskData.id) await dbOps.put('tasks', taskData); else { delete taskData.id; await dbOps.add('tasks', taskData); }
-                        await loadAppData(); refreshCurrentView(); closeModal();
-                    });
-                    if (id) { document.getElementById('delete-task-btn').addEventListener('click', async () => { if (confirm('Delete task?')) { await dbOps.delete('tasks', id); await loadAppData(); refreshCurrentView(); closeModal(); } }); }
-                }
-            },
-            'contact': {
-                render: () => `<div class="modal-content"><form id="contact-form"><div class="modal-header"><h3 class="modal-title">New Contact</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><div class="form-group"><label class="form-label">Name</label><input type="text" class="form-input" id="contact-name" required></div></div><div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`,
-                postRender: () => { document.getElementById('contact-form').addEventListener('submit', async e => { e.preventDefault(); const name = document.getElementById('contact-name').value.trim(); if (name) await dbOps.add('familyMembers', {name}); await loadAppData(); refreshCurrentView(); closeModal(); }); }
-            },
-            'store': {
-                 render: () => `<div class="modal-content"><form id="store-form"><div class="modal-header"><h3 class="modal-title">New Store</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="text" class="form-input" id="store-name" placeholder="Store Name" required></div><div class="modal-footer"><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Add</button></div></form></div>`,
-                 postRender: () => { document.getElementById('store-form').addEventListener('submit', async e => { e.preventDefault(); const name = document.getElementById('store-name').value.trim(); if(name) await dbOps.add('stores', {name}); await loadAppData(); refreshCurrentView(); closeModal(); }); }
-            },
-            'shoppingItem': {
-                render: async ({id}) => {
-                    const item = await dbOps.get('shoppingLists', id);
-                    return `<div class="modal-content"><form id="shopping-item-form"><div class="modal-header"><h3 class="modal-title">Edit Item</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="shopping-item-id" value="${id || ''}"><div class="form-group"><label class="form-label">Item Name</label><input type="text" class="form-input" id="shopping-item-name" value="${item.name || ''}" required></div></div><div class="modal-footer"><button type="button" class="btn btn-danger" id="delete-shopping-item-btn">Delete</button><div style="flex:1;"></div><button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
-                },
-                postRender: ({id}) => {
-                    document.getElementById('shopping-item-form').addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        const newName = document.getElementById('shopping-item-name').value.trim();
-                        if (!newName) return;
-                        const originalItem = await dbOps.get('shoppingLists', id);
-                        originalItem.name = newName;
-                        await dbOps.put('shoppingLists', originalItem);
-                        await loadAppData(); refreshCurrentView(); closeModal();
-                    });
-                    document.getElementById('delete-shopping-item-btn').addEventListener('click', () => deleteShoppingItem(id));
-                }
-            },
-            'meal': {
-                render: async ({id}) => {
-                    const meal = id ? await dbOps.get('meals', id) : {}; const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack']; const typeOptions = mealTypes.map(t => `<option value="${t}" ${meal.type === t ? 'selected' : ''}>${t}</option>`).join('');
-                    return `<div class="modal-content"><form id="meal-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Meal' : 'New Meal'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="meal-id" value="${id || ''}"><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="meal-date" value="${meal.date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Meal Type</label><select class="form-input" id="meal-type">${typeOptions}</select></div><div class="form-group"><label class="form-label">Meal Name</label><input type="text" class="form-input" id="meal-name" value="${meal.name || ''}" required placeholder="e.g., Tacos, Cereal..."></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-meal-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
-                },
-                postRender: ({id}) => {
-                    document.getElementById('meal-form').addEventListener('submit', async (e) => {
-                        e.preventDefault(); const mealData = { id: parseInt(document.getElementById('meal-id').value) || undefined, date: document.getElementById('meal-date').value, type: document.getElementById('meal-type').value, name: document.getElementById('meal-name').value };
-                        if (mealData.id) await dbOps.put('meals', mealData); else { delete mealData.id; await dbOps.add('meals', mealData); }
-                        await loadAppData(); refreshCurrentView(); closeModal();
-                    });
-                    if (id) { document.getElementById('delete-meal-btn').addEventListener('click', async () => { if (confirm('Delete this meal?')) { await dbOps.delete('meals', id); await loadAppData(); refreshCurrentView(); closeModal(); } }); }
-                }
-            },
-            'journal': {
-                render: async ({id}) => {
-                    const entry = id ? await dbOps.get('journalEntries', id) : {};
-                    return `<div class="modal-content"><form id="journal-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Entry' : 'New Journal Entry'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="journal-id" value="${id || ''}"><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="journal-date" value="${entry.date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="journal-title" value="${entry.title || ''}" required></div><div class="form-group"><label class="form-label">Content</label><textarea class="form-input" id="journal-content" rows="6">${entry.content || ''}</textarea></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-journal-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
-                },
-                postRender: ({id}) => {
-                    document.getElementById('journal-form').addEventListener('submit', async (e) => {
-                        e.preventDefault(); const entryData = { id: parseInt(document.getElementById('journal-id').value) || undefined, date: document.getElementById('journal-date').value, title: document.getElementById('journal-title').value, content: document.getElementById('journal-content').value };
-                        if (entryData.id) await dbOps.put('journalEntries', entryData); else { delete entryData.id; await dbOps.add('journalEntries', entryData); }
-                        await loadAppData(); refreshCurrentView(); closeModal();
-                    });
-                     if (id) { document.getElementById('delete-journal-btn').addEventListener('click', async () => { if (confirm('Delete this entry?')) { await dbOps.delete('journalEntries', id); await loadAppData(); refreshCurrentView(); closeModal(); } }); }
-                }
+            // --- NAVIGATION LOGIC ---
+            const navButtons = document.querySelectorAll('.nav-icon');
+            const pages = document.querySelectorAll('.page');
+            
+            function showPage(pageId) {
+                currentPageId = pageId;
+                pages.forEach(page => {
+                    if (page.id === `${pageId}-page` || page.id === 'add-item-modal') {
+                        // Don't hide the modal if it's the target
+                        if (page.id !== 'add-item-modal') page.classList.remove('hidden');
+                    } else {
+                        page.classList.add('hidden');
+                    }
+                });
+                navButtons.forEach(button => {
+                    button.classList.toggle('active', button.dataset.page === pageId);
+                });
             }
-        };
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => showPage(button.dataset.page));
+            });
+            showPage('hub'); // Set initial page
+
+            // --- MODAL & FAB LOGIC ---
+            const addItemBtn = document.getElementById('add-item-btn');
+            const modal = document.getElementById('add-item-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+
+            const pageTitles = {
+                hub: 'New Schedule Event',
+                calendar: 'New Calendar Event',
+                shopping: 'New Shopping List',
+                health: 'New Health Item',
+                meals: 'New Meal',
+                contacts: 'New Contact'
+            };
+
+            addItemBtn.addEventListener('click', () => {
+                modalTitle.textContent = pageTitles[currentPageId] || 'Add New Item';
+                modal.classList.remove('hidden');
+            });
+            closeModalBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+            });
+             // Also close modal if clicking on the background
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
     </script>
 </body>
 </html>
+
