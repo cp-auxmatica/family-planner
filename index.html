@@ -60,7 +60,7 @@
         .list-item-title { font-size: 1rem; font-weight: 500; color: var(--text-primary); }
         .list-item-subtitle { font-size: 0.85rem; color: var(--text-secondary); }
         .list-item-aside { font-size: 0.9rem; font-weight: 500; color: var(--text-primary); text-align: right; }
-        .list-item-assignee { font-size: 0.8rem; color: var(--text-secondary); background-color: var(--bg-tertiary); padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); }
+        .list-item-assignee { font-size: 0.8rem; color: var(--text-secondary); background-color: var(--bg-tertiary); padding: 0.15rem 0.5rem; border-radius: var(--radius-sm); margin-top: 0.25rem; display: inline-block; }
         .fab { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background-color: var(--primary); color: white; font-size: 1.5rem; border: none; box-shadow: var(--shadow-lg); position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 900; cursor: pointer; transition: all 0.3s ease; }
         .fab:hover { transform: scale(1.05) rotate(90deg); background-color: var(--primary-hover); }
         .hidden { display: none !important; }
@@ -106,7 +106,7 @@
     
     <script>
         // --- DATABASE AND CORE APP LOGIC ---
-        const DB_NAME = 'HomeHubDB_v26';
+        const DB_NAME = 'HomeHubDB_v27';
         const DB_VERSION = 1;
         let db = null, currentView = 'dashboard', appData = {}, calendar, currentStoreId = null;
 
@@ -138,28 +138,29 @@
         };
         
         const seedInitialData = async () => {
-            const tasks = await dbOps.getAll('tasks');
-            if (tasks && tasks.length > 0) return;
+            const family = await dbOps.getAll('familyMembers');
+            if (family && family.length > 0) return;
             console.log("Seeding initial data...");
-            const today = new Date();
-            const tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
-            const yesterday = new Date(); yesterday.setDate(today.getDate() - 1);
-            const nextWeek = new Date(); nextWeek.setDate(today.getDate() + 7);
+            const today = new Date(), tomorrow = new Date(), yesterday = new Date(), nextWeek = new Date();
+            tomorrow.setDate(today.getDate() + 1);
+            yesterday.setDate(today.getDate() - 1);
+            nextWeek.setDate(today.getDate() + 7);
             const formatDate = (date) => date.toISOString().split('T')[0];
             
-            await dbOps.add('tasks', { name: 'Morning Standup', date: formatDate(today), time: '09:00', type: 'Work', priority: 'high' });
-            await dbOps.add('tasks', { name: 'Pick up kids', date: formatDate(today), time: '15:30', type: 'School', priority: 'high' });
-            await dbOps.add('tasks', { name: 'Project Deadline', date: formatDate(tomorrow), time: '17:00', type: 'Work', priority: 'urgent' });
-            await dbOps.add('tasks', { name: 'Dentist Appointment', date: formatDate(nextWeek), time: '11:00', type: 'Dentist', priority: 'high' });
-            await dbOps.add('tasks', { name: 'Take out trash', date: formatDate(today), type: 'Chore' });
+            const alexId = await dbOps.add('familyMembers', { name: 'Alex' });
+            const samId = await dbOps.add('familyMembers', { name: 'Sam' });
+            
+            await dbOps.add('tasks', { name: 'Morning Standup', date: formatDate(today), time: '09:00', type: 'Work', priority: 'high', assignee: 'Sam' });
+            await dbOps.add('tasks', { name: 'Pick up kids', date: formatDate(today), time: '15:30', type: 'School', priority: 'high', assignee: 'Alex' });
+            await dbOps.add('tasks', { name: 'Project Deadline', date: formatDate(tomorrow), time: '17:00', type: 'Work', priority: 'urgent', assignee: 'Sam' });
+            await dbOps.add('tasks', { name: 'Dentist Appointment', date: formatDate(nextWeek), time: '11:00', type: 'Dentist', priority: 'high', assignee: 'Alex' });
             
             const groceryId = await dbOps.add('stores', { name: 'Grocery Store' });
             await dbOps.add('shoppingLists', { storeId: groceryId, name: 'Milk', completed: false });
             
             await dbOps.add('meals', { date: formatDate(today), type: 'Dinner', name: 'Spaghetti and Meatballs' });
-            await dbOps.add('meals', { date: formatDate(tomorrow), type: 'Dinner', name: 'Taco Night' });
-
-            await dbOps.add('journalEntries', { date: formatDate(yesterday), title: 'A Good Day', content: 'We went to the park and had a great time. The weather was perfect.' });
+            
+            await dbOps.add('journalEntries', { date: formatDate(yesterday), title: 'A Good Day', content: 'We went to the park and had a great time.' });
         };
         
         const openModal = async (modalType, params = {}) => {
@@ -179,11 +180,8 @@
             document.querySelectorAll('.view').forEach(v => v.classList.toggle('hidden', v.id !== `${viewName}-view`));
             document.getElementById('fab').classList.toggle('hidden', viewName === 'list-detail');
             const fabActions = { 
-                'dashboard': () => openModal('task'), 
-                'shopping': () => openModal('store'),
-                'calendar': () => openModal('task'), 
-                'meals': () => openModal('meal'), 
-                'journal': () => openModal('journal'),
+                'dashboard': () => openModal('task'), 'shopping': () => openModal('store'),
+                'calendar': () => openModal('task'), 'meals': () => openModal('meal'), 'journal': () => openModal('journal'),
             };
             document.getElementById('fab').onclick = fabActions[viewName] || (() => {});
             refreshCurrentView();
@@ -191,12 +189,8 @@
 
         const refreshCurrentView = () => {
             const renderMap = { 
-                'dashboard': renderDashboard, 
-                'shopping': renderShopping, 
-                'list-detail': renderListDetail, 
-                'calendar': renderCalendar, 
-                'meals': renderMealPlanner, 
-                'journal': renderJournal,
+                'dashboard': renderDashboard, 'shopping': renderShopping, 'list-detail': renderListDetail, 
+                'calendar': renderCalendar, 'meals': renderMealPlanner, 'journal': renderJournal,
             };
             renderMap[currentView]?.();
         };
@@ -231,12 +225,9 @@
         // --- UI RENDERING FUNCTIONS ---
         function renderDashboard() {
             const container = document.getElementById('dashboard-view');
-            const today = new Date();
-            const tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
-            const todayStr = today.toISOString().split('T')[0];
-            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+            const today = new Date(), tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1);
+            const todayStr = today.toISOString().split('T')[0], tomorrowStr = tomorrow.toISOString().split('T')[0];
             const formattedDate = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-
             const timedEventsToday = appData.tasks.filter(t => t.date === todayStr && t.time).sort((a,b) => a.time.localeCompare(b.time));
             const mealsToday = appData.meals.filter(m => m.date === todayStr);
             const timedEventsTomorrow = appData.tasks.filter(t => t.date === tomorrowStr && t.time);
@@ -246,7 +237,6 @@
                 return isImportant && isAfterTomorrow;
             });
             const upcoming = [...timedEventsTomorrow, ...importantAppointments].sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''));
-
             container.innerHTML = `
                 <div class="view-header"><h1 class="view-title">Dashboard</h1></div>
                 <div class="card">
@@ -271,17 +261,15 @@
                     <div class="list-item-title">${item.name}</div>
                     <div class="list-item-subtitle">${formatDate(item.date)}</div>
                 </div>
-                <div class="list-item-aside">${item.time ? formatTime(item.time) : ''}</div>
+                <div class="list-item-aside">
+                    ${item.time ? formatTime(item.time) : ''}
+                    ${item.assignee ? `<div class="list-item-assignee">${item.assignee}</div>` : ''}
+                </div>
             </div>`;
         }
         
         function createMealListItem(item) {
-             return `
-            <div class="list-item" onclick="openModal('meal', {id:${item.id}})">
-                <div class="list-item-icon"><i class="fas fa-utensils"></i></div>
-                <div class="list-item-content"><div class="list-item-title">${item.name}</div></div>
-                <div class="list-item-aside"><div class="list-item-assignee">${item.type}</div></div>
-            </div>`;
+             return `<div class="list-item" onclick="openModal('meal', {id:${item.id}})"><div class="list-item-icon"><i class="fas fa-utensils"></i></div><div class="list-item-content"><div class="list-item-title">${item.name}</div></div><div class="list-item-aside"><div class="list-item-assignee">${item.type}</div></div></div>`;
         }
 
         function renderShopping() {
@@ -293,16 +281,7 @@
                 html += appData.stores.map(store => {
                     const items = appData.shoppingLists.filter(i => i.storeId === store.id);
                     const needed = items.filter(i => !i.completed).length;
-                    return `<div class="card" onclick="showListDetail(${store.id})">
-                        <div class="list-item">
-                            <div class="list-item-icon"><i class="fas fa-store"></i></div>
-                            <div class="list-item-content">
-                                <div class="list-item-title">${store.name}</div>
-                                <div class="list-item-subtitle">${needed} of ${items.length} items needed</div>
-                            </div>
-                            <div class="list-item-aside"><i class="fas fa-chevron-right"></i></div>
-                        </div>
-                    </div>`;
+                    return `<div class="card" onclick="showListDetail(${store.id})"><div class="list-item"><div class="list-item-icon"><i class="fas fa-store"></i></div><div class="list-item-content"><div class="list-item-title">${store.name}</div><div class="list-item-subtitle">${needed} of ${items.length} items needed</div></div><div class="list-item-aside"><i class="fas fa-chevron-right"></i></div></div></div>`;
                 }).join('');
             }
             container.innerHTML = html;
@@ -320,28 +299,8 @@
             const items = appData.shoppingLists.filter(i => i.storeId === currentStoreId);
             const needed = items.filter(i => !i.completed);
             const completed = items.filter(i => i.completed);
-            const createItemHtml = item => `
-                <div class="list-item shopping-item ${item.completed ? 'completed' : ''}">
-                    <input type="checkbox" class="checkbox" onchange="toggleShoppingItem(${item.id})" ${item.completed ? 'checked' : ''}>
-                    <div class="list-item-content"><div class="list-item-title">${item.name}</div></div>
-                    <button class="btn btn-ghost" onclick="deleteShoppingItem(${item.id})"><i class="fas fa-trash-alt"></i></button>
-                </div>`;
-            container.innerHTML = `
-                <div class="view-header">
-                    <button class="btn btn-ghost" onclick="switchView('shopping')"><i class="fas fa-arrow-left"></i> Back</button>
-                    <h1 class="view-title" style="font-size: 1.5rem;">${store.name}</h1>
-                </div>
-                <div class="card">
-                    <div class="card-header">Needed</div>
-                    <div class="card-body">${needed.length > 0 ? needed.map(createItemHtml).join('') : `<div class="list-item"><p class="list-item-subtitle">All done!</p></div>`}</div>
-                </div>
-                ${completed.length > 0 ? `<div class="card"><div class="card-header">Completed</div><div class="card-body">${completed.map(createItemHtml).join('')}</div></div>` : ''}
-                <div class="card" style="position: sticky; bottom: 1rem;">
-                    <form id="add-item-form" style="display: flex; gap: 0.5rem; padding: 0.5rem;">
-                        <input type="text" class="form-input" id="new-item-name" placeholder="Add a new item..." required>
-                        <button type="submit" class="btn btn-primary">Add</button>
-                    </form>
-                </div>`;
+            const createItemHtml = item => `<div class="list-item shopping-item ${item.completed ? 'completed' : ''}"><input type="checkbox" class="checkbox" onchange="toggleShoppingItem(${item.id})" ${item.completed ? 'checked' : ''}><div class="list-item-content"><div class="list-item-title">${item.name}</div></div><button class="btn btn-ghost" onclick="deleteShoppingItem(${item.id})"><i class="fas fa-trash-alt"></i></button></div>`;
+            container.innerHTML = `<div class="view-header"><button class="btn btn-ghost" onclick="switchView('shopping')"><i class="fas fa-arrow-left"></i> Back</button><h1 class="view-title" style="font-size: 1.5rem;">${store.name}</h1></div><div class="card"><div class="card-header">Needed</div><div class="card-body">${needed.length > 0 ? needed.map(createItemHtml).join('') : `<div class="list-item"><p class="list-item-subtitle">All done!</p></div>`}</div></div>${completed.length > 0 ? `<div class="card"><div class="card-header">Completed</div><div class="card-body">${completed.map(createItemHtml).join('')}</div></div>` : ''}<div class="card" style="position: sticky; bottom: 1rem;"><form id="add-item-form" style="display: flex; gap: 0.5rem; padding: 0.5rem;"><input type="text" class="form-input" id="new-item-name" placeholder="Add a new item..." required><button type="submit" class="btn btn-primary">Add</button></form></div>`;
             document.getElementById('add-item-form').addEventListener('submit', async e => {
                 e.preventDefault();
                 const input = document.getElementById('new-item-name');
@@ -354,39 +313,19 @@
 
         async function toggleShoppingItem(itemId) {
             const item = appData.shoppingLists.find(i => i.id === itemId);
-            if(item) {
-                item.completed = !item.completed;
-                await dbOps.put('shoppingLists', item);
-                await loadAppData();
-                renderListDetail();
-            }
+            if(item) { item.completed = !item.completed; await dbOps.put('shoppingLists', item); await loadAppData(); renderListDetail(); }
         }
 
         async function deleteShoppingItem(itemId) {
-            if (confirm('Delete this item?')) {
-                await dbOps.delete('shoppingLists', itemId);
-                await loadAppData();
-                renderListDetail();
-            }
+            if (confirm('Delete this item?')) { await dbOps.delete('shoppingLists', itemId); await loadAppData(); renderListDetail(); }
         }
 
         function renderJournal() {
             const container = document.getElementById('journal-view');
             let html = `<div class="view-header"><h1 class="view-title">Journal</h1></div>`;
             const entries = appData.journalEntries.sort((a,b) => b.date.localeCompare(a.date));
-
             if (entries.length > 0) {
-                html += entries.map(entry => `
-                    <div class="card" onclick="openModal('journal', {id: ${entry.id}})">
-                        <div class="card-header">
-                            <span>${entry.title}</span>
-                            <span class="list-item-subtitle">${formatDate(entry.date)}</span>
-                        </div>
-                        <div class="card-content">
-                            ${entry.content.substring(0, 150)}${entry.content.length > 150 ? '...' : ''}
-                        </div>
-                    </div>
-                `).join('');
+                html += entries.map(entry => `<div class="card" onclick="openModal('journal', {id: ${entry.id}})"><div class="card-header"><span>${entry.title}</span><span class="list-item-subtitle">${formatDate(entry.date)}</span></div><div class="card-content">${entry.content.substring(0, 150)}${entry.content.length > 150 ? '...' : ''}</div></div>`).join('');
             } else {
                 html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No journal entries yet. Use the '+' button to add one.</p></div></div>`;
             }
@@ -401,32 +340,31 @@
             const isMobile = window.innerWidth < 768;
             calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: isMobile ? 'listDay' : 'dayGridMonth',
-                headerToolbar: isMobile 
-                    ? { left: 'prev,next today', center: 'title', right: '' }
-                    : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,workWeek,timeGridDay' },
-                events: appData.tasks.map(task => ({
-                    id: task.id, title: task.name,
-                    start: task.time ? `${task.date}T${task.time}` : task.date
-                })),
+                headerToolbar: isMobile ? { left: 'prev,next today', center: 'title', right: '' } : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,workWeek,timeGridDay' },
+                events: appData.tasks.map(task => ({ id: task.id, title: task.name, start: task.time ? `${task.date}T${task.time}` : task.date, extendedProps: { assignee: task.assignee } })),
                 eventClick: (info) => openModal('task', { id: parseInt(info.event.id) }),
                 dateClick: (info) => openModal('task', { date: info.dateStr.split('T')[0] }),
-                viewDidMount: (info) => {
-                    if (isMobile) updateActiveCalendarButton(info.view.type);
+                viewDidMount: (info) => { if (isMobile) updateActiveCalendarButton(info.view.type); },
+                eventContent: (arg) => {
+                    let titleEl = document.createElement('div');
+                    titleEl.innerHTML = arg.event.title;
+                    if (arg.event.extendedProps.assignee) {
+                        let assigneeEl = document.createElement('div');
+                        assigneeEl.innerHTML = `<i>${arg.event.extendedProps.assignee}</i>`;
+                        assigneeEl.style.opacity = '0.8';
+                        assigneeEl.style.fontSize = '0.8em';
+                        return { domNodes: [titleEl, assigneeEl] };
+                    }
+                    return { domNodes: [titleEl] };
                 }
             });
             calendar.render();
             if (isMobile) {
                 const mobileControls = document.createElement('div');
                 mobileControls.className = 'calendar-mobile-controls';
-                mobileControls.innerHTML = `
-                    <button class="btn btn-outline" data-view="listDay">Day</button>
-                    <button class="btn btn-outline" data-view="listWeek">Week</button>
-                    <button class="btn btn-outline" data-view="dayGridMonth">Month</button>
-                `;
+                mobileControls.innerHTML = `<button class="btn btn-outline" data-view="listDay">Day</button><button class="btn btn-outline" data-view="listWeek">Week</button><button class="btn btn-outline" data-view="dayGridMonth">Month</button>`;
                 calendarEl.querySelector('.fc-toolbar').insertAdjacentElement('afterend', mobileControls);
-                mobileControls.querySelectorAll('button').forEach(btn => {
-                    btn.addEventListener('click', () => calendar.changeView(btn.dataset.view));
-                });
+                mobileControls.querySelectorAll('button').forEach(btn => btn.addEventListener('click', () => calendar.changeView(btn.dataset.view)));
             }
         }
 
@@ -439,18 +377,10 @@
         function renderMealPlanner() {
             const container = document.getElementById('meals-view');
             let html = `<div class="view-header"><h1 class="view-title">Meal Plan</h1></div>`;
-            const mealsByDate = appData.meals.reduce((acc, meal) => {
-                (acc[meal.date] = acc[meal.date] || []).push(meal);
-                return acc;
-            }, {});
+            const mealsByDate = appData.meals.reduce((acc, meal) => { (acc[meal.date] = acc[meal.date] || []).push(meal); return acc; }, {});
             const sortedDates = Object.keys(mealsByDate).sort();
             if (sortedDates.length > 0) {
-                 sortedDates.forEach(date => {
-                    html += `<div class="card">
-                        <div class="card-header">${formatDate(date)}</div>
-                        <div class="card-body">${mealsByDate[date].map(createMealListItem).join('')}</div>
-                    </div>`;
-                });
+                 sortedDates.forEach(date => { html += `<div class="card"><div class="card-header">${formatDate(date)}</div><div class="card-body">${mealsByDate[date].map(createMealListItem).join('')}</div></div>`; });
             } else {
                  html += `<div class="card"><div class="list-item"><p class="list-item-subtitle">No meals planned. Use the '+' button to add one.</p></div></div>`;
             }
@@ -462,6 +392,8 @@
             'task': {
                 render: async ({id, date}) => {
                     const task = id ? await dbOps.get('tasks', id) : {};
+                    const familyMembers = appData.familyMembers || [];
+                    const memberOptions = familyMembers.map(m => `<option value="${m.name}" ${task.assignee === m.name ? 'selected' : ''}>${m.name}</option>`).join('');
                     const types = ['Appointment', 'Chore', 'Errand', 'School', 'Work', 'Meeting', 'Doctor', 'Dentist'];
                     const typeOptions = types.map(t => `<option value="${t}" ${task.type === t ? 'selected' : ''}>${t}</option>`).join('');
                     return `<div class="modal-content"><form id="task-form">
@@ -472,6 +404,13 @@
                             <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="task-date" value="${task.date || date || new Date().toISOString().split('T')[0]}" required></div>
                             <div class="form-group"><label class="form-label">Time (optional)</label><input type="time" class="form-input" id="task-time" value="${task.time || ''}"></div>
                             <div class="form-group"><label class="form-label">Type</label><select class="form-input" id="task-type">${typeOptions}</select></div>
+                            <div class="form-group"><label class="form-label">Assign To</label><select class="form-input" id="task-assignee"><option value="">Unassigned</option>${memberOptions}</select></div>
+                            <div class="form-group"><label class="form-label">Priority</label><select class="form-input" id="task-priority">
+                                <option value="low" ${task.priority === 'low' ? 'selected' : ''}>Low</option>
+                                <option value="medium" ${!task.priority || task.priority === 'medium' ? 'selected' : ''}>Medium</option>
+                                <option value="high" ${task.priority === 'high' ? 'selected' : ''}>High</option>
+                                <option value="urgent" ${task.priority === 'urgent' ? 'selected' : ''}>Urgent</option>
+                            </select></div>
                         </div>
                         <div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-task-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div>
                     </form></div>`;
@@ -481,20 +420,13 @@
                         e.preventDefault();
                         const taskData = {
                             id: parseInt(document.getElementById('task-id').value) || undefined, name: document.getElementById('task-name').value, type: document.getElementById('task-type').value,
-                            date: document.getElementById('task-date').value, time: document.getElementById('task-time').value
+                            date: document.getElementById('task-date').value, time: document.getElementById('task-time').value, assignee: document.getElementById('task-assignee').value, priority: document.getElementById('task-priority').value
                         };
                         if (taskData.id) await dbOps.put('tasks', taskData);
                         else { delete taskData.id; await dbOps.add('tasks', taskData); }
                         await loadAppData(); refreshCurrentView(); closeModal();
                     });
-                    if (id) {
-                        document.getElementById('delete-task-btn').addEventListener('click', async () => {
-                            if (confirm('Delete this task?')) {
-                                await dbOps.delete('tasks', id);
-                                await loadAppData(); refreshCurrentView(); closeModal();
-                            }
-                        });
-                    }
+                    if (id) { document.getElementById('delete-task-btn').addEventListener('click', async () => { if (confirm('Delete this task?')) { await dbOps.delete('tasks', id); await loadAppData(); refreshCurrentView(); closeModal(); } }); }
                 }
             },
             'store': {
@@ -503,17 +435,13 @@
             },
             'meal': {
                 render: async ({id}) => {
-                    const meal = id ? await dbOps.get('meals', id) : {};
-                    const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
-                    const typeOptions = mealTypes.map(t => `<option value="${t}" ${meal.type === t ? 'selected' : ''}>${t}</option>`).join('');
+                    const meal = id ? await dbOps.get('meals', id) : {}; const mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snack']; const typeOptions = mealTypes.map(t => `<option value="${t}" ${meal.type === t ? 'selected' : ''}>${t}</option>`).join('');
                     return `<div class="modal-content"><form id="meal-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Meal' : 'New Meal'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="meal-id" value="${id || ''}"><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="meal-date" value="${meal.date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Meal Type</label><select class="form-input" id="meal-type">${typeOptions}</select></div><div class="form-group"><label class="form-label">Meal Name</label><input type="text" class="form-input" id="meal-name" value="${meal.name || ''}" required placeholder="e.g., Tacos, Cereal..."></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-meal-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
                 },
                 postRender: ({id}) => {
                     document.getElementById('meal-form').addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        const mealData = { id: parseInt(document.getElementById('meal-id').value) || undefined, date: document.getElementById('meal-date').value, type: document.getElementById('meal-type').value, name: document.getElementById('meal-name').value };
-                        if (mealData.id) await dbOps.put('meals', mealData);
-                        else { delete mealData.id; await dbOps.add('meals', mealData); }
+                        e.preventDefault(); const mealData = { id: parseInt(document.getElementById('meal-id').value) || undefined, date: document.getElementById('meal-date').value, type: document.getElementById('meal-type').value, name: document.getElementById('meal-name').value };
+                        if (mealData.id) await dbOps.put('meals', mealData); else { delete mealData.id; await dbOps.add('meals', mealData); }
                         await loadAppData(); refreshCurrentView(); closeModal();
                     });
                     if (id) { document.getElementById('delete-meal-btn').addEventListener('click', async () => { if (confirm('Delete this meal?')) { await dbOps.delete('meals', id); await loadAppData(); refreshCurrentView(); closeModal(); } }); }
@@ -522,23 +450,12 @@
             'journal': {
                 render: async ({id}) => {
                     const entry = id ? await dbOps.get('journalEntries', id) : {};
-                    return `<div class="modal-content"><form id="journal-form">
-                        <div class="modal-header"><h3 class="modal-title">${id ? 'Edit Entry' : 'New Journal Entry'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div>
-                        <div class="modal-body">
-                            <input type="hidden" id="journal-id" value="${id || ''}">
-                            <div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="journal-date" value="${entry.date || new Date().toISOString().split('T')[0]}" required></div>
-                            <div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="journal-title" value="${entry.title || ''}" required></div>
-                            <div class="form-group"><label class="form-label">Content</label><textarea class="form-input" id="journal-content" rows="6">${entry.content || ''}</textarea></div>
-                        </div>
-                        <div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-journal-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div>
-                    </form></div>`;
+                    return `<div class="modal-content"><form id="journal-form"><div class="modal-header"><h3 class="modal-title">${id ? 'Edit Entry' : 'New Journal Entry'}</h3><button type="button" class="btn btn-ghost" onclick="closeModal()"><i class="fas fa-times"></i></button></div><div class="modal-body"><input type="hidden" id="journal-id" value="${id || ''}"><div class="form-group"><label class="form-label">Date</label><input type="date" class="form-input" id="journal-date" value="${entry.date || new Date().toISOString().split('T')[0]}" required></div><div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="journal-title" value="${entry.title || ''}" required></div><div class="form-group"><label class="form-label">Content</label><textarea class="form-input" id="journal-content" rows="6">${entry.content || ''}</textarea></div></div><div class="modal-footer">${id ? `<button type="button" class="btn btn-danger" id="delete-journal-btn">Delete</button><div style="flex:1;"></div>` : ''}<button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button><button type="submit" class="btn btn-primary">Save</button></div></form></div>`;
                 },
                 postRender: ({id}) => {
                     document.getElementById('journal-form').addEventListener('submit', async (e) => {
-                        e.preventDefault();
-                        const entryData = { id: parseInt(document.getElementById('journal-id').value) || undefined, date: document.getElementById('journal-date').value, title: document.getElementById('journal-title').value, content: document.getElementById('journal-content').value };
-                        if (entryData.id) await dbOps.put('journalEntries', entryData);
-                        else { delete entryData.id; await dbOps.add('journalEntries', entryData); }
+                        e.preventDefault(); const entryData = { id: parseInt(document.getElementById('journal-id').value) || undefined, date: document.getElementById('journal-date').value, title: document.getElementById('journal-title').value, content: document.getElementById('journal-content').value };
+                        if (entryData.id) await dbOps.put('journalEntries', entryData); else { delete entryData.id; await dbOps.add('journalEntries', entryData); }
                         await loadAppData(); refreshCurrentView(); closeModal();
                     });
                      if (id) { document.getElementById('delete-journal-btn').addEventListener('click', async () => { if (confirm('Delete this entry?')) { await dbOps.delete('journalEntries', id); await loadAppData(); refreshCurrentView(); closeModal(); } }); }
